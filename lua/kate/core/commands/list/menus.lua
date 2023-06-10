@@ -32,7 +32,7 @@ do
 			local len = #cmp
 
 			net.Start("Kate Players")
-				net.WriteUInt(len, 16)
+				net.WriteUInt(len, 32)
 				net.WriteData(cmp, len)
 			net.Send(pl)
 		end
@@ -63,7 +63,7 @@ do
 			local len = #cmp
 
 			net.Start("Kate Bans")
-				net.WriteUInt(len, 16)
+				net.WriteUInt(len, 32)
 				net.WriteData(cmp, len)
 			net.Send(pl)
 		end
@@ -98,7 +98,7 @@ do
 				local len = #cmp
 
 				net.Start("Kate " .. tag .. "s")
-					net.WriteUInt(len, 16)
+					net.WriteUInt(len, 32)
 					net.WriteData(cmp, len)
 				net.Send(pl)
 			end

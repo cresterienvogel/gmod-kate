@@ -4,7 +4,7 @@ function kate.RegisterMenu(name)
 	else
 		local fr
 		net.Receive("Kate " .. name, function()
-			local len = net.ReadUInt(16)
+			local len = net.ReadUInt(32)
 			local data = net.ReadData(len)
 
 			data = util.JSONToTable(util.Decompress(data))
