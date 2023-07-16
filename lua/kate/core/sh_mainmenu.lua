@@ -126,7 +126,7 @@ else
 
 		fr = vgui.Create("DFrame")
 		fr:SetTitle("Kate Menu")
-		fr:SetSize(ScrW() / 4.5, ScrH() / 4)
+		fr:SetSize(ScrW() / 4, ScrH() / 4)
 		fr:SetPos(-fr:GetWide(), ScrH() / 2 - (fr:GetWide() / 2))
 		fr:MoveTo(32, fr:GetY(), 0.1)
 		fr:MakePopup(true)
