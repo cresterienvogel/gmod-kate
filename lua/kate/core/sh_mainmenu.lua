@@ -13,7 +13,7 @@ else
 
 		qfr = vgui.Create("KQuery")
 		qfr:SetTitle("Fill args for " .. kate.Commands.Stored[command]:GetTitle())
-		qfr:SetSize(ScrW() / 4.5, ScrH() / 4)
+		qfr:SetSize(ScrW() / 3.5, ScrH() / 3.5)
 		qfr:SetPos(parent:GetPos())
 		qfr:MoveTo(parent:GetX() + qfr:GetWide() + 16, parent:GetY(), 0.1)
 
@@ -65,7 +65,7 @@ else
 
 		pfr = vgui.Create("DFrame")
 		pfr:SetTitle("Choose player for " .. data:GetTitle())
-		pfr:SetSize(ScrW() / 4.5, ScrH() / 4)
+		pfr:SetSize(ScrW() / 3.5, ScrH() / 3.5)
 		pfr:SetPos(fr:GetPos())
 		pfr:MoveTo(pfr:GetX() + pfr:GetWide() + 16, pfr:GetY(), 0.1)
 		pfr:MakePopup(true)
@@ -126,7 +126,7 @@ else
 
 		fr = vgui.Create("DFrame")
 		fr:SetTitle("Kate Menu")
-		fr:SetSize(ScrW() / 4, ScrH() / 4)
+		fr:SetSize(ScrW() / 3.5, ScrH() / 3.5)
 		fr:SetPos(-fr:GetWide(), ScrH() / 2 - (fr:GetWide() / 2))
 		fr:MoveTo(32, fr:GetY(), 0.1)
 		fr:MakePopup(true)
