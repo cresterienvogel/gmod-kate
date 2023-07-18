@@ -37,6 +37,11 @@ do
 			return
 		end
 
+		if time < 300 then
+			kate.Message(pl, 2, "Expiration time shouln't be less than 5 minutes")
+			return
+		end
+
 		if IsValid(pl) and stored[rank]:GetImmunity() >= pl:GetImmunity() then
 			kate.Message(pl, 2, "Rank's immunity is higher or equal to yours")
 			return
