@@ -1,7 +1,7 @@
 function kate.GetAdmins()
 	local tbl = {}
 	for _, pl in ipairs(player.GetAll()) do
-		if pl:IsAdmin() then
+		if pl:IsModerator() then
 			tbl[#tbl + 1] = pl
 		end
 	end

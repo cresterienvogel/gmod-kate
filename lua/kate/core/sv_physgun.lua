@@ -1,5 +1,5 @@
 hook.Add("PhysgunPickup", "Kate PhysgunPickup", function(pl, ent)
-	if not pl:IsAdmin() or not pl:GetInfoNum("kate_touchplayers", 1) then
+	if not pl:IsModerator() or not pl:GetInfoNum("kate_touchplayers", 1) then
 		return
 	end
 
