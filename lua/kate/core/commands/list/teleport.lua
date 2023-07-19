@@ -20,6 +20,8 @@ do
 	:SetCategory("Teleport")
 	:SetIcon("icon16/arrow_down.png")
 	:SetImmunity(1000)
+	:AddAlias("tp")
+	:AddAlias("tele")
 	:SetArgs("Target")
 end
 
