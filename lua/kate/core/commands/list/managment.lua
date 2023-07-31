@@ -37,7 +37,7 @@ do
 			return
 		end
 
-		if time < 300 then
+		if exp and time < 300 then
 			kate.Message(pl, 2, "Expiration time shouln't be less than 5 minutes")
 			return
 		end
