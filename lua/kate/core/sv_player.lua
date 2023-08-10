@@ -2,10 +2,11 @@ local db = kate.Data.DB
 
 hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 	local id = pl:SteamID64()
+	local moment = os.time()
 
 	do
-		local state = "SELECT * FROM kate_users WHERE steamid = %s"
-		local query = db:query(state:format(SQLStr(id)))
+		local query = db:prepare("SELECT * FROM `kate_users` WHERE steamid = ? LIMIT 1")
+		query:setString(1, id)
 
 		query.onSuccess = function(_, data)
 			if #data > 0 then
@@ -17,11 +18,19 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 				pl:SetKateVar("Seen", data.seen)
 				pl:SetKateVar("Playtime", data.playtime)
 
-				state = "UPDATE kate_users SET seen = %s WHERE steamid = %s"
-				db:query(state:format(SQLStr(os.time()), SQLStr(id))):start()
+				local query_update = db:prepare("UPDATE `kate_users` SET seen = ? WHERE steamid = ? LIMIT 1")
+				query_update:setNumber(1, moment)
+				query_update:setString(2, id)
+				query_update:start()
 			else
-				state = "INSERT INTO kate_users (name, steamid, rank, joined, seen, playtime) VALUES (%s, %s, %s, %s, %s, %s)"
-				db:query(state:format(SQLStr(pl:Name()), SQLStr(id), SQLStr("user"), SQLStr(os.time()), SQLStr(os.time()), SQLStr(0))):start()
+				local query_insert = db:prepare("INSERT INTO `kate_users` (name, steamid, rank, joined, seen, playtime) VALUES (?, ?, ?, ?, ?, ?)")
+				query_insert:setString(1, pl:Name())
+				query_insert:setString(2, id)
+				query_insert:setString(3, "user")
+				query_insert:setNumber(4, moment)
+				query_insert:setNumber(5, moment)
+				query_insert:setNumber(6, 0)
+				query_insert:start()
 			end
 		end
 
@@ -29,27 +38,20 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 	end
 
 	for _, tag in ipairs({"Gag", "Mute"}) do
-		local tbl = "kate_" .. tag:lower() .. "s"
+		local low_tag = tag:lower()
+		local s_tag = tag .. "s"
 
-		local state = "SELECT * FROM " .. tbl .. " WHERE steamid = %s"
-		local query = db:query(state:format(SQLStr(id)))
-
-		query.onSuccess = function(_, data)
-			if #data <= 0 then
-				return
-			end
-
-			local exp = data[1].expire_time
-			if exp ~= 0 and os.time() > exp then
-				state = "DELETE FROM " .. tbl .. " WHERE steamid = %s"
-				db:query(state:format(SQLStr(id))):start()
-				pl:SetKateVar(tag, nil)
-			else
-				pl:SetKateVar(tag, exp)
-			end
+		local cached = kate[s_tag][id]
+		if not cached then
+			continue
 		end
 
-		query:start()
+		local exp = cached.expire_time
+		if exp ~= 0 and moment > exp then
+			kate["Un" .. low_tag](pl)
+		else
+			pl:SetKateVar(tag, exp)
+		end
 	end
 end)
 
@@ -58,8 +60,8 @@ timer.Create("Kate Players", 300, 0, function()
 		local id = pl:SteamID64()
 
 		do -- update playtime
-			local state = "SELECT * FROM kate_users WHERE steamid = %s"
-			local query = db:query(state:format(SQLStr(id)))
+			local query = db:prepare("SELECT * FROM `kate_users` WHERE steamid = ? LIMIT 1")
+			query:setString(1, id)
 
 			query.onSuccess = function(_, data)
 				if #data <= 0 then
@@ -68,8 +70,10 @@ timer.Create("Kate Players", 300, 0, function()
 
 				local new = data[1].playtime + 300
 
-				state = "UPDATE kate_users SET playtime = %s WHERE steamid = %s"
-				db:query(state:format(SQLStr(new), SQLStr(id))):start()
+				local query_update = db:prepare("UPDATE `kate_users` SET playtime = ? WHERE steamid = ? LIMIT 1")
+				query_update:setNumber(1, new)
+				query_update:setString(2, id)
+				query_update:start()
 
 				pl:SetKateVar("Playtime", new)
 			end
@@ -78,8 +82,8 @@ timer.Create("Kate Players", 300, 0, function()
 		end
 
 		do -- check expirations
-			local state = "SELECT * FROM kate_expirations WHERE steamid = %s"
-			local query = db:query(state:format(SQLStr(id)))
+			local query = db:prepare("SELECT * FROM `kate_expirations` WHERE steamid = ? LIMIT 1")
+			query:setString(1, id)
 
 			query.onSuccess = function(_, data)
 				if #data <= 0 then
@@ -87,6 +91,7 @@ timer.Create("Kate Players", 300, 0, function()
 				end
 
 				data = data[1]
+
 				local exp = data.expire_time
 				local exp_in = data.expire_in or "user"
 
@@ -94,11 +99,14 @@ timer.Create("Kate Players", 300, 0, function()
 					return
 				end
 
-				state = "DELETE FROM kate_expirations WHERE steamid = %s"
-				db:query(state:format(SQLStr(id))):start()
+				local query_delete = db:prepare("DELETE FROM `kate_expirations` WHERE steamid = ?")
+				query_delete:setString(1, id)
+				query_delete:start()
 
-				state = "UPDATE kate_users SET rank = %s WHERE steamid = %s"
-				db:query(state:format(SQLStr(exp_in), SQLStr(id))):start()
+				local query_update = db:prepare("UPDATE `kate_users` SET rank = ? WHERE steamid = ? LIMIT 1")
+				query_update:setString(1, exp_in)
+				query_update:setString(2, id)
+				query_update:start()
 
 				do
 					local text = pl:Name() .. " has got his " .. kate.Ranks.Stored[pl:GetRank()]:GetTitle() .. " rank expired"

@@ -56,6 +56,10 @@ do
 					if param:find("ban_time") then
 						data[i][param] = os.date("%d %B %Y", val)
 					end
+
+					if param == "expired" then
+						data[i][param] = tobool(val)
+					end
 				end
 			end
 
@@ -90,6 +94,10 @@ do
 					for param, val in pairs(params) do
 						if param == "expire_time" then
 							data[i][param] = os.date("%d %B %Y", val)
+						end
+
+						if param == "expired" then
+							data[i][param] = tobool(val)
 						end
 					end
 				end

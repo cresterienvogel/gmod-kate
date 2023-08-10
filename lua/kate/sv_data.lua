@@ -1,9 +1,9 @@
 kate.Data = kate.Data or {}
 
-kate.Data.IP = ""
-kate.Data.User = ""
-kate.Data.Password = ""
-kate.Data.Table = ""
+kate.Data.IP = "127.0.0.1"
+kate.Data.User = "root"
+kate.Data.Password = "9263"
+kate.Data.Table = "kate"
 kate.Data.Port = 3306
 
 kate.Data.DB = kate.Data.DB or mysqloo.connect(kate.Data.IP, kate.Data.User, kate.Data.Password, kate.Data.Table, kate.Data.Port)
@@ -26,17 +26,17 @@ end
 
 hook.Add("Initialize", "Kate DB", function()
 	-- mutes
-	db:query("CREATE TABLE IF NOT EXISTS kate_mutes (steamid TEXT, reason TEXT, expire_time INT, admin_steamid TEXT)"):start()
+	db:query("CREATE TABLE IF NOT EXISTS `kate_mutes` (steamid TINYTEXT, reason TEXT, mute_time INT, expire_time INT, admin_steamid TINYTEXT, expired BOOL)"):start()
 
 	-- gags
-	db:query("CREATE TABLE IF NOT EXISTS kate_gags (steamid TEXT, reason TEXT, expire_time INT, admin_steamid TEXT)"):start()
+	db:query("CREATE TABLE IF NOT EXISTS `kate_gags` (steamid TINYTEXT, reason TEXT, gag_time INT, expire_time INT, admin_steamid TINYTEXT, expired BOOL)"):start()
 
 	-- expirations
-	db:query("CREATE TABLE IF NOT EXISTS kate_expirations (steamid TEXT, expire_rank TEXT, expire_in TEXT, expire_time INT)"):start()
+	db:query("CREATE TABLE IF NOT EXISTS `kate_expirations` (steamid TINYTEXT, expire_rank TINYTEXT, expire_in TINYTEXT, expire_time INT)"):start()
 
 	-- users
-	db:query("CREATE TABLE IF NOT EXISTS kate_users (name TEXT, steamid TEXT, rank TEXT, joined INT, seen INT, playtime INT)"):start()
+	db:query("CREATE TABLE IF NOT EXISTS `kate_users` (name TEXT, steamid TINYTEXT, rank TINYTEXT, joined INT, seen INT, playtime INT)"):start()
 
 	-- bans
-	db:query("CREATE TABLE IF NOT EXISTS kate_bans (admin_name TEXT, admin_steamid TEXT, steamid TEXT, ip TEXT, ban_time INT, unban_time INT, reason TEXT)"):start()
+	db:query("CREATE TABLE IF NOT EXISTS `kate_bans` (admin_name TEXT, admin_steamid TINYTEXT, steamid TINYTEXT, ban_time INT, unban_time INT, reason TEXT, expired BOOL)"):start()
 end)
