@@ -289,7 +289,7 @@ function PANEL:Build(page)
 
 			for i, data in ipairs(self.InitData) do
 				for _, v in pairs(data) do
-					if v:find(val) then
+					if tostring(v):find(val) then
 						tbl[#tbl + 1] = data
 					end
 				end
