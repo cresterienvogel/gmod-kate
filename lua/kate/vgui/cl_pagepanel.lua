@@ -1,6 +1,6 @@
-local speed = 17
-
 local PANEL = {}
+
+PANEL.Speed = 17
 
 AccessorFunc(PANEL, "max_per_page", "MaxPerPage", FORCE_NUMBER)
 
@@ -11,16 +11,26 @@ function PANEL:Init()
 	local parent = self:GetParent()
 	local wide = parent:GetWide() / 6
 
+	local top, bottom
+
 	-- page panel
 	do
-		local pnl = vgui.Create("EditablePanel", self)
-		pnl:Dock(BOTTOM)
-		pnl:DockMargin(2, 2, 2, 2)
-		pnl:SetTall(parent:GetTall() / 22)
+		-- main panels
+		do
+			top = vgui.Create("EditablePanel", self)
+			top:Dock(TOP)
+			top:DockMargin(2, 2, 2, 2)
+			top:SetTall(28)
+
+			bottom = vgui.Create("EditablePanel", self)
+			bottom:Dock(BOTTOM)
+			bottom:DockMargin(2, 2, 2, 2)
+			bottom:SetTall(parent:GetTall() / 22)
+		end
 
 		-- first
 		do
-			local btn = vgui.Create("DButton", pnl)
+			local btn = vgui.Create("DButton", bottom)
 			btn:SetText("<<")
 			btn:SetWide(wide)
 			btn:Dock(LEFT)
@@ -33,7 +43,7 @@ function PANEL:Init()
 
 		-- prev
 		do
-			local btn = vgui.Create("DButton", pnl)
+			local btn = vgui.Create("DButton", bottom)
 			btn:SetText("<")
 			btn:SetWide(wide)
 			btn:Dock(LEFT)
@@ -46,7 +56,7 @@ function PANEL:Init()
 
 		-- current
 		do
-			local entry = vgui.Create("DTextEntry", pnl)
+			local entry = vgui.Create("DTextEntry", bottom)
 			entry:SetValue(1)
 			entry:SetContentAlignment(5)
 			entry:SetWide(wide)
@@ -71,12 +81,12 @@ function PANEL:Init()
 				s:SetValue(s:IsEditing() and val or (val .. "/" .. (#pages == 0 and 1 or #pages)))
 			end
 
-			pnl.Entry = entry
+			bottom.Entry = entry
 		end
 
 		-- last
 		do
-			local btn = vgui.Create("DButton", pnl)
+			local btn = vgui.Create("DButton", bottom)
 			btn:SetText(">>")
 			btn:SetWide(wide)
 			btn:Dock(RIGHT)
@@ -89,7 +99,7 @@ function PANEL:Init()
 
 		-- next
 		do
-			local btn = vgui.Create("DButton", pnl)
+			local btn = vgui.Create("DButton", bottom)
 			btn:SetText(">")
 			btn:SetWide(wide)
 			btn:Dock(RIGHT)
@@ -100,18 +110,31 @@ function PANEL:Init()
 			end
 		end
 
-		self.PagePanel = pnl
+		self.PagePanel = bottom
 	end
 
 	-- text entry
 	do
-		local entry = vgui.Create("DTextEntry", self)
+		local entry = vgui.Create("DTextEntry", top)
 		entry:SetPlaceholderText("Any data to find...")
-		entry:Dock(TOP)
-		entry:DockMargin(2, 2, 2, 2)
-		entry:SetTall(28)
+		entry:SetUpdateOnType(true)
+		entry:Dock(FILL)
 
 		self.TextEntry = entry
+	end
+
+	-- reset button
+	do
+		local btn = vgui.Create("DButton", top)
+		btn:SetText("")
+		btn:SetIcon("icon16/arrow_redo.png")
+		btn:Dock(RIGHT)
+		btn:DockMargin(2, 0, 0, 0)
+		btn:SetWide(24)
+
+		btn.DoClick = function()
+			self.TextEntry:SetValue("")
+		end
 	end
 
 	-- data list
@@ -155,7 +178,7 @@ function PANEL:Init()
 		vbar.btnDown:SetVisible(false)
 
 		vbar.ScrollTarget = 0
-		vbar.ScrollSpeed = speed
+		vbar.ScrollSpeed = self.Speed
 
 		vbar.OnMouseWheeled = function(s, delta)
 			s.ScrollSpeed = s.ScrollSpeed + (14 * RealFrameTime())
@@ -190,7 +213,7 @@ function PANEL:Init()
 				s.ScrollTarget = Lerp(frame_time, scroll_target, math.Clamp(scroll_target, 0, s.CanvasSize))
 			end
 
-			s.ScrollSpeed = Lerp(frame_time / 14, s.ScrollSpeed, speed)
+			s.ScrollSpeed = Lerp(frame_time / 14, s.ScrollSpeed, self.Speed)
 		end
 
 		vbar.PerformLayout = function(s, w, h)
@@ -276,21 +299,24 @@ function PANEL:Build(page)
 
 	do
 		local tbl = {}
-		self.TextEntry.OnChange = function(s)
-			local val = s:GetValue()
-			if val == "" then
+		self.TextEntry.OnValueChange = function(s, val)
+			if not val or val == "" then
 				tbl = {}
-				if #self.Data ~= #self.InitData then
+				if util.TableToJSON(self.Data) ~= util.TableToJSON(self.InitData) then
 					self:SetData(self.InitData)
 					self:Build()
+					self:SetPage(1)
 				end
 				return
 			end
 
+			local added = {}
 			for i, data in ipairs(self.InitData) do
+				local json = util.TableToJSON(data)
 				for _, v in pairs(data) do
-					if tostring(v):find(val) then
+					if not added[json] and tostring(v):find(val) then
 						tbl[#tbl + 1] = data
+						added[json] = true
 					end
 				end
 			end

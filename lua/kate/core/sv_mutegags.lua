@@ -18,12 +18,24 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 		local pl = kate.FindPlayer(id)
 		expire_time = expire_time > 0 and moment + expire_time or 0
 
-		local hibernate = GetConVar("sv_hibernate_think"):GetInt()
-		RunConsoleCommand("sv_hibernate_think", 1)
+		kate[s_tag][id] = {}
+
+		local should_hibernate, hibernate
+
+		do
+			should_hibernate = #player.GetAll() <= 1
+
+			if should_hibernate then
+				hibernate = GetConVar("sv_hibernate_think"):GetInt()
+				RunConsoleCommand("sv_hibernate_think", 1)
+			end
+		end
 
 		query.onSuccess = function(_, data)
 			if #data > 0 then
-				local query_update = db:prepare("UPDATE `" .. tbl .. "` SET reason = ?, admin_steamid = ?, expire_time = ? WHERE steamid = ? AND expired = ? LIMIT 1")
+				local case_id = data[1].case_id
+
+				local query_update = db:prepare("UPDATE `" .. tbl .. "` SET reason = ?, admin_steamid = ?, expire_time = ? WHERE steamid = ? AND expired = ? AND case_id = ? LIMIT 1")
 				query_update:setString(1, reason)
 
 				if admin_id then
@@ -35,27 +47,42 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 				query_update:setNumber(3, expire_time)
 				query_update:setString(4, id)
 				query_update:setBoolean(5, false)
+				query_update:setNumber(6, case_id)
 
 				query_update:start()
 			else
-				local query_insert = db:prepare("INSERT INTO `" .. tbl .. "` (steamid, reason, " .. (low_tag .. "_time") .. ", expire_time, admin_steamid, expired) VALUES (?, ?, ?, ?, ?, ?)")
-				query_insert:setString(1, id)
-				query_insert:setString(2, reason)
-				query_insert:setNumber(3, moment)
-				query_insert:setNumber(4, expire_time)
+				local query_select = db:query("SELECT COALESCE(SUM(`case_id`), 0) AS `case_id` FROM `" .. tbl .. "`")
 
-				if admin_id then
-					query_insert:setString(5, admin_id)
-				else
-					query_insert:setNull(5)
+				query_select.onSuccess = function(_, cases)
+					cases = cases[1].case_id
+					local case_id = cases + 1
+
+					local query_insert = db:prepare("INSERT INTO `" .. tbl .. "` (steamid, reason, " .. (low_tag .. "_time") .. ", expire_time, admin_steamid, expired, case_id) VALUES (?, ?, ?, ?, ?, ?, ?)")
+					query_insert:setString(1, id)
+					query_insert:setString(2, reason)
+					query_insert:setNumber(3, moment)
+					query_insert:setNumber(4, expire_time)
+
+					if admin_id then
+						query_insert:setString(5, admin_id)
+					else
+						query_insert:setNull(5)
+					end
+
+					query_insert:setBoolean(6, false)
+					query_insert:setNumber(7, case_id)
+
+					query_insert:start()
+
+					kate[s_tag][id].case_id = case_id
 				end
 
-				query_insert:setBoolean(6, false)
-
-				query_insert:start()
+				query_select:start()
 			end
 
-			RunConsoleCommand("sv_hibernate_think", hibernate)
+			if should_hibernate then
+				RunConsoleCommand("sv_hibernate_think", hibernate)
+			end
 		end
 
 		if IsValid(pl) then
@@ -63,7 +90,6 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 		end
 
 		do
-			kate[s_tag][id] = {}
 			kate[s_tag][id].reason = reason
 			kate[s_tag][id].expire_time = expire_time
 			kate[s_tag][id].admin_id = admin_id
@@ -82,8 +108,16 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 
 		local pl = kate.FindPlayer(id)
 
-		local hibernate = GetConVar("sv_hibernate_think"):GetInt()
-		RunConsoleCommand("sv_hibernate_think", 1)
+		local should_hibernate, hibernate
+
+		do
+			should_hibernate = #player.GetAll() <= 1
+
+			if should_hibernate then
+				hibernate = GetConVar("sv_hibernate_think"):GetInt()
+				RunConsoleCommand("sv_hibernate_think", 1)
+			end
+		end
 
 		query.onSuccess = function(_, data)
 			if #data <= 0 then
@@ -92,15 +126,18 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 
 			data = data[1]
 
-			local query_update = db:prepare("UPDATE `" .. tbl .. "` SET expired = ? WHERE steamid = ? AND expired = ? LIMIT 1")
+			local query_update = db:prepare("UPDATE `" .. tbl .. "` SET expired = ? WHERE steamid = ? AND expired = ? AND case_id = ? LIMIT 1")
 			query_update:setBoolean(1, true)
 			query_update:setString(2, id)
 			query_update:setBoolean(3, false)
+			query_update:setNumber(4, data.case_id)
 			query_update:start()
 
 			kate[s_tag][id] = nil
 
-			RunConsoleCommand("sv_hibernate_think", hibernate)
+			if should_hibernate then
+				RunConsoleCommand("sv_hibernate_think", hibernate)
+			end
 		end
 
 		if IsValid(pl) then
@@ -119,13 +156,23 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 		query.onSuccess = function(_, data)
 			for _, punished in ipairs(data) do
 				local id = punished.steamid
+				local time = punished.expire_time
 
 				do
 					kate[s_tag][id] = {}
+					kate[s_tag][id].expire_time = time
 					kate[s_tag][id].reason = punished.reason
-					kate[s_tag][id].expire_time = punished.expire_time
 					kate[s_tag][id].admin_id = punished.admin_id
+					kate[s_tag][id].case_id = punished.case_id
 					kate[s_tag][id][low_tag .. "_time"] = punished[low_tag .. "_time"]
+				end
+
+				do
+					local pl = kate.FindPlayer(kate.SteamIDFrom64(id))
+
+					if IsValid(pl) then
+						pl:SetKateVar(tag, time)
+					end
 				end
 			end
 		end
