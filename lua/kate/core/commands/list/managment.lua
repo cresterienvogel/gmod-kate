@@ -1,4 +1,24 @@
 do
+	kate.Commands.Register("pingdb", function(self, pl, args)
+		local db = kate.Data.DB
+
+		local online = db:ping()
+		if not online then
+			db:connect()
+		end
+
+		do
+			local msg = "You've just pinged a Kate Database, the current status is: " .. (online and "connected" or "disconnected") .. ", " .. (online and "everything is fine" or "reconnecting...")
+			kate.Message(pl, 3, msg)
+		end
+	end)
+	:SetTitle("Ping Kate DB")
+	:SetCategory("Managment")
+	:SetIcon("icon16/database_refresh.png")
+	:SetImmunity(1000000)
+end
+
+do
 	kate.Commands.Register("setrank", function(self, pl, args)
 		local target = args[1]
 		if not target then

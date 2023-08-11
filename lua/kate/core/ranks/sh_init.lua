@@ -101,6 +101,6 @@ do
 	kate.Ranks.Register("moderator")
 		:SetTitle("Moderator")
 		:SetImmunity(1000)
-end
 
-kate.Ranks.RegisterMeta()
+	kate.Ranks.RegisterMeta()
+end
