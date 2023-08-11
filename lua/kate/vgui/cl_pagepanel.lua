@@ -133,8 +133,40 @@ function PANEL:Init()
 		btn:SetWide(24)
 
 		btn.DoClick = function()
+			self.SearchBy:SetValue("all fields")
 			self.TextEntry:SetValue("")
 		end
+	end
+
+	-- search by row
+	do
+		local combo = vgui.Create("DComboBox", top)
+		combo:SetValue("all fields")
+		combo:Dock(RIGHT)
+		combo:SizeToContents()
+		combo:SetWide(combo:GetWide() * 2)
+		combo:DockMargin(2, 0, 0, 0)
+
+		combo:AddChoice("all fields")
+
+		-- let fields load
+		timer.Simple(0.01, function()
+			local data = self.Data
+			if not data then
+				return
+			end
+
+			local eg = data[1]
+			if not eg then
+				return
+			end
+
+			for field in pairs(eg) do
+				combo:AddChoice(field)
+			end
+		end)
+
+		self.SearchBy = combo
 	end
 
 	-- data list
@@ -145,7 +177,7 @@ function PANEL:Init()
 
 		view:SetMultiSelect(false)
 
-		view.OnRowSelected = function(s, id, row)
+		view.OnRowRightClick = function(s, id, row)
 			local dmenu = DermaMenu()
 			dmenu:SetPos(input.GetCursorPos())
 
@@ -266,6 +298,7 @@ function PANEL:SetData(tbl)
 	self.Data = tbl
 
 	self.Pages = {}
+	self.Columns = {}
 
 	local page = 0
 	for i, data in ipairs(tbl) do
@@ -277,10 +310,12 @@ function PANEL:SetData(tbl)
 		self.Pages[page][#self.Pages[page] + 1] = data
 	end
 
+	local eg = tbl[1]
 	local view = self.ListView
-	if tbl[1] and #view.Columns == 0 then
-		for param in pairs(tbl[1]) do
+	if eg and #view.Columns == 0 then
+		for param in pairs(eg) do
 			view:AddColumn(param)
+			self.Columns[param] = table.Count(self.Columns) + 1
 		end
 	end
 end
@@ -298,8 +333,10 @@ function PANEL:Build(page)
 	end
 
 	do
-		local tbl = {}
-		self.TextEntry.OnValueChange = function(s, val)
+		local tbl, added = {}, {}
+		local onChange = function(s, val)
+			table.Empty(added)
+
 			if not val or val == "" then
 				tbl = {}
 				if util.TableToJSON(self.Data) ~= util.TableToJSON(self.InitData) then
@@ -310,13 +347,23 @@ function PANEL:Build(page)
 				return
 			end
 
-			local added = {}
+			val = val:lower()
 			for i, data in ipairs(self.InitData) do
 				local json = util.TableToJSON(data)
-				for _, v in pairs(data) do
-					if not added[json] and tostring(v):find(val) then
-						tbl[#tbl + 1] = data
-						added[json] = true
+				for field, value in pairs(data) do
+					value = tostring(value):lower()
+
+					local search_by = self.SearchBy:GetSelected()
+					if search_by and search_by ~= "all fields" then
+						if not added[json] and field == search_by and value:find(val) then
+							tbl[#tbl + 1] = data
+							added[json] = true
+						end
+					else
+						if not added[json] and value:find(val) then
+							tbl[#tbl + 1] = data
+							added[json] = true
+						end
 					end
 				end
 			end
@@ -324,6 +371,16 @@ function PANEL:Build(page)
 			self:SetData(tbl)
 			self:Build()
 			self:SetPage(1)
+		end
+
+		self.TextEntry.OnValueChange = onChange
+
+		self.SearchBy.OnSelect = function(s, val)
+			local entry_val = self.TextEntry:GetValue()
+			if entry_val and entry_val ~= "" then
+				self.TextEntry:SetValue(entry_val)
+				onChange(s, val)
+			end
 		end
 	end
 end
