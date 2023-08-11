@@ -13,8 +13,16 @@ function kate.Ban(id, unban_time, reason, admin_name, admin_id)
 	admin_name = admin_name or "Console"
 	unban_time = unban_time > 0 and moment + unban_time or 0
 
-	local hibernate = GetConVar("sv_hibernate_think"):GetInt()
-	RunConsoleCommand("sv_hibernate_think", 1) -- to make sure we won't lose our query
+	local should_hibernate, hibernate
+
+	do
+		should_hibernate = #player.GetAll() <= 1
+
+		if should_hibernate then
+			hibernate = GetConVar("sv_hibernate_think"):GetInt()
+			RunConsoleCommand("sv_hibernate_think", 1) -- to make sure we won't lose our query
+		end
+	end
 
 	query.onSuccess = function(_, data)
 		if #data > 0 then
@@ -52,7 +60,9 @@ function kate.Ban(id, unban_time, reason, admin_name, admin_id)
 			query_insert:start()
 		end
 
-		RunConsoleCommand("sv_hibernate_think", hibernate) -- we're done
+		if should_hibernate then
+			RunConsoleCommand("sv_hibernate_think", hibernate) -- we're done
+		end
 	end
 
 	game.KickID(kate.SteamIDFrom64(id), reason)
@@ -76,8 +86,16 @@ function kate.Unban(id)
 	query:setString(1, id)
 	query:setBoolean(2, false)
 
-	local hibernate = GetConVar("sv_hibernate_think"):GetInt()
-	RunConsoleCommand("sv_hibernate_think", 1)
+	local should_hibernate, hibernate
+
+	do
+		should_hibernate = #player.GetAll() <= 1
+
+		if should_hibernate then
+			hibernate = GetConVar("sv_hibernate_think"):GetInt()
+			RunConsoleCommand("sv_hibernate_think", 1)
+		end
+	end
 
 	query.onSuccess = function(_, data)
 		if #data <= 0 then
@@ -94,7 +112,9 @@ function kate.Unban(id)
 
 		kate.Bans[id] = nil
 
-		RunConsoleCommand("sv_hibernate_think", hibernate)
+		if should_hibernate then
+			RunConsoleCommand("sv_hibernate_think", hibernate)
+		end
 	end
 
 	query:start()
