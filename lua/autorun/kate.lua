@@ -1,5 +1,4 @@
 kate = kate or {}
-kate.ui = kate.ui or {}
 
 if SERVER then
 	require("mysqloo")
