@@ -192,7 +192,7 @@ hook.Add("PlayerCanHearPlayersVoice", "Kate Gag", function(listener, talker)
 
 	if gag ~= 0 and os.time() > gag then
 		kate.Ungag(talker)
-		kate.Print(kate.GetTarget(talker) .. " has been ungagged since the mute time expired")
+		kate.Print(kate.GetTarget(talker) .. " has been ungagged since the gag time expired")
 		return
 	end
 
