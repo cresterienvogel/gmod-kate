@@ -29,10 +29,19 @@ concommand.Add("_kate", function(pl, cmd, args)
 		return
 	end
 
+	if IsValid(pl) and (CurTime() < (pl.KateCommandDelay or 0)) then
+		kate.Message(pl, 2, "Wait a bit")
+		return
+	end
+
 	args[1] = nil
 	args = table.ClearKeys(args)
 
 	kate.Commands.Run(pl, cmd, args)
+
+	if IsValid(pl) then
+		pl.KateCommandDelay = CurTime() + 0.3
+	end
 
 	do
 		local msg = kate.GetExecuter(pl) .. " has executed command " .. cmd
@@ -66,6 +75,11 @@ hook.Add("PlayerSay", "Kate Commands", function(pl, text)
 		return
 	end
 
+	if CurTime() < (pl.KateCommandDelay or 0) then
+		kate.Message(pl, 2, "Wait a bit")
+		return
+	end
+
 	do
 		args[1] = nil
 		args = table.ClearKeys(args)
@@ -84,6 +98,7 @@ hook.Add("PlayerSay", "Kate Commands", function(pl, text)
 	end
 
 	kate.Commands.Run(pl, cmd, args)
+	pl.KateCommandDelay = CurTime() + 0.3
 
 	do
 		local msg = kate.GetExecuter(pl) .. " has executed command " .. cmd
