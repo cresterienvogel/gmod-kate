@@ -3,6 +3,10 @@ function kate.FindPlayer(info)
 		return nil
 	end
 
+	if IsValid(info) and info:IsPlayer() then
+		return info
+	end
+
 	for _, pl in ipairs(player.GetAll()) do
 		if tonumber(info) == pl:UserID() then
 			return pl

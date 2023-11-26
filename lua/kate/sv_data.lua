@@ -2,7 +2,7 @@ kate.Data = kate.Data or {}
 
 kate.Data.IP = "127.0.0.1"
 kate.Data.User = "root"
-kate.Data.Password = "9263"
+kate.Data.Password = ""
 kate.Data.Table = "kate"
 kate.Data.Port = 3306
 
