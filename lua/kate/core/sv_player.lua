@@ -57,6 +57,7 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 
 	-- find player's restrictions
 	for _, tag in ipairs({"Gag", "Mute"}) do
+		local tag_lower = string.lower(tag)
 		local cached, exp = kate[tag .. "s"][id]
 
 		if not cached then
@@ -72,7 +73,10 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 		end
 
 		-- set restriction
-		pl:SetNetVar(string.lower(tag), exp)
+		pl:SetNetVar(tag_lower, exp)
+
+		-- message
+		kate.Message(pl, 3, string.format("Your %s will end in %s", tag_lower, kate.ConvertTime(exp - os.time())))
 	end
 end)
 

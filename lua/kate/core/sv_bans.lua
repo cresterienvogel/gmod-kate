@@ -17,10 +17,10 @@ function kate.Ban(id, unban_time, reason, admin_name, admin_id)
 
 	local query = db:prepare("SELECT * FROM `kate_bans` WHERE steamid = ? AND expired = ? LIMIT 1")
 	query:setString(1, id)
-	query:setBoolean(2, false)
+	query:setString(2, "active")
 
 	query.onSuccess = function(_, data)
-		if #data <= 0 then
+		if not data[1] then
 			goto new_ban
 		end
 
@@ -39,7 +39,7 @@ function kate.Ban(id, unban_time, reason, admin_name, admin_id)
 			query_update:setNumber(3, unban_time)
 			query_update:setString(4, reason)
 			query_update:setString(5, id)
-			query_update:setBoolean(6, false)
+			query_update:setString(6, "active")
 			query_update:setNumber(7, case_id)
 
 			query_update:start()
@@ -49,7 +49,7 @@ function kate.Ban(id, unban_time, reason, admin_name, admin_id)
 
 		::new_ban::
 		do
-			local query_select = db:query("SELECT SUM(`case_id`) AS `case_id` FROM `kate_bans`")
+			local query_select = db:query("SELECT COUNT(`case_id`) AS `case_id` FROM `kate_bans`")
 
 			query_select.onSuccess = function(_, cases)
 				cases = cases[1].case_id or 0
@@ -69,7 +69,7 @@ function kate.Ban(id, unban_time, reason, admin_name, admin_id)
 				query_insert:setNumber(4, now)
 				query_insert:setNumber(5, unban_time)
 				query_insert:setString(6, reason)
-				query_insert:setBoolean(7, false)
+				query_insert:setString(7, "active")
 				query_insert:setNumber(8, case_id)
 
 				query_insert:start()
@@ -94,7 +94,7 @@ function kate.Ban(id, unban_time, reason, admin_name, admin_id)
 	query:start()
 end
 
-function kate.Unban(id)
+function kate.Unban(id, reason, admin_id)
 	local db = kate.Data.DB
 
 	if not db then
@@ -105,20 +105,19 @@ function kate.Unban(id)
 
 	local query = db:prepare("SELECT * FROM `kate_bans` WHERE steamid = ? AND expired = ? LIMIT 1")
 	query:setString(1, id)
-	query:setBoolean(2, false)
+	query:setString(2, "active")
 
 	query.onSuccess = function(_, data)
-		if #data <= 0 then
+		if not data[1] then
 			return
 		end
 
-		data = data[1]
-
-		local query_update = db:prepare("UPDATE `kate_bans` SET expired = ? WHERE steamid = ? AND expired = ? AND case_id = ? LIMIT 1")
-		query_update:setBoolean(1, true)
-		query_update:setString(2, id)
-		query_update:setBoolean(3, false)
-		query_update:setNumber(4, data.case_id)
+		local query_update = db:prepare("UPDATE `kate_bans` SET expired = ?, admin_steamid = ?, unban_time = ? WHERE steamid = ? AND case_id = ? LIMIT 1")
+		query_update:setString(1, reason or "time out")
+		query_update:setString(2, admin_id or data[1].admin_steamid)
+		query_update:setNumber(3, os.time())
+		query_update:setString(4, id)
+		query_update:setNumber(5, data[1].case_id)
 		query_update:start()
 
 		kate.Bans[id] = nil
@@ -137,7 +136,7 @@ function kate.UpdateBans()
 	kate.Bans = {}
 
 	local query = db:prepare("SELECT * FROM `kate_bans` WHERE expired = ? LIMIT 1")
-	query:setBoolean(1, false)
+	query:setString(1, "active")
 
 	query.onSuccess = function(_, data)
 		for _, banned in ipairs(data) do

@@ -16,7 +16,7 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 
 		local query = db:prepare("SELECT * FROM `" .. tag_sql .. "` WHERE steamid = ? AND expired = ? LIMIT 1")
 		query:setString(1, id)
-		query:setBoolean(2, false)
+		query:setString(2, "active")
 
 		local now = os.time()
 		expire_time = expire_time > 0 and now + expire_time or 0
@@ -24,10 +24,14 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 		kate[tag_plural][id] = {}
 
 		query.onSuccess = function(_, data)
-			if #data > 0 then
+			if not data[1] then
+				goto new
+			end
+
+			do
 				local case_id = data[1].case_id
 
-				local query_update = db:prepare("UPDATE `" .. tag_sql .. "` SET reason = ?, admin_steamid = ?, expire_time = ? WHERE steamid = ? AND expired = ? AND case_id = ? LIMIT 1")
+				local query_update = db:prepare("UPDATE `" .. tag_sql .. "` SET reason = ?, admin_steamid = ?, expire_time = ? WHERE steamid = ? AND case_id = ? LIMIT 1")
 				query_update:setString(1, reason)
 
 				if admin_id then
@@ -38,12 +42,16 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 
 				query_update:setNumber(3, expire_time)
 				query_update:setString(4, id)
-				query_update:setBoolean(5, false)
-				query_update:setNumber(6, case_id)
+				query_update:setNumber(5, case_id)
 
 				query_update:start()
-			else
-				local query_select = db:query("SELECT SUM(`case_id`) AS `case_id` FROM `" .. tag_sql .. "`")
+
+				return
+			end
+
+			::new::
+			do
+				local query_select = db:query("SELECT COUNT(`case_id`) AS `case_id` FROM `" .. tag_sql .. "`")
 
 				query_select.onSuccess = function(_, cases)
 					cases = cases[1].case_id or 0
@@ -62,7 +70,7 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 						query_insert:setNull(5)
 					end
 
-					query_insert:setBoolean(6, false)
+					query_insert:setString(6, "active")
 					query_insert:setNumber(7, case_id)
 
 					query_insert:start()
@@ -92,7 +100,7 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 		query:start()
 	end
 
-	kate["Un" .. tag_lower] = function(id)
+	kate["Un" .. tag_lower] = function(id, reason, admin_id)
 		local db = kate.Data.DB
 
 		if not db then
@@ -103,20 +111,19 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 
 		local query = db:prepare("SELECT * FROM `" .. tag_sql .. "` WHERE steamid = ? AND expired = ? LIMIT 1")
 		query:setString(1, id)
-		query:setBoolean(2, false)
+		query:setString(2, "active")
 
 		query.onSuccess = function(_, data)
-			if #data <= 0 then
+			if not data[1] then
 				return
 			end
 
-			data = data[1]
-
-			local query_update = db:prepare("UPDATE `" .. tag_sql .. "` SET expired = ? WHERE steamid = ? AND expired = ? AND case_id = ? LIMIT 1")
-			query_update:setBoolean(1, true)
-			query_update:setString(2, id)
-			query_update:setBoolean(3, false)
-			query_update:setNumber(4, data.case_id)
+			local query_update = db:prepare("UPDATE `" .. tag_sql .. "` SET expired = ?, admin_steamid = ?, expire_time = ? WHERE steamid = ? AND case_id = ? LIMIT 1")
+			query_update:setString(1, reason or "time out")
+			query_update:setString(2, admin_id or data[1].admin_steamid)
+			query_update:setNumber(3, os.time())
+			query_update:setString(4, id)
+			query_update:setNumber(5, data[1].case_id)
 			query_update:start()
 
 			kate[tag_plural][id] = nil
@@ -142,8 +149,8 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 
 		kate[tag_plural] = {}
 
-		local query = db:prepare("SELECT * FROM `" .. tag_sql .. "` WHERE expired = ?")
-		query:setBoolean(1, false)
+		local query = db:prepare("SELECT * FROM `" .. tag_sql .. "` WHERE expired = ? LIMIT 1")
+		query:setString(1, "active")
 
 		query.onSuccess = function(_, data)
 			for _, punished in ipairs(data) do
@@ -172,8 +179,8 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 		query:start()
 	end
 
+	timer.Simple(0, kate["Update" .. tag_plural])
 	timer.Create("Kate Update " .. tag_plural, 180, 0, kate["Update" .. tag_plural]) -- in case the database is used on several servers at time
-	hook.Add("Initialize", "Kate " .. tag_plural, kate["Update" .. tag_plural])
 end
 
 hook.Add("PlayerCanHearPlayersVoice", "Kate Gag", function(listener, talker)

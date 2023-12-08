@@ -14,7 +14,8 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 			local time = args.time
 			local reason = args.reason
 
-			kate[tag](target, time, reason, IsValid(pl) and pl:SteamID64() or "Console")
+			local admin_id = IsValid(pl) and pl:SteamID64() or "Console"
+			kate[tag](target, time, reason, admin_id)
 
 			do
 				local msg = string.format("%s has run %s on %s for %s with reason %s",
@@ -38,13 +39,18 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 
 	do
 		kate.Commands:Register("un" .. tag_lower, function(self, pl, args)
-			kate["Un" .. tag_lower](args.target)
+			local target = args.target
+			local reason = args.reason
+
+			local admin_id = IsValid(pl) and pl:SteamID64() or "Console"
+			kate["Un" .. tag_lower](target, reason, admin_id)
 
 			do
-				local msg = string.format("%s has run un%s on %s",
+				local msg = string.format("%s has run un%s on %s: %s",
 					kate.GetExecuter(pl),
 					tag_lower,
-					kate.GetTarget(id)
+					kate.GetTarget(target),
+					reason
 				)
 
 				kate.Print(msg)
@@ -55,6 +61,6 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 		:SetCategory("Punishment")
 		:SetIcon(icons["Un" .. tag_lower])
 		:SetImmunity(1000)
-		:SetArgs("Target")
+		:SetArgs("Target", "Reason")
 	end
 end

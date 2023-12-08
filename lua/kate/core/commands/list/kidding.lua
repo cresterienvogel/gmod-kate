@@ -1,13 +1,21 @@
 do
 	kate.Commands:Register("slay", function(self, pl, args)
 		local target = args.target or pl
+		local reason = args.reason
 
 		target:Kill()
 
 		do
-			local msg = string.format("%s has slayed %s",
+			local text = "%s has slayed %s"
+
+			if reason then
+				text = text .. ": %s"
+			end
+
+			local msg = string.format(text,
 				kate.GetExecuter(pl),
-				kate.GetTarget(target)
+				kate.GetTarget(target),
+				reason
 			)
 
 			kate.Print(msg)
@@ -19,8 +27,8 @@ do
 	:SetIcon("icon16/cross.png")
 	:SetImmunity(2500)
 	:SetOnlineTarget(true)
-	:SetArgs("Target")
-	:SetOptionalArgs("Target")
+	:SetArgs("Target", "Reason")
+	:SetOptionalArgs("Target", "Reason")
 	:AddAlias("kill")
 end
 
@@ -84,6 +92,7 @@ end
 do
 	kate.Commands:Register("freeze", function(self, pl, args)
 		local target = args.target or pl
+		local reason = args.reason
 
 		local frozen = target:IsFrozen()
 		local toggle = frozen and "unfrozen" or "frozen"
@@ -91,10 +100,17 @@ do
 		target:Freeze(not frozen)
 
 		do
-			local msg = string.format("%s has %s %s",
+			local text = "%s has %s %s"
+
+			if reason then
+				text = text .. ": %s"
+			end
+
+			local msg = string.format(text,
 				kate.GetExecuter(pl),
 				toggle,
-				kate.GetTarget(target)
+				kate.GetTarget(target),
+				reason
 			)
 
 			kate.Print(msg)
@@ -106,14 +122,15 @@ do
 	:SetIcon("icon16/status_offline.png")
 	:SetImmunity(1000)
 	:SetOnlineTarget(true)
-	:SetArgs("Target")
-	:SetOptionalArgs("Target")
+	:SetArgs("Target", "Reason")
+	:SetOptionalArgs("Target", "Reason")
 end
 
 do
 	kate.Commands:Register("strip", function(self, pl, args)
 		local target = args.target or pl
 		local wep = args.weapon
+		local reason = args.reason
 		local stripped_weapon
 
 		if wep then
@@ -127,10 +144,17 @@ do
 
 		::log::
 		do
-			local msg = string.format("%s has stripped %s from %s",
+			local text = "%s has stripped %s from %s"
+
+			if reason then
+				text = text .. ": %s"
+			end
+
+			local msg = string.format(text,
 				kate.GetExecuter(pl),
 				stripped_weapon,
-				kate.GetTarget(target)
+				kate.GetTarget(target),
+				reason
 			)
 
 			kate.Print(msg)
@@ -142,14 +166,15 @@ do
 	:SetIcon("icon16/gun.png")
 	:SetImmunity(5000)
 	:SetOnlineTarget(true)
-	:SetArgs("Target", "Weapon")
-	:SetOptionalArgs("Target", "Weapon")
+	:SetArgs("Target", "Weapon", "Reason")
+	:SetOptionalArgs("Target", "Weapon", "Reason")
 end
 
 do
 	kate.Commands:Register("ignite", function(self, pl, args)
 		local target = args.target or pl
 		local time = args.time or 10
+		local reason = args.reason
 		local msg
 
 		if target:IsOnFire() then
@@ -161,12 +186,17 @@ do
 		msg = "%s has ignited %s for %s"
 		target:Ignite(time)
 
+		if reason then
+			msg = msg .. ": %s"
+		end
+
 		::log::
 		do
 			msg = string.format(msg,
 				kate.GetExecuter(pl),
 				kate.GetTarget(target),
-				kate.ConvertTime(time)
+				kate.ConvertTime(time),
+				reason
 			)
 
 			kate.Print(msg)
@@ -178,6 +208,6 @@ do
 	:SetIcon("icon16/lightning.png")
 	:SetImmunity(2500)
 	:SetOnlineTarget(true)
-	:SetArgs("Target", "Time")
-	:SetOptionalArgs("Target", "Time")
+	:SetArgs("Target", "Time", "Reason")
+	:SetOptionalArgs("Target", "Time", "Reason")
 end

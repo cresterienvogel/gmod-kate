@@ -12,7 +12,7 @@ kate.Commands.Validators = {
 			return false, "You can't use " .. stored:GetTitle() .. " on yourself"
 		end
 
-		if stored:GetOnlineTarget() and (not IsValid(target)) then
+		if (stored:GetOnlineTarget() == true) and (not IsValid(target)) then
 			return false, "Target is offline"
 		end
 

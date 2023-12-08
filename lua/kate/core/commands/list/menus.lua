@@ -57,12 +57,8 @@ do
 		query.onSuccess = function(_, data)
 			for i, params in pairs(data) do
 				for param, val in pairs(params) do
-					if string.find(param, "ban_time") then
+					if string.find(param, "time") then
 						data[i][param] = os.date("%d %B %Y at %H:%M", val)
-					end
-
-					if param == "expired" then
-						data[i][param] = tobool(val)
 					end
 				end
 			end
@@ -96,12 +92,8 @@ do
 			query.onSuccess = function(_, data)
 				for i, params in pairs(data) do
 					for param, val in pairs(params) do
-						if param == "expire_time" then
-							data[i][param] = os.date("%d %B %Y", val)
-						end
-
-						if param == "expired" then
-							data[i][param] = tobool(val)
+						if string.find(param, "time") then
+							data[i][param] = os.date("%d %B %Y at %H:%M", val)
 						end
 					end
 				end

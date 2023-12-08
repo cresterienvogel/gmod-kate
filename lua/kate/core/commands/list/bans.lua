@@ -4,10 +4,10 @@ do
 		local time = args.time
 		local reason = args.reason
 
-		local a_name = IsValid(pl) and pl:Name() or "Console"
-		local a_id = IsValid(pl) and pl:SteamID64() or "None"
+		local admin_name = IsValid(pl) and pl:Name() or "Console"
+		local admin_id = IsValid(pl) and pl:SteamID64() or "None"
 
-		kate.Ban(target, time, reason, a_name, a_id)
+		kate.Ban(target, time, reason, admin_name, admin_id)
 
 		do
 			local msg = string.format("%s has banned %s for %s: %s",
@@ -31,13 +31,16 @@ end
 do
 	kate.Commands:Register("unban", function(self, pl, args)
 		local target = args.target
+		local reason = args.reason
 
-		kate.Unban(target)
+		local admin_id = IsValid(pl) and pl:SteamID64() or "Console"
+		kate.Unban(target, reason, admin_id)
 
 		do
-			local msg = string.format("%s has unbanned %s",
+			local msg = string.format("%s has unbanned %s: %s",
 				kate.GetExecuter(pl),
-				kate.GetTarget(target)
+				kate.GetTarget(target),
+				reason
 			)
 
 			kate.Print(msg)
@@ -48,7 +51,7 @@ do
 	:SetCategory("Punishment")
 	:SetIcon("icon16/computer_add.png")
 	:SetImmunity(5000)
-	:SetArgs("Target")
+	:SetArgs("Target", "Reason")
 end
 
 do
