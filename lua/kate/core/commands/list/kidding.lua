@@ -1,15 +1,14 @@
 do
-	kate.Commands.Register("slay", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
+	kate.Commands:Register("slay", function(self, pl, args)
+		local target = args.target or pl
 
 		target:Kill()
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has slayed " .. kate.GetTarget(target)
+			local msg = string.format("%s has slayed %s",
+				kate.GetExecuter(pl),
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
@@ -19,28 +18,25 @@ do
 	:SetCategory("Kidding")
 	:SetIcon("icon16/cross.png")
 	:SetImmunity(2500)
-	:AddAlias("kill")
+	:SetOnlineTarget(true)
 	:SetArgs("Target")
+	:SetOptionalArgs("Target")
+	:AddAlias("kill")
 end
 
 do
-	kate.Commands.Register("model", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
-
-		local model = args[2]
-		if not (model and util.IsValidModel(model)) then
-			kate.Message(pl, 2, "Invalid model")
-			return
-		end
+	kate.Commands:Register("model", function(self, pl, args)
+		local target = args.target
+		local model = args.model
 
 		target:SetModel(model)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has set " .. model .. " model to " .. kate.GetTarget(target)
+			local msg = string.format("%s has set %s model to %s",
+				kate.GetExecuter(pl),
+				model,
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
@@ -50,28 +46,24 @@ do
 	:SetCategory("Kidding")
 	:SetIcon("icon16/status_online.png")
 	:SetImmunity(10000)
-	:AddAlias("setmodel")
+	:SetOnlineTarget(true)
 	:SetArgs("Target", "Model")
+	:AddAlias("setmodel")
 end
 
 do
-	kate.Commands.Register("size", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
-
-		local scale = args[2]
-		if not scale then
-			kate.Message(pl, 2, "Invalid scale")
-			return
-		end
+	kate.Commands:Register("size", function(self, pl, args)
+		local target = args.target or pl
+		local scale = args.unsigned_amount or 1
 
 		target:SetModelScale(scale)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has set " .. scale .. " model scale to " .. kate.GetTarget(target)
+			local msg = string.format("%s has set %s model scale to %s",
+				kate.GetExecuter(pl),
+				scale,
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
@@ -81,26 +73,29 @@ do
 	:SetCategory("Kidding")
 	:SetIcon("icon16/arrow_up.png")
 	:SetImmunity(10000)
+	:SetOnlineTarget(true)
+	:SetArgs("Target", "Unsigned Amount")
+	:SetOptionalArgs("Target", "Unsigned Amount")
 	:AddAlias("scale")
 	:AddAlias("setscale")
 	:AddAlias("setsize")
-	:SetArgs("Target", "Scale")
 end
 
 do
-	kate.Commands.Register("freeze", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
+	kate.Commands:Register("freeze", function(self, pl, args)
+		local target = args.target or pl
 
 		local frozen = target:IsFrozen()
-		local typ = frozen and "unfrozen" or "frozen"
+		local toggle = frozen and "unfrozen" or "frozen"
+
 		target:Freeze(not frozen)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has " .. typ .. " " .. kate.GetTarget(target)
+			local msg = string.format("%s has %s %s",
+				kate.GetExecuter(pl),
+				toggle,
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
@@ -110,33 +105,33 @@ do
 	:SetCategory("Kidding")
 	:SetIcon("icon16/status_offline.png")
 	:SetImmunity(1000)
+	:SetOnlineTarget(true)
 	:SetArgs("Target")
+	:SetOptionalArgs("Target")
 end
 
 do
-	kate.Commands.Register("strip", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
+	kate.Commands:Register("strip", function(self, pl, args)
+		local target = args.target or pl
+		local wep = args.weapon
+		local stripped_weapon
 
-		local typ
-		local wep = args[2]
 		if wep then
-			if not target:HasWeapon(wep) then
-				kate.Message(pl, 2, "Target has no such weapon")
-				return
-			end
+			stripped_weapon = weapons.Get(wep) and weapons.Get(wep).PrintName or wep
 			target:StripWeapon(wep)
-			typ = weapons.Get(wep) and weapons.Get(wep).PrintName or wep
-		else
-			target:StripWeapons()
-			typ = "all weapons"
+			goto log
 		end
 
+		stripped_weapon = "all weapons"
+		target:StripWeapons()
+
+		::log::
 		do
-			local msg = kate.GetExecuter(pl) .. " stripped " .. typ .. " from " .. kate.GetTarget(target)
+			local msg = string.format("%s has stripped %s from %s",
+				kate.GetExecuter(pl),
+				stripped_weapon,
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(kate.GetAdmins(), 3, msg)
@@ -146,41 +141,34 @@ do
 	:SetCategory("Kidding")
 	:SetIcon("icon16/gun.png")
 	:SetImmunity(5000)
-	:SetArgs("Target")
+	:SetOnlineTarget(true)
+	:SetArgs("Target", "Weapon")
+	:SetOptionalArgs("Target", "Weapon")
 end
 
 do
-	kate.Commands.Register("ignite", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
-
+	kate.Commands:Register("ignite", function(self, pl, args)
+		local target = args.target or pl
+		local time = args.time or 10
 		local msg
+
 		if target:IsOnFire() then
-			msg = kate.GetExecuter(pl) .. " has extinguished " .. kate.GetTarget(target)
-
+			msg = "%s has extinguished %s"
 			target:Extinguish()
-		else
-			if not args[2] then
-				kate.Message(pl, 2, "Invalid time")
-				return
-			end
-
-			local time_valid, time = kate.FormatTime(args[2])
-
-			if not time_valid then
-				kate.Message(pl, 2, "Invalid time")
-				return
-			end
-
-			msg = kate.GetExecuter(pl) .. " has ignited " .. kate.GetTarget(target) .. " for " .. kate.ConvertTime(time)
-
-			target:Ignite(time)
+			goto log
 		end
 
+		msg = "%s has ignited %s for %s"
+		target:Ignite(time)
+
+		::log::
 		do
+			msg = string.format(msg,
+				kate.GetExecuter(pl),
+				kate.GetTarget(target),
+				kate.ConvertTime(time)
+			)
+
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
 		end
@@ -189,5 +177,7 @@ do
 	:SetCategory("Kidding")
 	:SetIcon("icon16/lightning.png")
 	:SetImmunity(2500)
+	:SetOnlineTarget(true)
 	:SetArgs("Target", "Time")
+	:SetOptionalArgs("Target", "Time")
 end

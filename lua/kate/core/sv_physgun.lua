@@ -1,5 +1,5 @@
 hook.Add("PhysgunPickup", "Kate PhysgunPickup", function(pl, ent)
-	if not pl:IsModerator() or not pl:GetInfoNum("kate_touchplayers", 1) then
+	if not (pl:IsModerator() and pl:GetInfoNum("kate_touchplayers", 1)) then
 		return
 	end
 
@@ -19,7 +19,7 @@ hook.Add("PhysgunPickup", "Kate PhysgunPickup", function(pl, ent)
 end)
 
 hook.Add("PhysgunDrop", "Kate PhysgunDrop", function(pl, ent)
-	if not IsValid(ent) or ent:GetClass() ~= "player" then
+	if (not IsValid(ent)) or (ent:GetClass() ~= "player") then
 		return
 	end
 
@@ -32,11 +32,11 @@ hook.Add("PhysgunDrop", "Kate PhysgunDrop", function(pl, ent)
 	end
 
 	timer.Simple(0.001, function()
-		if not IsValid(pl) or not IsValid(ent) then
+		if not (IsValid(pl) and IsValid(ent)) then
 			return
 		end
 
-		if not (pl:KeyDown(IN_ATTACK2) and IsValid(ent) and not ent:IsFrozen()) then
+		if not (pl:KeyDown(IN_ATTACK2) and IsValid(ent) and (not ent:IsFrozen())) then
 			return
 		end
 

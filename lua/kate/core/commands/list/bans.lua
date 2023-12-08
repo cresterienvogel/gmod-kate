@@ -1,43 +1,21 @@
 do
-	kate.Commands.Register("ban", function(self, pl, args)
-		local target = args[1]
-		if not target then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
-
-		local id = kate.SteamIDTo64(target)
-
-		if not id then
-			kate.Message(pl, 2, "Invalid target")
-			return
-		end
-
-		if not args[2] then
-			kate.Message(pl, 2, "Invalid time")
-			return
-		end
-
-		local time_valid, time = kate.FormatTime(args[2])
-		local reason = table.concat(args, " ", 3)
-
-		if not time_valid then
-			kate.Message(pl, 2, "Invalid time")
-			return
-		end
-
-		if reason == "" then
-			kate.Message(pl, 2, "Invalid reason")
-			return
-		end
+	kate.Commands:Register("ban", function(self, pl, args)
+		local target = args.target
+		local time = args.time
+		local reason = args.reason
 
 		local a_name = IsValid(pl) and pl:Name() or "Console"
 		local a_id = IsValid(pl) and pl:SteamID64() or "None"
 
-		kate.Ban(id, time, reason, a_name, a_id)
+		kate.Ban(target, time, reason, a_name, a_id)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has banned " .. kate.GetTarget(id) .. " for " .. kate.ConvertTime(time) .. " with reason " .. reason
+			local msg = string.format("%s has banned %s for %s: %s",
+				kate.GetExecuter(pl),
+				kate.GetTarget(target),
+				kate.ConvertTime(time),
+				reason
+			)
 
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
@@ -51,23 +29,16 @@ do
 end
 
 do
-	kate.Commands.Register("unban", function(self, pl, args)
-		local target = args[1]
-		if not target then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
+	kate.Commands:Register("unban", function(self, pl, args)
+		local target = args.target
 
-		local id = kate.SteamIDTo64(target)
-		if not id then
-			kate.Message(pl, 2, "Invalid target")
-			return
-		end
-
-		kate.Unban(id)
+		kate.Unban(target)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has unbanned " .. kate.GetTarget(id)
+			local msg = string.format("%s has unbanned %s",
+				kate.GetExecuter(pl),
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
@@ -77,28 +48,22 @@ do
 	:SetCategory("Punishment")
 	:SetIcon("icon16/computer_add.png")
 	:SetImmunity(5000)
-	:SetArgs("SteamID")
+	:SetArgs("Target")
 end
 
 do
-	kate.Commands.Register("kick", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
-
-		local reason = table.concat(args, " ", 2)
-
-		if reason == "" then
-			kate.Message(pl, 2, "Invalid reason")
-			return
-		end
+	kate.Commands:Register("kick", function(self, pl, args)
+		local target = args.target
+		local reason = args.reason
 
 		target:Kick(reason)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has kicked " .. kate.GetTarget(target) .. " with reason " .. reason
+			local msg = string.format("%s has kicked %s: %s",
+				kate.GetExecuter(pl),
+				kate.GetTarget(target),
+				reason
+			)
 
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
@@ -108,5 +73,6 @@ do
 	:SetCategory("Punishment")
 	:SetIcon("icon16/door_out.png")
 	:SetImmunity(1000)
+	:SetOnlineTarget(true)
 	:SetArgs("Target", "Reason")
 end

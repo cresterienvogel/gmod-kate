@@ -6,17 +6,20 @@ local content_blacklist = {
 	[CONTENTS_MONSTERCLIP] = true
 }
 
+-- https://github.com/FPtje/DarkRP/blob/d156914d395be0f6e297f5d595ed4459828b8a35/gamemode/modules/base/sv_util.lua#L105C2-L105C2
 function kate.IsPosEmpty(vector, ignore)
 	ignore = ignore or {}
 
 	local point, a = util.PointContents(vector), not content_blacklist[point]
+
 	if not a then
 		return false
 	end
 
 	local b = true
+
 	for _, pl in ipairs(ents.FindInSphere(vector, 35)) do
-		if (pl:IsNPC() or pl:IsPlayer() or pl:GetClass() == "prop_physics" or pl.NotEmptyPos) and not table.HasValue(ignore, pl) then
+		if (pl:IsNPC() or pl:IsPlayer() or pl:GetClass() == "prop_physics" or pl.NotEmptyPos) and (not table.HasValue(ignore, pl)) then
 			b = false
 			break
 		end
@@ -25,6 +28,7 @@ function kate.IsPosEmpty(vector, ignore)
 	return a and b
 end
 
+-- https://github.com/FPtje/DarkRP/blob/d156914d395be0f6e297f5d595ed4459828b8a35/gamemode/modules/base/sv_util.lua#L155
 function kate.FindEmptyPos(pos, ignore, distance, step, area)
 	if kate.IsPosEmpty(pos, ignore) and kate.IsPosEmpty(pos + area, ignore) then
 		return pos

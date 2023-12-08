@@ -1,21 +1,16 @@
 do
-	kate.Commands.Register("msg", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
-
-		local text = table.concat(args, " ", 2)
-		if text == "" then
-			kate.Message(pl, 2, "Invalid message")
-			return
-		end
+	kate.Commands:Register("msg", function(self, pl, args)
+		local target = args.target or pl
+		local text = args.message
 
 		kate.Message(target, 3, text)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has sent a message to " .. kate.GetTarget(target) .. " with contents " .. text
+			local msg = string.format("%s has sent a message to %s: %s",
+				kate.GetExecuter(pl),
+				kate.GetTarget(target),
+				text
+			)
 
 			kate.Print(msg)
 			kate.Message(kate.GetAdmins(), 3, msg)
@@ -25,30 +20,26 @@ do
 	:SetCategory("Utilities")
 	:SetIcon("icon16/bell.png")
 	:SetImmunity(1000)
+	:SetOnlineTarget(true)
+	:SetArgs("Target", "Message")
 	:AddAlias("message")
 	:AddAlias("say")
 	:AddAlias("asay")
-	:SetArgs("Target", "Text")
 end
 
 do
-	kate.Commands.Register("hp", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
-
-		local amt = args[2]
-		if not amt or tonumber(amt) <= 0 then
-			kate.Message(pl, 2, "Invalid amount")
-			return
-		end
+	kate.Commands:Register("hp", function(self, pl, args)
+		local target = args.target or pl
+		local amt = args.amount or target:GetMaxHealth()
 
 		target:SetHealth(amt)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has set " .. amt .. " health to" .. kate.GetTarget(target)
+			local msg = string.format("%s has set %s health to %s",
+				kate.GetExecuter(pl),
+				amt,
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
@@ -58,30 +49,27 @@ do
 	:SetCategory("Utilities")
 	:SetIcon("icon16/heart.png")
 	:SetImmunity(2500)
+	:SetOnlineTarget(true)
+	:SetArgs("Target", "Amount")
+	:SetOptionalArgs("Amount")
 	:AddAlias("sethp")
 	:AddAlias("health")
 	:AddAlias("sethealth")
-	:SetArgs("Target", "Amount")
 end
 
 do
-	kate.Commands.Register("ar", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
-
-		local amt = args[2]
-		if not amt or tonumber(amt) <= 0 then
-			kate.Message(pl, 2, "Invalid amount")
-			return
-		end
+	kate.Commands:Register("ar", function(self, pl, args)
+		local target = args.target or pl
+		local amt = args.amount or target:GetMaxArmor()
 
 		target:SetArmor(amt)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has set " .. amt .. " armor to" .. kate.GetTarget(target)
+			local msg = string.format("%s has set %s armor to %s",
+				kate.GetExecuter(pl),
+				amt,
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
@@ -91,26 +79,29 @@ do
 	:SetCategory("Utilities")
 	:SetIcon("icon16/shield.png")
 	:SetImmunity(2500)
+	:SetOnlineTarget(true)
+	:SetArgs("Target", "Amount")
+	:SetOptionalArgs("Amount")
 	:AddAlias("setar")
 	:AddAlias("armor")
 	:AddAlias("setarmor")
-	:SetArgs("Target", "Amount")
 end
 
 do
-	kate.Commands.Register("god", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
+	kate.Commands:Register("god", function(self, pl, args)
+		local target = args.target or pl
 
 		local god = target:HasGodMode()
-		local typ = god and "disabled" or "enabled"
+		local toggle = toggle and "disabled" or "enabled"
+
 		target:GodEnable(not god)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has " .. typ .. " god to " .. kate.GetTarget(target)
+			local msg = string.format("%s has %s god to %s",
+				kate.GetExecuter(pl),
+				toggle,
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
@@ -120,75 +111,71 @@ do
 	:SetCategory("Utilities")
 	:SetIcon("icon16/pill.png")
 	:SetImmunity(10000)
+	:SetOnlineTarget(true)
 	:SetArgs("Target")
+	:SetOptionalArgs("Target")
 end
 
 do
-	kate.Commands.Register("cloak", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
+	kate.Commands:Register("cloak", function(self, pl, args)
+		local target = args.target or pl
+		local should_cloak = not target:GetCloak()
+		local toggle = should_cloak and "enabled" or "disabled"
 
-		local cloaked = target:GetKateVar("Cloak")
-		local typ = target:GetKateVar("Cloak") and "disabled" or "enabled"
+		target:SetCloak(should_cloak)
 
-		target:SetKateVar("Cloak", not cloaked)
-		target:SetNoDraw(not cloaked)
-
-		for _, v in ipairs(target:GetWeapons()) do
-			v:SetNoDraw(not cloaked)
-		end
-
-		for _, v in ipairs(ents.FindByClass("physgun_beam")) do
-			if v:GetParent() == target then
-				v:SetNoDraw(not cloaked)
-			end
-		end
+		kate.CloakPlayer(pl, should_cloak)
+		kate.CloakWeapons(pl, should_cloak)
 
 		do
-			kate.Message(pl, 1, "You've " .. typ .. " cloak to " .. kate.GetTarget(target))
-			kate.Message(target, 3, kate.GetExecuter(pl) .. " has " .. typ .. " cloak to you")
+			kate.Message(pl, 1, string.format("You've %s cloak to %s", toggle, kate.GetTarget(target)))
+
+			if target ~= pl then
+				kate.Message(target, 3, string.format("%s has %s cloak to you", kate.GetExecuter(pl), toggle))
+			end
 		end
 	end)
 	:SetTitle("Cloak")
 	:SetCategory("Utilities")
 	:SetIcon("icon16/eye.png")
 	:SetImmunity(1000)
+	:SetOnlineTarget(true)
 	:SetArgs("Target")
+	:SetOptionalArgs("Target")
 end
 
 do
-	kate.Commands.Register("ammo", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
+	kate.Commands:Register("ammo", function(self, pl, args)
+		local target = args.target or pl
+		local amt = args.amount or 100
+		local ammotype = args.ammotype
 
-		local amt = args[2]
-		if not amt then
-			kate.Message(pl, 2, "Invalid amount")
-			return
-		end
+		local ammotype_given
 
-		local name = table.concat(args, " ", 3)
-		if name == "" then
-			name = "every ammotype registered"
+		if ammotype then
+			ammotype_given = game.GetAmmoTypes()[ammotype]
+
+			pl:GiveAmmo(amt, ammotype, true)
+
+			goto log
+		else
+			ammotype_given = "every ammotype registered"
+
 			for ammo in pairs(game.GetAmmoTypes()) do
 				pl:GiveAmmo(amt, ammo, true)
 			end
-		else
-			local given = target:GiveAmmo(amt, name)
-			if given == 0 then
-				kate.Message(pl, 2, "Invalid ammotype")
-				return
-			end
+
+			goto log
 		end
 
+		::log::
 		do
-			local msg = kate.GetExecuter(pl) .. " has added " .. amt .. " ammo of " .. name .. " to " .. kate.GetTarget(target)
+			local msg = string.format("%s has added %s ammo of %s to %s",
+				kate.GetExecuter(pl),
+				amt,
+				ammotype_given,
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(player.GetAll(), 3, msg)
@@ -198,8 +185,10 @@ do
 	:SetCategory("Utilities")
 	:SetIcon("icon16/bomb.png")
 	:SetImmunity(5000)
+	:SetOnlineTarget(true)
+	:SetArgs("Target", "Amount", "AmmoType")
+	:SetOptionalArgs("Target", "Amount",  "AmmoType")
 	:AddAlias("addammo")
 	:AddAlias("giveammo")
 	:AddAlias("am")
-	:SetArgs("Target", "Amount", "Type")
 end

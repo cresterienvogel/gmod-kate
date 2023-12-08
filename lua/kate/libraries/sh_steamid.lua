@@ -1,21 +1,28 @@
+-- https://github.com/SuperiorServers/dash/blob/770bd90d77e077b2b1b975f517f815e9ff24d693/lua/dash/extensions/string.lua#L26
 function kate.IsSteamID(id)
-	if not isstring(id) then
+	if not id then
 		return false
 	end
 
-	return tobool(id:match("^STEAM_[0-5]:[0-1]:[0-9]+$"))
+	id = tostring(id)
+
+	return tobool(string.match(id, "^STEAM_%d:%d:%d+$"))
 end
 
+-- https://github.com/SuperiorServers/dash/blob/770bd90d77e077b2b1b975f517f815e9ff24d693/lua/dash/extensions/string.lua#L30
 function kate.IsSteamID64(id)
-	if not isstring(id) then
+	if not id then
 		return false
 	end
 
-	return tobool(id:sub(1, 7) == "7656119" and (#id == 17 or #id == 18))
+	id = tostring(id)
+
+	return tobool((utf8.len(id) == 17) and (string.sub(id, 1, 4) == "7656"))
 end
 
 function kate.SteamIDTo64(id)
 	local pl = kate.FindPlayer(id)
+
 	if IsValid(pl or id) and (pl or id):IsPlayer() then
 		return (pl or id):SteamID64()
 	end
@@ -33,6 +40,7 @@ end
 
 function kate.SteamIDFrom64(id)
 	local pl = kate.FindPlayer(id)
+
 	if IsValid(pl or id) and (pl or id):IsPlayer() then
 		return (pl or id):SteamID()
 	end

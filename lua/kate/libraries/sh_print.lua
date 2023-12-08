@@ -6,10 +6,13 @@ kate.Status = {
 
 if SERVER then
 	util.AddNetworkString("Kate Message")
-else
+end
+
+if CLIENT then
 	net.Receive("Kate Message", function()
 		local st = net.ReadInt(3)
 		local msg = net.ReadString()
+
 		chat.AddText(kate.Status[st], "» ", color_white, msg)
 	end)
 end
@@ -17,7 +20,7 @@ end
 function kate.Print(...)
 	local text = table.concat({...}, " ")
 
-	timer.Simple(0, function(...)
+	timer.Simple(0, function()
 		MsgC(kate.Status[1], "[Kate] ", "[" .. os.date("%H:%M:%S", os.time()) .. "] ", color_white, text, "\n")
 	end)
 end

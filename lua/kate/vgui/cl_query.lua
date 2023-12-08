@@ -5,9 +5,13 @@ function PANEL:Init()
 
 	self:MakePopup()
 
-	self.Fill = vgui.Create("DPanel", self)
-	self.Fill:Dock(FILL)
-	self.Fill:DockMargin(2, 2, 2, 2)
+	do
+		local panel = vgui.Create("DPanel", self)
+		panel:Dock(FILL)
+		panel:DockMargin(2, 2, 2, 2)
+
+		self.Fill = panel
+	end
 end
 
 function PANEL:SetQueries(q)
@@ -16,10 +20,6 @@ end
 
 function PANEL:GetQueries()
 	return self.Data
-end
-
-function PANEL:SetPlayer(id)
-	self.Player = id
 end
 
 function PANEL:SetFunction(func)

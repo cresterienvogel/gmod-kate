@@ -1,94 +1,91 @@
 if SERVER then
 	util.AddNetworkString("Kate Menu")
-else
-	local fr, qfr, pfr
+end
+
+if CLIENT then
+	local frame, frame_query, frame_player
 	local showQuery, showPlayers
 
 	showQuery = function(command, queries, pl)
-		if IsValid(qfr) then
-			qfr:Close()
+		if IsValid(frame_query) then
+			frame_query:Close()
 		end
 
-		local parent = IsValid(pfr) and pfr or fr
+		local parent = IsValid(frame_player) and frame_player or frame
 
-		qfr = vgui.Create("KQuery")
-		qfr:SetTitle("Fill args for " .. kate.Commands.Stored[command]:GetTitle())
-		qfr:SetSize(ScrW() / 3.5, ScrH() / 3.5)
-		qfr:SetPos(parent:GetPos())
-		qfr:MoveTo(parent:GetX() + qfr:GetWide() + 16, parent:GetY(), 0.1)
+		frame_query = vgui.Create("KQuery")
+		frame_query:SetTitle("Fill args for " .. kate.Commands.Stored[command]:GetTitle())
+		frame_query:SetSize(ScrW() / 3.5, ScrH() / 3.5)
+		frame_query:SetPos(parent:GetPos())
+		frame_query:MoveTo(parent:GetX() + frame_query:GetWide() + 16, parent:GetY(), 0.1)
 
-		if pl then
-			qfr:SetPlayer(pl)
-		end
+		frame_query:SetQueries(queries)
 
-		qfr:SetQueries(queries)
-
-		qfr:SetFunction(function()
+		frame_query:SetFunction(function()
 			local args = {"kate", command}
 
 			if pl then
 				local id = kate.SteamIDTo64(pl)
+
 				if id then
 					args[#args + 1] = id
 				end
 			end
 
-			for query, val in pairs(qfr:GetQueries()) do
+			for query, val in pairs(frame_query:GetQueries()) do
 				args[#args + 1] = val
 			end
 
 			RunConsoleCommand(unpack(args))
 		end)
 
-		qfr:Build()
+		frame_query:Build()
 
-		qfr.Close = function(s)
+		frame_query.Close = function(s)
 			s:AlphaTo(0, 0.05)
-			s:MoveTo(fr:GetX(), parent:GetY(), 0.1, 0, -1, function()
+			s:MoveTo(frame:GetX(), parent:GetY(), 0.1, 0, -1, function()
 				s:Remove()
 			end)
 		end
 	end
 
 	showPlayers = function(data)
-		do
-			if IsValid(pfr) then
-				pfr:Close()
-			end
+		if IsValid(frame_player) then
+			frame_player:Close()
+		end
 
-			if IsValid(qfr) then
-				qfr:Close()
-			end
+		if IsValid(frame_query) then
+			frame_query:Close()
 		end
 
 		local name = data:GetName()
 
-		pfr = vgui.Create("DFrame")
-		pfr:SetTitle("Choose player for " .. data:GetTitle())
-		pfr:SetSize(ScrW() / 3.5, ScrH() / 3.5)
-		pfr:SetPos(fr:GetPos())
-		pfr:MoveTo(pfr:GetX() + pfr:GetWide() + 16, pfr:GetY(), 0.1)
-		pfr:MakePopup(true)
+		frame_player = vgui.Create("DFrame")
+		frame_player:SetTitle("Choose player for " .. data:GetTitle())
+		frame_player:SetSize(ScrW() / 3.5, ScrH() / 3.5)
+		frame_player:SetPos(frame:GetPos())
+		frame_player:MoveTo(frame_player:GetX() + frame_player:GetWide() + 16, frame_player:GetY(), 0.1)
+		frame_player:MakePopup(true)
 
-		pfr.Close = function(s)
-			if IsValid(qfr) then
-				qfr:Close()
+		frame_player.Close = function(s)
+			if IsValid(frame_query) then
+				frame_query:Close()
 			end
 
 			s:AlphaTo(0, 0.05)
-			s:MoveTo(fr:GetX(), pfr:GetY(), 0.1, 0, -1, function()
+			s:MoveTo(frame:GetX(), frame_player:GetY(), 0.1, 0, -1, function()
 				s:Remove()
 			end)
 		end
 
-		local fill = vgui.Create("DPanel", pfr)
+		local fill = vgui.Create("DPanel", frame_player)
 		fill:Dock(FILL)
 		fill:DockMargin(2, 2, 2, 2)
 
 		local scroll = vgui.Create("KScrollPanel", fill)
 		scroll:Dock(LEFT)
 		scroll:DockMargin(2, 2, 2, 2)
-		scroll:SetWide(pfr:GetWide())
+		scroll:SetWide(frame_player:GetWide())
 
 		local layout = vgui.Create("DIconLayout", scroll)
 		layout:Dock(FILL)
@@ -112,44 +109,44 @@ else
 			act.DoClick = function()
 				if #args > 0 then
 					showQuery(name, args, pl)
-				else
-					RunConsoleCommand("kate", name, pl:SteamID64())
+					return
 				end
+
+				RunConsoleCommand("kate", name, pl:SteamID64())
 			end
 		end
 	end
 
 	net.Receive("Kate Menu", function()
-		if IsValid(fr) then
+		if IsValid(frame) then
 			return
 		end
 
-		fr = vgui.Create("DFrame")
-		fr:SetTitle("Kate Menu")
-		fr:SetSize(ScrW() / 3.5, ScrH() / 3.5)
-		fr:SetPos(-fr:GetWide(), ScrH() / 2 - (fr:GetWide() / 2))
-		fr:MoveTo(32, fr:GetY(), 0.1)
-		fr:MakePopup(true)
+		frame = vgui.Create("DFrame")
+		frame:SetTitle("Kate Menu")
+		frame:SetSize(ScrW() / 3.5, ScrH() / 3.5)
+		frame:SetPos(-frame:GetWide(), ScrH() / 2 - (frame:GetWide() / 2))
+		frame:MoveTo(32, frame:GetY(), 0.1)
+		frame:MakePopup(true)
 
-		fr.Close = function(s)
-			if IsValid(pfr) then
-				pfr:Close()
+		frame.Close = function(s)
+			if IsValid(frame_player) then
+				frame_player:Close()
 			end
 
 			s:AlphaTo(0, 0.05)
-			s:MoveTo(-fr:GetWide(), fr:GetY(), 0.1, 0, -1, function()
+			s:MoveTo(-frame:GetWide(), frame:GetY(), 0.1, 0, -1, function()
 				s:Remove()
 			end)
 		end
 
-		local fill = vgui.Create("DPanel", fr)
+		local fill = vgui.Create("DPanel", frame)
 		fill:Dock(FILL)
 		fill:DockMargin(2, 2, 2, 2)
 
 		do
-			local cmds = kate.Commands.Stored
+			local cmds, cats = kate.Commands.Stored, {}
 
-			local cats = {}
 			for _, cmd in pairs(cmds) do
 				local cat = cmd:GetCategory()
 				if not cats[cat] then
@@ -160,7 +157,7 @@ else
 			local scroll = vgui.Create("KScrollPanel", fill)
 			scroll:Dock(LEFT)
 			scroll:DockMargin(2, 2, 2, 2)
-			scroll:SetWide(fr:GetWide())
+			scroll:SetWide(frame:GetWide())
 
 			for category in pairs(cats) do
 				local cat = vgui.Create("DCollapsibleCategory", scroll)
@@ -173,20 +170,20 @@ else
 				layout:SetSpaceX(1)
 
 				for cmd, data in pairs(cmds) do
-					if not data:GetVisible() or data:GetImmunity() > LocalPlayer():GetImmunity() or data:GetAlias() or data:GetCategory() ~= category then
+					if (not data:GetVisible()) or (data:GetImmunity() > LocalPlayer():GetImmunity()) or data:GetAlias() or (data:GetCategory() ~= category) then
 						continue
 					end
 
 					local args = data:GetArgs()
 					local name = data:GetName()
+					local icon = data:GetIcon()
 
 					local act = vgui.Create("DButton", layout)
 					act:SetText(data:GetTitle())
-					act:SetSize(fr:GetWide() / 4 - 5, 24)
+					act:SetSize(frame:GetWide() / 4 - 5, 24)
 					act:SetFont("Default")
 					act:SetTooltip("kate " .. cmd)
 
-					local icon = data:GetIcon()
 					if icon then
 						act:SetIcon(icon)
 					end
@@ -195,20 +192,23 @@ else
 						if #args > 0 then
 							if table.HasValue(args, "Target") then
 								showPlayers(data)
-							else
-								showQuery(name, args)
+								return
 							end
-						else
-							RunConsoleCommand("kate", name)
+
+							showQuery(name, args)
+							return
 						end
+
+						RunConsoleCommand("kate", name)
 					end
 
 					act.DoRightClick = function()
 						if #args > 0 then
 							showQuery(name, args)
-						else
-							RunConsoleCommand("kate", data:GetName())
+							return
 						end
+
+						RunConsoleCommand("kate", data:GetName())
 					end
 				end
 

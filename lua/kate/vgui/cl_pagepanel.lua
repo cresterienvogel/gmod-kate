@@ -2,7 +2,7 @@ local PANEL = {}
 
 PANEL.Speed = 17
 
-AccessorFunc(PANEL, "max_per_page", "MaxPerPage", FORCE_NUMBER)
+AccessorFunc(PANEL, "m_iMaxPerPage", "MaxPerPage", FORCE_NUMBER)
 
 function PANEL:Init()
 	self.Players = {}
@@ -68,7 +68,8 @@ function PANEL:Init()
 
 			entry.Think = function(s)
 				local val = s:GetValue()
-				if val:find("/") then
+
+				if string.find(val, "/") then
 					val = tonumber(string.Explode("/", val)[1])
 				end
 
@@ -127,7 +128,7 @@ function PANEL:Init()
 	do
 		local btn = vgui.Create("DButton", top)
 		btn:SetText("")
-		btn:SetIcon("icon16/arrow_redo.png")
+		btn:SetIcon("icon16/arrow_rotate_clockwise.png")
 		btn:Dock(RIGHT)
 		btn:DockMargin(2, 0, 0, 0)
 		btn:SetWide(24)
@@ -152,11 +153,13 @@ function PANEL:Init()
 		-- let fields load
 		timer.Simple(0.01, function()
 			local data = self.Data
+
 			if not data then
 				return
 			end
 
 			local eg = data[1]
+
 			if not eg then
 				return
 			end
@@ -188,6 +191,7 @@ function PANEL:Init()
 			end
 
 			local options = self.Options
+
 			if options then
 				for _, data in pairs(options) do
 					for i, column in ipairs(s.Columns) do
@@ -213,7 +217,7 @@ function PANEL:Init()
 		vbar.ScrollSpeed = self.Speed
 
 		vbar.OnMouseWheeled = function(s, delta)
-			s.ScrollSpeed = s.ScrollSpeed + (14 * RealFrameTime())
+			s.ScrollSpeed = s.ScrollSpeed + (RealFrameTime() * 14)
 			s:AddScroll(delta * -s.ScrollSpeed)
 		end
 
@@ -228,24 +232,39 @@ function PANEL:Init()
 		end
 
 		vbar.OnCursorMoved = function(s, _, y)
-			if s.Dragging then
-				y = y - s.HoldPos
-				y = y / (s:GetTall() - s:GetWide() * 2 - s.btnGrip:GetTall())
-				s.ScrollTarget = y * s.CanvasSize
+			if not s.Dragging then
+				return
 			end
+
+			y = y - s.HoldPos
+			y = y / (s:GetTall() - s:GetWide() * 2 - s.btnGrip:GetTall())
+
+			s.ScrollTarget = y * s.CanvasSize
 		end
 
 		vbar.Think = function(s)
 			local frame_time = RealFrameTime() * 14
 			local scroll_target = s.ScrollTarget
 
-			s.Scroll = Lerp(frame_time, s.Scroll, scroll_target)
+			s.Scroll = Lerp(
+				frame_time,
+				s.Scroll,
+				scroll_target
+			)
 
 			if not s.Dragging then
-				s.ScrollTarget = Lerp(frame_time, scroll_target, math.Clamp(scroll_target, 0, s.CanvasSize))
+				s.ScrollTarget = Lerp(
+					frame_time,
+					scroll_target,
+					math.Clamp(scroll_target, 0, s.CanvasSize)
+				)
 			end
 
-			s.ScrollSpeed = Lerp(frame_time / 14, s.ScrollSpeed, self.Speed)
+			s.ScrollSpeed = Lerp(
+				frame_time / 14,
+				s.ScrollSpeed,
+				self.Speed
+			)
 		end
 
 		vbar.PerformLayout = function(s, w, h)
@@ -261,7 +280,12 @@ function PANEL:Init()
 
 		view.Think = function(s)
 			local canvas = s.pnlCanvas
-			canvas.y = vbar.Enabled and -vbar.Scroll or Lerp(14 * RealFrameTime(), canvas._y or canvas.y, -vbar.Scroll)
+
+			canvas.y = vbar.Enabled and -vbar.Scroll or Lerp(
+				RealFrameTime() * 14,
+				canvas._y or canvas.y,
+				-vbar.Scroll
+			)
 		end
 
 		self.ListView = view
@@ -334,33 +358,38 @@ function PANEL:Build(page)
 
 	do
 		local tbl, added = {}, {}
+
 		local onChange = function(s, val)
-			table.Empty(added)
+			added = {}
 
 			if not val or val == "" then
 				tbl = {}
+
 				if util.TableToJSON(self.Data) ~= util.TableToJSON(self.InitData) then
 					self:SetData(self.InitData)
 					self:Build()
 					self:SetPage(1)
 				end
+
 				return
 			end
 
-			val = val:lower()
+			val = string.lower(val)
+
 			for i, data in ipairs(self.InitData) do
 				local json = util.TableToJSON(data)
+
 				for field, value in pairs(data) do
-					value = tostring(value):lower()
+					value = string.lower(tostring(value))
 
 					local search_by = self.SearchBy:GetSelected()
 					if search_by and search_by ~= "all fields" then
-						if not added[json] and field == search_by and value:find(val) then
+						if not added[json] and field == search_by and string.find(value, val) then
 							tbl[#tbl + 1] = data
 							added[json] = true
 						end
 					else
-						if not added[json] and value:find(val) then
+						if not added[json] and string.find(value, val) then
 							tbl[#tbl + 1] = data
 							added[json] = true
 						end
@@ -377,6 +406,7 @@ function PANEL:Build(page)
 
 		self.SearchBy.OnSelect = function(s, val)
 			local entry_val = self.TextEntry:GetValue()
+
 			if entry_val and entry_val ~= "" then
 				self.TextEntry:SetValue(entry_val)
 				onChange(s, val)

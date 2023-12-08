@@ -1,16 +1,15 @@
 do
-	kate.Commands.Register("teleport", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) or pl == target then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
+	kate.Commands:Register("teleport", function(self, pl, args)
+		local target = args.target
 
-		target:SetKateVar("Return", target:GetPos())
+		target:SetReturnPos(target:GetPos())
 		target:SetPos(pl:GetEyeTrace().HitPos)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has teleported " .. kate.GetTarget(target)
+			local msg = string.format("%s has teleported %s",
+				kate.GetExecuter(pl),
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(kate.GetAdmins(), 3, msg)
@@ -20,24 +19,25 @@ do
 	:SetCategory("Teleport")
 	:SetIcon("icon16/arrow_down.png")
 	:SetImmunity(1000)
+	:SetArgs("Target")
+	:SetSelfRun(false)
+	:SetOnlineTarget(true)
 	:AddAlias("tp")
 	:AddAlias("tele")
-	:SetArgs("Target")
 end
 
 do
-	kate.Commands.Register("bring", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) or pl == target then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
+	kate.Commands:Register("bring", function(self, pl, args)
+		local target = args.target
 
-		target:SetKateVar("Return", target:GetPos())
+		target:SetReturnPos(target:GetPos())
 		target:SetPos(kate.FindEmptyPos(pl:GetPos(), {}, 32, 32, Vector(16, 16, 64)))
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has brought " .. kate.GetTarget(target)
+			local msg = string.format("%s has brought %s",
+				kate.GetExecuter(pl),
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(kate.GetAdmins(), 3, msg)
@@ -47,28 +47,29 @@ do
 	:SetCategory("Teleport")
 	:SetIcon("icon16/arrow_in.png")
 	:SetImmunity(1000)
+	:SetSelfRun(false)
+	:SetOnlineTarget(true)
 	:SetArgs("Target")
 end
 
 do
-	kate.Commands.Register("return", function(self, pl, args)
-		local target = kate.FindPlayer(args[1])
-		if not IsValid(target) or pl == target then
-			kate.Message(pl, 2, "Target not found")
-			return
-		end
+	kate.Commands:Register("return", function(self, pl, args)
+		local target = args.target or pl
+		local pos = target:GetReturnPos()
 
-		local pos = target:GetKateVar("ReturnPos")
 		if not pos then
 			kate.Message(pl, 2, "Target has no pos to return")
 			return
 		end
 
-		target:SetKateVar("ReturnPos", nil)
+		target:SetReturnPos(nil)
 		target:SetPos(pos)
 
 		do
-			local msg = kate.GetExecuter(pl) .. " has returned " .. kate.GetTarget(target)
+			local msg = string.format("%s has returned %s",
+				kate.GetExecuter(pl),
+				kate.GetTarget(target)
+			)
 
 			kate.Print(msg)
 			kate.Message(kate.GetAdmins(), 3, msg)
@@ -78,5 +79,7 @@ do
 	:SetCategory("Teleport")
 	:SetIcon("icon16/arrow_redo.png")
 	:SetImmunity(1000)
+	:SetOnlineTarget(true)
 	:SetArgs("Target")
+	:SetOptionalArgs("Target")
 end

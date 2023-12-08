@@ -1,5 +1,5 @@
 function kate.FindPlayer(info)
-	if not info or info == "" then
+	if (not info) or (info == "") then
 		return nil
 	end
 
@@ -24,7 +24,7 @@ function kate.FindPlayer(info)
 			return pl
 		end
 
-		if pl:Name():lower():find(tostring(info):lower(), 1, true) then
+		if string.find(string.lower(pl:Name()), string.lower(info), 1, true) then
 			return pl
 		end
 	end

@@ -1,3 +1,5 @@
+-- https://github.com/SuperiorServers/dash/blob/770bd90d77e077b2b1b975f517f815e9ff24d693/lua/dash/extensions/string.lua#L87
+
 TIME_SECOND = 1
 TIME_MINUTE = TIME_SECOND * 60
 TIME_HOUR = TIME_MINUTE * 60
@@ -21,6 +23,7 @@ function kate.ConvertTime(num, limit)
 	end
 
 	local ret = {}
+
 	while not limit or limit ~= 0 do
 		local templimit = limit or 0
 		if num >= TIME_YEAR or templimit <= -7 then
@@ -65,6 +68,7 @@ function kate.ConvertTime(num, limit)
 	end
 
 	local str = ""
+
 	for i = 1, #ret do
 		if i == 1 then
 			str = str .. ret[i]
@@ -83,28 +87,34 @@ end
 ]]
 
 local units = {
-	s = TIME_SECOND,
-	mi = TIME_MINUTE,
-	h = TIME_HOUR,
-	d = TIME_DAY,
-	w = TIME_WEEK,
-	mo = TIME_MONTH,
-	y = TIME_YEAR
+	["s"] = TIME_SECOND,
+	["mi"] = TIME_MINUTE,
+	["h"] = TIME_HOUR,
+	["d"] = TIME_DAY,
+	["w"] = TIME_WEEK,
+	["mo"] = TIME_MONTH,
+	["y"] = TIME_YEAR
 }
 
 function kate.FormatTime(time)
-	time = tostring(time):lower()
+	if not time then
+		return false
+	end
+
+	time = string.lower(time)
+
 	if time == "0" then
 		return true, 0
 	end
 
 	local s = 0
-	for u, t in time:gmatch("(%d+)(%a+)") do
-		if units[t] then
-			s = s + u * units[t]
-		else
+
+	for u, t in string.gmatch(time, "(%d+)(%a+)") do
+		if not units[t] then
 			return false
 		end
+
+		s = s + u * units[t]
 	end
 
 	if s == 0 then

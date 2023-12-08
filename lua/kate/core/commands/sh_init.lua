@@ -31,6 +31,10 @@ function meta:SetImmunity(amt)
 	return self
 end
 
+function meta:GetImmunity()
+	return self.Immunity
+end
+
 function meta:SetVisible(bool)
 	self.Visible = bool
 	return self
@@ -38,10 +42,6 @@ end
 
 function meta:GetVisible()
 	return self.Visible
-end
-
-function meta:GetImmunity()
-	return self.Immunity
 end
 
 function meta:SetIcon(icon)
@@ -54,7 +54,7 @@ function meta:GetIcon()
 end
 
 function meta:AddAlias(name)
-	name = name:lower()
+	name = string.lower(name)
 
 	kate.Commands.Stored[name] = table.Copy(self)
 	kate.Commands.Stored[name].IsAlias = true
@@ -70,15 +70,48 @@ function meta:SetArgs(...)
 	for _, arg in ipairs({...}) do
 		self.Args[#self.Args + 1] = arg
 	end
-	return self.Args
+
+	return self
 end
 
 function meta:GetArgs()
 	return self.Args
 end
 
-function kate.Commands.Register(name, callback)
-	name = name:lower()
+function meta:SetOptionalArgs(...)
+	for _, arg in ipairs({...}) do
+		self.OptionalArgs[#self.OptionalArgs + 1] = arg
+	end
+
+	return self
+end
+
+function meta:GetOptionalArgs()
+	return self.OptionalArgs
+end
+
+function meta:SetOnlineTarget(bool)
+	self.OnlineTarget = bool
+
+	return self
+end
+
+function meta:GetOnlineTarget()
+	return self.GetOnlineTarget
+end
+
+function meta:SetSelfRun(bool)
+	self.SelfRun = bool
+
+	return self
+end
+
+function meta:GetSelfRun()
+	return self.SelfRun
+end
+
+function kate.Commands:Register(name, callback)
+	name = string.lower(name)
 
 	local command = {
 		Name = name,
@@ -86,9 +119,12 @@ function kate.Commands.Register(name, callback)
 		Category = "Other",
 		Icon = "icon16/pill.png",
 		Immunity = 0,
+		SelfRun = true,
+		OnlineTarget = false,
 		Args = {},
-		IsAlias = false,
+		OptionalArgs = {},
 		Visible = true,
+		IsAlias = false,
 		Run = SERVER and callback or function() end
 	}
 
@@ -108,26 +144,28 @@ concommand.Add(
 				end
 
 				local _args = {}
+
 				for i, arg in ipairs(data:GetArgs()) do
 					_args[i] = "<" .. arg .. ">"
 				end
 
 				print("	" .. c .. " " .. table.concat(_args, " "))
 			end
+
 			return
 		end
 
 		RunConsoleCommand("_kate", unpack(args))
 	end,
 	function(cmd, str)
-		cmd = string.Explode(" ", str)[2]:Trim()
+		cmd = string.Trim(string.Explode(" ", str)[2])
 
-		local stored = kate.Commands.Stored[cmd]
+		local stored, args = kate.Commands.Stored[cmd], {}
+
 		if not stored then
 			return
 		end
 
-		local args = {}
 		for i, arg in ipairs(stored:GetArgs()) do
 			args[i] = "<" .. arg .. ">"
 		end

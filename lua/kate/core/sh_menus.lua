@@ -1,26 +1,29 @@
 function kate.RegisterMenu(name)
 	if SERVER then
 		util.AddNetworkString("Kate " .. name)
-	else
-		local fr
+	end
+
+	if CLIENT then
+		local frame
+
 		net.Receive("Kate " .. name, function()
 			local len = net.ReadUInt(32)
 			local data = net.ReadData(len)
 
 			data = util.JSONToTable(util.Decompress(data))
 
-			if IsValid(fr) then
-				fr:Remove()
+			if IsValid(frame) then
+				frame:Remove()
 			end
 
-			fr = vgui.Create("KFrame")
-			fr:SetSize(ScrW() / 1.5, ScrH() / 2)
-			fr:SetTitle("Kate " .. name)
-			fr:Center()
-			fr:MakePopup()
+			frame = vgui.Create("KFrame")
+			frame:SetSize(ScrW() / 1.5, ScrH() / 2)
+			frame:SetTitle("Kate " .. name)
+			frame:Center()
+			frame:MakePopup()
 
 			do
-				local records = vgui.Create("KPagePanel", fr)
+				local records = vgui.Create("KPagePanel", frame)
 				records:Dock(FILL)
 				records:SetMaxPerPage(200)
 

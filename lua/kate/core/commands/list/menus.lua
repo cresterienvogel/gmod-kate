@@ -1,5 +1,5 @@
 do
-	kate.Commands.Register("menu", function(self, pl)
+	kate.Commands:Register("menu", function(self, pl)
 		net.Start("Kate Menu")
 		net.Send(pl)
 	end)
@@ -11,14 +11,18 @@ do
 end
 
 do
-	kate.Commands.Register("players", function(self, pl)
+	kate.Commands:Register("players", function(self, pl)
 		local query = kate.Data.DB:query("SELECT * FROM kate_users")
 
 		query.onSuccess = function(_, data)
 			for i, params in pairs(data) do
 				for param, val in pairs(params) do
-					if param == "joined" or param == "seen" then
+					if param == "joined" then
 						data[i][param] = os.date("%d %B %Y", val)
+					end
+
+					if param == "seen" then
+						data[i][param] = os.date("%d %B %Y at %H:%M", val)
 					end
 
 					if param == "playtime" then
@@ -41,20 +45,20 @@ do
 	end)
 	:SetTitle("Players")
 	:SetCategory("Menus")
-	:AddAlias("playtime")
 	:SetIcon("icon16/information.png")
 	:SetImmunity(0)
+	:AddAlias("playtime")
 end
 
 do
-	kate.Commands.Register("bans", function(self, pl)
+	kate.Commands:Register("bans", function(self, pl)
 		local query = kate.Data.DB:query("SELECT * FROM kate_bans")
 
 		query.onSuccess = function(_, data)
 			for i, params in pairs(data) do
 				for param, val in pairs(params) do
-					if param:find("ban_time") then
-						data[i][param] = os.date("%d %B %Y", val)
+					if string.find(param, "ban_time") then
+						data[i][param] = os.date("%d %B %Y at %H:%M", val)
 					end
 
 					if param == "expired" then
@@ -76,17 +80,17 @@ do
 	end)
 	:SetTitle("Bans")
 	:SetCategory("Menus")
-	:AddAlias("restrictions")
 	:SetIcon("icon16/information.png")
 	:SetImmunity(1000)
+	:AddAlias("restrictions")
 end
 
 do
 	for _, tag in ipairs({"Gag", "Mute"}) do
-		local low_tag = tag:lower()
+		local low_tag = string.lower(tag)
 		local tbl = "kate_" .. low_tag .. "s"
 
-		kate.Commands.Register(low_tag .. "s", function(self, pl)
+		kate.Commands:Register(low_tag .. "s", function(self, pl)
 			local query = kate.Data.DB:query("SELECT * FROM " .. tbl)
 
 			query.onSuccess = function(_, data)

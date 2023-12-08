@@ -1,29 +1,29 @@
-local speed = 6
-
 local PANEL = {}
 
 AccessorFunc(PANEL, "m_bFromBottom", "FromBottom", FORCE_BOOL)
-AccessorFunc(PANEL, "m_bVBarPadding", "VBarPadding", FORCE_NUMBER)
+AccessorFunc(PANEL, "m_iVBarPadding", "VBarPadding", FORCE_NUMBER)
 
-PANEL:SetVBarPadding(0)
-
+PANEL.Speed = 6
 PANEL.NoOverrideClear = true
 
 function PANEL:Init()
+	self:SetVBarPadding(0)
+
 	local canvas = self:GetCanvas()
 
 	local children = {}
 
 	do
 		function canvas:OnChildAdded(child)
-			table.insert(children, child)
+			children[#children + 1] = child
 		end
 
 		function canvas:OnChildRemoved(child)
 			for i = 1, #children do
 				local v = children[i]
+
 				if v == child then
-					table.remove(children, i)
+					children[i] = nil
 					return
 				end
 			end
@@ -37,16 +37,17 @@ function PANEL:Init()
 	end
 
 	local vbar = self.VBar
+
 	vbar:SetHideButtons(true)
 	vbar.btnUp:SetVisible(false)
 	vbar.btnDown:SetVisible(false)
 
 	vbar.ScrollTarget = 0
-	vbar.ScrollSpeed = speed
+	vbar.ScrollSpeed = self.Speed
 
 	do
 		vbar.OnMouseWheeled = function(s, delta)
-			s.ScrollSpeed = s.ScrollSpeed + (14 * RealFrameTime())
+			s.ScrollSpeed = s.ScrollSpeed + (RealFrameTime() * 14)
 			s:AddScroll(delta * -s.ScrollSpeed)
 		end
 
@@ -61,24 +62,39 @@ function PANEL:Init()
 		end
 
 		vbar.OnCursorMoved = function(s, _, y)
-			if s.Dragging then
-				y = y - s.HoldPos
-				y = y / (s:GetTall() - s:GetWide() * 2 - s.btnGrip:GetTall())
-				s.ScrollTarget = y * s.CanvasSize
+			if not s.Dragging then
+				return
 			end
+
+			y = y - s.HoldPos
+			y = y / (s:GetTall() - s:GetWide() * 2 - s.btnGrip:GetTall())
+
+			s.ScrollTarget = y * s.CanvasSize
 		end
 
 		vbar.Think = function(s)
 			local frame_time = RealFrameTime() * 14
 			local scroll_target = s.ScrollTarget
 
-			s.Scroll = Lerp(frame_time, s.Scroll, scroll_target)
+			s.Scroll = Lerp(
+				frame_time,
+				s.Scroll,
+				scroll_target
+			)
 
 			if not s.Dragging then
-				s.ScrollTarget = Lerp(frame_time, scroll_target, math.Clamp(scroll_target, 0, s.CanvasSize))
+				s.ScrollTarget = Lerp(
+					frame_time,
+					scroll_target,
+					math.Clamp(scroll_target, 0, s.CanvasSize)
+				)
 			end
 
-			s.ScrollSpeed = Lerp(frame_time / 14, s.ScrollSpeed, speed)
+			s.ScrollSpeed = Lerp(
+				frame_time / 14,
+				s.ScrollSpeed,
+				self.Speed
+			)
 		end
 
 		vbar.PerformLayout = function(s, w, h)
@@ -105,6 +121,7 @@ end
 
 function PANEL:ScrollToBottom()
 	local vbar = self.VBar
+
 	for k, anim in pairs(vbar.m_AnimList or {}) do
 		anim:Think(vbar, 1)
 		vbar.m_AnimList[k] = nil
@@ -128,7 +145,7 @@ function PANEL:PerformLayoutInternal(w, h)
 	vbar:SetUp(h, canvas:GetTall())
 
 	if vbar.Enabled then
-		w = w - vbar:GetWide() - self.m_bVBarPadding
+		w = w - vbar:GetWide() - self.m_iVBarPadding
 	end
 
 	canvas:SetWide(w)
@@ -138,19 +155,20 @@ end
 
 function PANEL:Think()
 	local canvas = self.pnlCanvas
-
 	local vbar = self.VBar
+
 	if vbar.Enabled then
 		canvas.y = -vbar.Scroll
-	else
-		if self:GetFromBottom() then
-			canvas._y = Lerp(14 * RealFrameTime(), canvas._y or canvas.y, self:GetTall() - canvas:GetTall())
-		else
-			canvas._y = Lerp(14 * RealFrameTime(), canvas._y or canvas.y, -vbar.Scroll)
-		end
-
-		canvas.y = canvas._y
+		return
 	end
+
+	canvas._y = Lerp(
+		RealFrameTime() * 14,
+		canvas._y or canvas.y,
+		self:GetFromBottom() and (self:GetTall() - canvas:GetTall()) or -vbar.Scroll
+	)
+
+	canvas.y = canvas._y
 end
 
 vgui.Register("KScrollPanel", PANEL, "DScrollPanel")
