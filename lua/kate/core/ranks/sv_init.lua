@@ -23,7 +23,7 @@ function kate.Ranks.AddExpiration(id, rank, exp, exp_in)
 	query:setString(1, id)
 
 	query.onSuccess = function(_, data)
-		if (not exp) then
+		if not exp then
 			goto delete_expiration
 		end
 

@@ -9,8 +9,8 @@ kate.Data = kate.Data or {}
 		kate.Data.Table
 		kate.Data.Table
 
-	to setup your custom data inside a kate addon
-	a tick timer will save you a bit of time to adjust mysqloo.connect
+	to setup your custom data outside a kate addon
+	a next tick timer will save you a bit of time to adjust mysqloo.connect
 ]]
 
 kate.Data.DB = kate.Data.DB or timer.Simple(0, function()
@@ -30,18 +30,6 @@ kate.Data.DB = kate.Data.DB or timer.Simple(0, function()
 				steamid TINYTEXT,
 				reason TEXT,
 				mute_time INT,
-				expire_time INT,
-				admin_steamid TINYTEXT,
-				expired TEXT,
-				case_id INT
-			)
-		]]):start()
-
-		s:query([[CREATE TABLE IF NOT EXISTS `kate_gags`
-			(
-				steamid TINYTEXT,
-				reason TEXT,
-				gag_time INT,
 				expire_time INT,
 				admin_steamid TINYTEXT,
 				expired TEXT,

@@ -84,7 +84,7 @@ end
 
 do
 	kate.Commands:Register("map", function(self, pl, args)
-		RunConsoleCommand(args.map)
+		RunConsoleCommand("changelevel", args.map)
 	end)
 	:SetTitle("Map")
 	:SetCategory("Managment")

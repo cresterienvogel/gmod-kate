@@ -29,7 +29,7 @@ function kate.Message(recip, status, ...)
 	local text = table.concat({...}, " ")
 
 	timer.Simple(0, function()
-		if not IsValid(recip) and not istable(recip) then
+		if (not IsValid(recip)) and (not istable(recip)) then
 			kate.Print(text)
 			return
 		end

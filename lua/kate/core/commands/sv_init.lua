@@ -174,11 +174,11 @@ hook.Add("PlayerSay", "Kate Commands", function(pl, text)
 		-- make it e-e-e-easy
 		local params = stored:GetArgs()
 
-		if stored:GetSelfRun() and params[1] == "Target" then
+		if stored:GetSelfRun() and (params[1] == "Target") then
 			local arg = args[1]
 
 			if arg then
-				if arg == "me" or arg == "^" then
+				if (arg == "me") or (arg == "^") then
 					args[1] = pl:SteamID64()
 				end
 			else

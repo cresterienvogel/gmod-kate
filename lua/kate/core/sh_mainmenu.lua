@@ -149,6 +149,7 @@ if CLIENT then
 
 			for _, cmd in pairs(cmds) do
 				local cat = cmd:GetCategory()
+
 				if not cats[cat] then
 					cats[cat] = true
 				end

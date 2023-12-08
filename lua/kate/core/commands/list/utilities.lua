@@ -3,7 +3,7 @@ do
 		local target = args.target or pl
 		local text = args.message
 
-		kate.Message(target, 3, text)
+		kate.Message(target, 3, string.format("You've got a message from admin: %s", text))
 
 		do
 			local msg = string.format("%s has sent a message to %s: %s",
@@ -51,7 +51,7 @@ do
 	:SetImmunity(2500)
 	:SetOnlineTarget(true)
 	:SetArgs("Target", "Amount")
-	:SetOptionalArgs("Amount")
+	:SetOptionalArgs("Target", "Amount")
 	:AddAlias("sethp")
 	:AddAlias("health")
 	:AddAlias("sethealth")
@@ -81,7 +81,7 @@ do
 	:SetImmunity(2500)
 	:SetOnlineTarget(true)
 	:SetArgs("Target", "Amount")
-	:SetOptionalArgs("Amount")
+	:SetOptionalArgs("Target", "Amount")
 	:AddAlias("setar")
 	:AddAlias("armor")
 	:AddAlias("setarmor")
