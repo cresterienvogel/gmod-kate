@@ -135,7 +135,7 @@ function kate.UpdateBans()
 
 	kate.Bans = {}
 
-	local query = db:prepare("SELECT * FROM `kate_bans` WHERE expired = ? LIMIT 1")
+	local query = db:prepare("SELECT * FROM `kate_bans` WHERE expired = ?")
 	query:setString(1, "active")
 
 	query.onSuccess = function(_, data)

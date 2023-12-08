@@ -149,7 +149,7 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 
 		kate[tag_plural] = {}
 
-		local query = db:prepare("SELECT * FROM `" .. tag_sql .. "` WHERE expired = ? LIMIT 1")
+		local query = db:prepare("SELECT * FROM `" .. tag_sql .. "` WHERE expired = ?")
 		query:setString(1, "active")
 
 		query.onSuccess = function(_, data)
