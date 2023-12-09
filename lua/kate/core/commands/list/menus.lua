@@ -27,7 +27,7 @@ do
 
 					if param == "playtime" then
 						local res = kate.ConvertTime(val)
-						data[i][param] = res ~= "∞" and res or "less than 5 minutes"
+						data[i][param] = (res ~= "∞") and res or "less than 5 minutes"
 					end
 				end
 			end

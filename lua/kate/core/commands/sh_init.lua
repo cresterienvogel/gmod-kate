@@ -149,7 +149,7 @@ concommand.Add(
 					_args[i] = "<" .. arg .. ">"
 				end
 
-				print("	" .. c .. " " .. table.concat(_args, " "))
+				print(string.format(" %s %s", c, table.concat(_args, " ")))
 			end
 
 			return

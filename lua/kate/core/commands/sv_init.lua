@@ -26,10 +26,10 @@ function kate.Commands.Run(pl, cmd, args)
 		end
 
 		if not args[k] then
-			local message = arg .. " not found"
-			kate.Message(pl, 2, message)
+			local msg = string.format("%s not found", arg)
+			kate.Message(pl, 2, msg)
 
-			return false, message
+			return false, msg
 		end
 	end
 
@@ -143,7 +143,7 @@ hook.Add("PlayerSay", "Kate Commands", function(pl, text)
 		return
 	end
 
-	local args = {}
+	local args, cmd = {}
 	text = string.sub(text, 2) -- cut prefix
 	args = kate.ParseArgs(text) -- get args
 	cmd = string.lower(args[1]) -- get command

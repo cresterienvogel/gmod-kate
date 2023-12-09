@@ -34,6 +34,7 @@ do
 		local reason = args.reason
 
 		local admin_id = IsValid(pl) and pl:SteamID64() or "Console"
+
 		kate.Unban(target, reason, admin_id)
 
 		do

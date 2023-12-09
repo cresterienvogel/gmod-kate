@@ -15,6 +15,7 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 			local reason = args.reason
 
 			local admin_id = IsValid(pl) and pl:SteamID64() or "Console"
+
 			kate[tag](target, time, reason, admin_id)
 
 			do
@@ -43,6 +44,7 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 			local reason = args.reason
 
 			local admin_id = IsValid(pl) and pl:SteamID64() or "Console"
+
 			kate["Un" .. tag_lower](target, reason, admin_id)
 
 			do

@@ -19,7 +19,7 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 		query:setString(2, "active")
 
 		local now = os.time()
-		expire_time = expire_time > 0 and now + expire_time or 0
+		expire_time = (expire_time > 0) and (now + expire_time) or 0
 
 		kate[tag_plural][id] = {}
 

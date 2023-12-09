@@ -101,7 +101,7 @@ kate.Commands.Validators = {
 	["Unsigned Amount"] = function(pl, cmd, index, value, args)
 		local info = tonumber(value)
 
-		if info and info > 0 then
+		if info and (info > 0) then
 			return info
 		end
 

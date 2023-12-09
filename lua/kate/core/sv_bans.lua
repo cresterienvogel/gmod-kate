@@ -11,7 +11,7 @@ function kate.Ban(id, unban_time, reason, admin_name, admin_id)
 
 	local now = os.time()
 	admin_name = admin_name or "Console"
-	unban_time = unban_time > 0 and now + unban_time or 0
+	unban_time = (unban_time > 0) and (now + unban_time) or 0
 
 	kate.Bans[id] = {}
 
