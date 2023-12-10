@@ -92,7 +92,6 @@ end
 
 function meta:SetOnlineTarget(bool)
 	self.OnlineTarget = bool
-
 	return self
 end
 
@@ -102,7 +101,6 @@ end
 
 function meta:SetSelfRun(bool)
 	self.SelfRun = bool
-
 	return self
 end
 
@@ -144,7 +142,6 @@ concommand.Add(
 				end
 
 				local _args = {}
-
 				for i, arg in ipairs(data:GetArgs()) do
 					_args[i] = "<" .. arg .. ">"
 				end
