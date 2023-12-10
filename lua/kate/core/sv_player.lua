@@ -10,10 +10,10 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 
 	-- find player's data
 	do
-		local query = db:prepare("SELECT * FROM `kate_users` WHERE steamid = ? LIMIT 1")
-		query:setString(1, id)
+		local querySelect = db:prepare("SELECT * FROM `kate_users` WHERE steamid = ? LIMIT 1")
+		querySelect:setString(1, id)
 
-		query.onSuccess = function(_, data)
+		querySelect.onSuccess = function(_, data)
 			if #data < 0 then
 				goto insert
 			end
@@ -30,34 +30,34 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 				kate.Message(pl, 3, string.format("Your last visit was %s, %s ago", os.date("%d %B %Y", data.seen), kate.ConvertTime(now - data.seen)))
 				kate.Message(pl, 3, string.format("Your playtime is %s", kate.ConvertTime(data.playtime)))
 
-				local query_update = db:prepare("UPDATE `kate_users` SET name = ?, seen = ? WHERE steamid = ? LIMIT 1")
-				query_update:setString(1, pl:Name())
-				query_update:setNumber(2, now)
-				query_update:setString(3, id)
-				query_update:start()
+				local queryUpdate = db:prepare("UPDATE `kate_users` SET name = ?, seen = ? WHERE steamid = ? LIMIT 1")
+				queryUpdate:setString(1, pl:Name())
+				queryUpdate:setNumber(2, now)
+				queryUpdate:setString(3, id)
+				queryUpdate:start()
 
 				return
 			end
 
 			::insert::
 			do
-				local query_insert = db:prepare("INSERT INTO `kate_users` (name, steamid, rank, joined, seen, playtime) VALUES (?, ?, ?, ?, ?, ?)")
-				query_insert:setString(1, pl:Name())
-				query_insert:setString(2, id)
-				query_insert:setString(3, "user")
-				query_insert:setNumber(4, now)
-				query_insert:setNumber(5, now)
-				query_insert:setNumber(6, 0)
-				query_insert:start()
+				local queryInsert = db:prepare("INSERT INTO `kate_users` (name, steamid, rank, joined, seen, playtime) VALUES (?, ?, ?, ?, ?, ?)")
+				queryInsert:setString(1, pl:Name())
+				queryInsert:setString(2, id)
+				queryInsert:setString(3, "user")
+				queryInsert:setNumber(4, now)
+				queryInsert:setNumber(5, now)
+				queryInsert:setNumber(6, 0)
+				queryInsert:start()
 			end
 		end
 
-		query:start()
+		querySelect:start()
 	end
 
 	-- find player's restrictions
 	for _, tag in ipairs({"Gag", "Mute"}) do
-		local tag_lower = string.lower(tag)
+		local tagLower = string.lower(tag)
 		local cached, exp = kate[tag .. "s"][id]
 
 		if not cached then
@@ -73,10 +73,10 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 		end
 
 		-- set restriction
-		pl:SetNetVar(tag_lower, exp)
+		pl:SetNetVar(tagLower, exp)
 
 		-- message
-		kate.Message(pl, 3, string.format("Your %s will end in %s", tag_lower, kate.ConvertTime(exp - os.time())))
+		kate.Message(pl, 3, string.format("Your %s will end in %s", tagLower, kate.ConvertTime(exp - os.time())))
 	end
 end)
 
@@ -87,10 +87,10 @@ hook.Add("PlayerDisconnected", "Kate PlayerDisconnected", function(pl)
 		return
 	end
 
-	local query = db:prepare("UPDATE `kate_users` SET seen = ? WHERE steamid = ? LIMIT 1")
-	query:setNumber(1, os.time())
-	query:setString(2, pl:SteamID64())
-	query:start()
+	local querySelect = db:prepare("UPDATE `kate_users` SET seen = ? WHERE steamid = ? LIMIT 1")
+	querySelect:setNumber(1, os.time())
+	querySelect:setString(2, pl:SteamID64())
+	querySelect:start()
 end)
 
 timer.Create("Kate Players", 300, 0, function()
@@ -104,32 +104,32 @@ timer.Create("Kate Players", 300, 0, function()
 		local id = pl:SteamID64()
 
 		do -- update playtime
-			local query = db:prepare("SELECT * FROM `kate_users` WHERE steamid = ? LIMIT 1")
-			query:setString(1, id)
+			local querySelect = db:prepare("SELECT * FROM `kate_users` WHERE steamid = ? LIMIT 1")
+			querySelect:setString(1, id)
 
-			query.onSuccess = function(_, data)
+			querySelect.onSuccess = function(_, data)
 				if #data <= 0 then
 					return
 				end
 
 				local new = data[1].playtime + 300
 
-				local query_update = db:prepare("UPDATE `kate_users` SET playtime = ? WHERE steamid = ? LIMIT 1")
-				query_update:setNumber(1, new)
-				query_update:setString(2, id)
-				query_update:start()
+				local queryUpdate = db:prepare("UPDATE `kate_users` SET playtime = ? WHERE steamid = ? LIMIT 1")
+				queryUpdate:setNumber(1, new)
+				queryUpdate:setString(2, id)
+				queryUpdate:start()
 
 				pl:SetPlaytime(new)
 			end
 
-			query:start()
+			querySelect:start()
 		end
 
 		do -- check expirations
-			local query = db:prepare("SELECT * FROM `kate_expirations` WHERE steamid = ? LIMIT 1")
-			query:setString(1, id)
+			local querySelect = db:prepare("SELECT * FROM `kate_expirations` WHERE steamid = ? LIMIT 1")
+			querySelect:setString(1, id)
 
-			query.onSuccess = function(_, data)
+			querySelect.onSuccess = function(_, data)
 				if #data <= 0 then
 					return
 				end
@@ -137,46 +137,46 @@ timer.Create("Kate Players", 300, 0, function()
 				data = data[1]
 
 				local exp = data.expire_time
-				local exp_in = data.expire_in
+				local expIn = data.expire_in
 
 				if os.time() < exp then
 					return
 				end
 
 				do
-					local query_delete = db:prepare("DELETE FROM `kate_expirations` WHERE steamid = ?")
-					query_delete:setString(1, id)
-					query_delete:start()
+					local queryDelete = db:prepare("DELETE FROM `kate_expirations` WHERE steamid = ?")
+					queryDelete:setString(1, id)
+					queryDelete:start()
 				end
 
 				do
-					local query_update = db:prepare("UPDATE `kate_users` SET rank = ? WHERE steamid = ? LIMIT 1")
-					query_update:setString(1, exp_in)
-					query_update:setString(2, id)
-					query_update:start()
+					local queryUpdate = db:prepare("UPDATE `kate_users` SET rank = ? WHERE steamid = ? LIMIT 1")
+					queryUpdate:setString(1, expIn)
+					queryUpdate:setString(2, id)
+					queryUpdate:start()
 				end
 
 				do
 					local msg = "%s has got his %s rank expired"
 
-					if exp_in ~= "user" then
+					if expIn ~= "user" then
 						msg = msg .. " in %s"
 					end
 
 					msg = string.format(msg,
 						pl:Name(),
 						kate.Ranks.Stored[pl:GetRank()]:GetTitle(),
-						kate.Ranks.Stored[exp_in]:GetTitle()
+						kate.Ranks.Stored[expIn]:GetTitle()
 					)
 
 					kate.Message(player.GetAll(), 3, msg)
 					kate.Print(msg)
 				end
 
-				pl:SetUserGroup(exp_in)
+				pl:SetUserGroup(expIn)
 			end
 
-			query:start()
+			querySelect:start()
 		end
 	end
 end)

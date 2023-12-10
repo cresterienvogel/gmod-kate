@@ -1,12 +1,14 @@
 function kate.RegisterMenu(name)
+	local tag = string.format("Kate %s", name)
+
 	if SERVER then
-		util.AddNetworkString("Kate " .. name)
+		util.AddNetworkString(tag)
 	end
 
 	if CLIENT then
 		local frame
 
-		net.Receive("Kate " .. name, function()
+		net.Receive(tag, function()
 			local len = net.ReadUInt(32)
 			local data = net.ReadData(len)
 
@@ -18,7 +20,7 @@ function kate.RegisterMenu(name)
 
 			frame = vgui.Create("KFrame")
 			frame:SetSize(ScrW() / 1.5, ScrH() / 2)
-			frame:SetTitle("Kate " .. name)
+			frame:SetTitle(tag)
 			frame:Center()
 			frame:MakePopup()
 

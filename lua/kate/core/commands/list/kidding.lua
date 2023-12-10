@@ -131,15 +131,15 @@ do
 		local target = args.target or pl
 		local wep = args.weapon
 		local reason = args.reason
-		local stripped_weapon
+		local strippedWep
 
 		if wep then
-			stripped_weapon = weapons.Get(wep) and weapons.Get(wep).PrintName or wep
+			strippedWep = weapons.Get(wep) and weapons.Get(wep).PrintName or wep
 			target:StripWeapon(wep)
 			goto log
 		end
 
-		stripped_weapon = "all weapons"
+		strippedWep = "all weapons"
 		target:StripWeapons()
 
 		::log::
@@ -152,7 +152,7 @@ do
 
 			local msg = string.format(text,
 				kate.GetExecuter(pl),
-				stripped_weapon,
+				strippedWep,
 				kate.GetTarget(target),
 				reason
 			)

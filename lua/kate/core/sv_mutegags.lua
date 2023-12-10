@@ -1,81 +1,81 @@
 for _, tag in ipairs({"Gag", "Mute"}) do
-	local tag_lower = string.lower(tag)
-	local tag_plural = tag .. "s"
-	local tag_sql = "kate_" .. string.lower(tag_plural)
+	local tagLower = string.lower(tag)
+	local tagPlural = tag .. "s"
+	local tagSQL = "kate_" .. string.lower(tagPlural)
 
-	kate[tag_plural] = kate[tag_plural] or {}
+	kate[tagPlural] = kate[tagPlural] or {}
 
-	kate[tag] = function(id, expire_time, reason, admin_id)
+	kate[tag] = function(targetId, expireTime, blockReason, adminId)
 		local db = kate.Data.DB
 
 		if not db then
 			return
 		end
 
-		id = kate.SteamIDTo64(id)
+		local unixNow = os.time()
 
-		local query = db:prepare("SELECT * FROM `" .. tag_sql .. "` WHERE steamid = ? AND expired = ? LIMIT 1")
-		query:setString(1, id)
-		query:setString(2, "active")
+		targetId = kate.SteamIDTo64(targetId)
+		expireTime = (expireTime > 0) and (unixNow + expireTime) or 0
 
-		local now = os.time()
-		expire_time = (expire_time > 0) and (now + expire_time) or 0
+		kate[tagPlural][targetId] = {} -- cache
 
-		kate[tag_plural][id] = {}
+		local querySelect = db:prepare(string.format("SELECT * FROM `%s` WHERE steamid = ? AND expired = ? LIMIT 1"), tagSQL)
+		querySelect:setString(1, targetId)
+		querySelect:setString(2, "active")
 
-		query.onSuccess = function(_, data)
+		querySelect.onSuccess = function(_, data)
 			if not data[1] then
-				goto new
+				goto newPunish
 			end
 
 			do
-				local case_id = data[1].case_id
+				local caseId = data[1].case_id
 
-				local query_update = db:prepare("UPDATE `" .. tag_sql .. "` SET reason = ?, admin_steamid = ?, expire_time = ? WHERE steamid = ? AND case_id = ? LIMIT 1")
-				query_update:setString(1, reason)
+				local queryUpdate = db:prepare(string.format("UPDATE `%s` SET reason = ?, admin_steamid = ?, expire_time = ? WHERE steamid = ? AND case_id = ? LIMIT 1", tagSQL))
+				queryUpdate:setString(1, blockReason)
 
-				if admin_id then
-					query_update:setString(2, admin_id)
+				if adminId then
+					queryUpdate:setString(2, adminId)
 				else
-					query_update:setNull(2)
+					queryUpdate:setNull(2)
 				end
 
-				query_update:setNumber(3, expire_time)
-				query_update:setString(4, id)
-				query_update:setNumber(5, case_id)
+				queryUpdate:setNumber(3, expireTime)
+				queryUpdate:setString(4, targetId)
+				queryUpdate:setNumber(5, caseId)
 
-				query_update:start()
+				queryUpdate:start()
 
 				return
 			end
 
-			::new::
+			::newPunish::
 			do
-				local query_select = db:query("SELECT COUNT(`case_id`) AS `case_id` FROM `" .. tag_sql .. "`")
+				local query_select = db:querySelect(string.format("SELECT COUNT(`case_id`) AS `case_id` FROM `%s`", tagSQL))
 
 				query_select.onSuccess = function(_, cases)
 					cases = cases[1].case_id or 0
 
-					local case_id = cases + 1
+					local caseId = cases + 1
 
-					local query_insert = db:prepare("INSERT INTO `" .. tag_sql .. "` (steamid, reason, " .. (tag_lower .. "_time") .. ", expire_time, admin_steamid, expired, case_id) VALUES (?, ?, ?, ?, ?, ?, ?)")
-					query_insert:setString(1, id)
-					query_insert:setString(2, reason)
-					query_insert:setNumber(3, now)
-					query_insert:setNumber(4, expire_time)
+					local queryInsert = db:prepare(string.format("INSERT INTO `%s` (steamid, reason, %s_time, expire_time, admin_steamid, expired, case_id) VALUES (?, ?, ?, ?, ?, ?, ?)", tagSQL, tagLower))
+					queryInsert:setString(1, targetId)
+					queryInsert:setString(2, blockReason)
+					queryInsert:setNumber(3, unixNow)
+					queryInsert:setNumber(4, expireTime)
 
-					if admin_id then
-						query_insert:setString(5, admin_id)
+					if adminId then
+						queryInsert:setString(5, adminId)
 					else
-						query_insert:setNull(5)
+						queryInsert:setNull(5)
 					end
 
-					query_insert:setString(6, "active")
-					query_insert:setNumber(7, case_id)
+					queryInsert:setString(6, "active")
+					queryInsert:setNumber(7, caseId)
 
-					query_insert:start()
+					queryInsert:start()
 
-					kate[tag_plural][id].case_id = case_id
+					kate[tagPlural][targetId].case_id = caseId
 				end
 
 				query_select:start()
@@ -83,104 +83,104 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 		end
 
 		do
-			local pl = kate.FindPlayer(id)
+			local pl = kate.FindPlayer(targetId)
 
 			if IsValid(pl) then
-				pl:SetNetVar(tag_lower, expire_time)
+				pl:SetNetVar(tagLower, expireTime)
 			end
 		end
 
 		do
-			kate[tag_plural][id].reason = reason
-			kate[tag_plural][id].expire_time = expire_time
-			kate[tag_plural][id].admin_id = admin_id
-			kate[tag_plural][id][tag_lower .. "_time"] = now
+			kate[tagPlural][targetId].reason = blockReason
+			kate[tagPlural][targetId].expire_time = expireTime
+			kate[tagPlural][targetId].admin_id = adminId
+			kate[tagPlural][targetId][tagLower .. "_time"] = unixNow
 		end
 
-		query:start()
+		querySelect:start()
 	end
 
-	kate["Un" .. tag_lower] = function(id, reason, admin_id)
+	kate["Un" .. tagLower] = function(targetId, unblockReason, adminId)
 		local db = kate.Data.DB
 
 		if not db then
 			return
 		end
 
-		id = kate.SteamIDTo64(id)
+		targetId = kate.SteamIDTo64(targetId)
 
-		local query = db:prepare("SELECT * FROM `" .. tag_sql .. "` WHERE steamid = ? AND expired = ? LIMIT 1")
-		query:setString(1, id)
-		query:setString(2, "active")
+		local querySelect = db:prepare(string.format("SELECT * FROM `%s` WHERE steamid = ? AND expired = ? LIMIT 1", tagSQL))
+		querySelect:setString(1, targetId)
+		querySelect:setString(2, "active")
 
-		query.onSuccess = function(_, data)
+		querySelect.onSuccess = function(_, data)
 			if not data[1] then
 				return
 			end
 
-			local query_update = db:prepare("UPDATE `" .. tag_sql .. "` SET expired = ?, admin_steamid = ?, expire_time = ? WHERE steamid = ? AND case_id = ? LIMIT 1")
-			query_update:setString(1, reason or "time out")
-			query_update:setString(2, admin_id or data[1].admin_steamid)
-			query_update:setNumber(3, os.time())
-			query_update:setString(4, id)
-			query_update:setNumber(5, data[1].case_id)
-			query_update:start()
+			local queryUpdate = db:prepare(string.format("UPDATE `%s` SET expired = ?, admin_steamid = ?, expire_time = ? WHERE steamid = ? AND case_id = ? LIMIT 1", tagSQL))
+			queryUpdate:setString(1, unblockReason or "time out")
+			queryUpdate:setString(2, adminId or data[1].admin_steamid)
+			queryUpdate:setNumber(3, os.time())
+			queryUpdate:setString(4, targetId)
+			queryUpdate:setNumber(5, data[1].case_id)
+			queryUpdate:start()
 
-			kate[tag_plural][id] = nil
+			kate[tagPlural][targetId] = nil
 		end
 
 		do
-			local pl = kate.FindPlayer(id)
+			local pl = kate.FindPlayer(targetId)
 
 			if IsValid(pl) then
-				pl:SetNetVar(tag_lower, nil)
+				pl:SetNetVar(tagLower, nil)
 			end
 		end
 
-		query:start()
+		querySelect:start()
 	end
 
-	kate["Update" .. tag_plural] = function()
+	kate["Update" .. tagPlural] = function()
 		local db = kate.Data.DB
 
 		if not db then
 			return
 		end
 
-		kate[tag_plural] = {}
+		kate[tagPlural] = {}
 
-		local query = db:prepare("SELECT * FROM `" .. tag_sql .. "` WHERE expired = ?")
-		query:setString(1, "active")
+		local querySelect = db:prepare(string.format("SELECT * FROM `%s` WHERE expired = ?", tagSQL))
+		querySelect:setString(1, "active")
 
-		query.onSuccess = function(_, data)
+		querySelect.onSuccess = function(_, data)
 			for _, punished in ipairs(data) do
 				local id = punished.steamid
 				local time = punished.expire_time
 
 				do
-					kate[tag_plural][id] = {}
-					kate[tag_plural][id].expire_time = time
-					kate[tag_plural][id].reason = punished.reason
-					kate[tag_plural][id].admin_id = punished.admin_id
-					kate[tag_plural][id].case_id = punished.case_id
-					kate[tag_plural][id][tag_lower .. "_time"] = punished[tag_lower .. "_time"]
+					kate[tagPlural][id] = {}
+					kate[tagPlural][id].expire_time = time
+					kate[tagPlural][id].reason = punished.reason
+					kate[tagPlural][id].admin_id = punished.admin_id
+					kate[tagPlural][id].case_id = punished.case_id
+					kate[tagPlural][id][tagLower .. "_time"] = punished[tagLower .. "_time"]
 				end
 
 				do
 					local pl = kate.FindPlayer(kate.SteamIDFrom64(id))
 
 					if IsValid(pl) then
-						pl:SetNetVar(tag_lower, time)
+						pl:SetNetVar(tagLower, time)
 					end
 				end
 			end
 		end
 
-		query:start()
+		querySelect:start()
 	end
 
-	timer.Simple(0, kate["Update" .. tag_plural])
-	timer.Create("Kate Update " .. tag_plural, 180, 0, kate["Update" .. tag_plural]) -- in case the database is used on several servers at time
+	timer.Simple(0, kate["Update" .. tagPlural])
+	timer.Create("Kate Update " .. tagPlural, 180, 0, kate["Update" .. tagPlural]) -- in case the database is used on several servers at time
 end
 
 hook.Add("PlayerCanHearPlayersVoice", "Kate Gag", function(listener, talker)

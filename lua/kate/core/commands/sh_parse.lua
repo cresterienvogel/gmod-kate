@@ -1,14 +1,16 @@
 -- https://github.com/CapsAdmin/fast_addons/blob/8e2292711355e1fde14a71afe0f5a3bf598fe35a/lua/notagain/aowl/init.lua#L153
 
-local s_pattern = "[\"|']"
-local a_pattern	= "[ ]"
-local e_pattern	= "[\\]"
+local stringPattern = "[\"|']"
+local argSepPattern = "[ ]"
+local escapePattern = "[\\]"
 
 function kate.ParseArgs(str)
 	local ret = {}
-	local instr = false
-	local strchar = ""
+
+	local strChar = ""
 	local chr = ""
+
+	local inStr = false
 	local escaped = false
 
 	for i = 1, #str do
@@ -20,17 +22,17 @@ function kate.ParseArgs(str)
 			continue
 		end
 
-		if string.find(char, s_pattern) and (not instr) and (not escaped) then
-			instr = true
-			strchar = char
-		elseif string.find(char, e_pattern) then
+		if string.find(char, stringPattern) and (not inStr) and (not escaped) then
+			inStr = true
+			strChar = char
+		elseif string.find(char, escapePattern) then
 			escaped = true
 			continue
-		elseif instr and (char == strchar) then
+		elseif inStr and (char == strChar) then
 			ret[#ret + 1] = string.Trim(chr)
 			chr = ""
-			instr = false
-		elseif string.find(char, a_pattern) and (not instr) then
+			inStr = false
+		elseif string.find(char, argSepPattern) and (not inStr) then
 			if chr ~= "" then
 				ret[#ret + 1] = chr
 				chr = ""

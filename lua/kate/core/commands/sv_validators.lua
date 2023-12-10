@@ -1,47 +1,47 @@
 kate.Commands.Validators = {
 	["Target"] = function(pl, cmd, index, value, args)
 		local info = kate.SteamIDTo64(value)
-		local target = kate.FindPlayer(info)
-		local stored = kate.Commands.Stored[cmd]
+		local targetEntity = kate.FindPlayer(info)
+		local storedCommand = kate.Commands.Stored[cmd]
 
 		if not info then
 			return false, "Invalid target"
 		end
 
-		if (not stored:GetSelfRun()) and IsValid(target) and (target == pl) then
-			return false, "You can't use " .. stored:GetTitle() .. " on yourself"
+		if (not storedCommand:GetSelfRun()) and IsValid(targetEntity) and (targetEntity == pl) then
+			return false, "You can't use " .. storedCommand:GetTitle() .. " on yourself"
 		end
 
-		if (stored:GetOnlineTarget() == true) and (not IsValid(target)) then
+		if (storedCommand:GetOnlineTarget() == true) and (not IsValid(targetEntity)) then
 			return false, "Target is offline"
 		end
 
-		return target or info
+		return targetEntity or info
 	end,
 	["Rank"] = function(pl, cmd, index, value, args)
-		local rank_stored = kate.Ranks.Stored[value]
-		local cmd_stored = kate.Commands.Stored[cmd]
+		local storedRank = kate.Ranks.Stored[value]
+		local storedCommand = kate.Commands.Stored[cmd]
 
-		if not rank_stored then
+		if not storedRank then
 			return false, "Invalid rank"
 		end
 
-		local target_index = table.KeyFromValue(cmd_stored:GetArgs(), "Target")
-		local target = kate.FindPlayer(args[target_index])
+		local targetArgId = table.KeyFromValue(storedCommand:GetArgs(), "Target")
+		local targetEntity = kate.FindPlayer(args[targetArgId])
 
 		if not IsValid(pl) then
 			goto success
 		end
 
-		if pl:GetImmunity() <= rank_stored:GetImmunity() then
+		if pl:GetImmunity() <= storedRank:GetImmunity() then
 			return false, "Rank's immunity is higher or equal to yours"
 		end
 
-		if not IsValid(target) then
+		if not IsValid(targetEntity) then
 			goto check
 		end
 
-		if pl:GetImmunity() <= target:GetImmunity() then
+		if pl:GetImmunity() <= targetEntity:GetImmunity() then
 			return false, "Targets's immunity is higher or equal to yours"
 		end
 
@@ -54,10 +54,10 @@ kate.Commands.Validators = {
 		return value
 	end,
 	["Expire Rank"] = function(pl, cmd, index, value, args)
-		local expire_rank_stored = kate.Ranks.Stored[value]
-		local cmd_stored = kate.Commands.Stored[cmd]
+		local storedExpireRank = kate.Ranks.Stored[value]
+		local storedCommand = kate.Commands.Stored[cmd]
 
-		if not expire_rank_stored then
+		if not storedExpireRank then
 			return false, "Invalid expire rank"
 		end
 
@@ -65,17 +65,17 @@ kate.Commands.Validators = {
 			goto issued
 		end
 
-		if pl:GetImmunity() <= expire_rank_stored:GetImmunity() then
+		if pl:GetImmunity() <= storedExpireRank:GetImmunity() then
 			return false, "Expire rank's immunity is higher or equal to yours"
 		end
 
 		::issued::
 		do
-			local issued_rank_index = table.KeyFromValue(cmd_stored:GetArgs(), "Rank")
-			local issued_rank_name = args[issued_rank_index]
-			local issued_rank_stored = kate.Ranks.Stored[issued_rank_name]
+			local issuedRankId = table.KeyFromValue(storedCommand:GetArgs(), "Rank")
+			local issuedRankName = args[issuedRankId]
+			local issuedRankStored = kate.Ranks.Stored[issuedRankName]
 
-			if issued_rank_stored:GetImmunity() <= expire_rank_stored:GetImmunity() then
+			if issuedRankStored:GetImmunity() <= storedExpireRank:GetImmunity() then
 				return false, "Currently issued rank's immunity is higher or equal to expire's rank"
 			end
 		end
@@ -109,9 +109,9 @@ kate.Commands.Validators = {
 	end,
 	["Time"] = function(pl, cmd, index, value, args)
 		local valid, time = kate.FormatTime(value)
-		local stored = kate.Commands.Stored[cmd]
+		local storedCommand = kate.Commands.Stored[cmd]
 
-		if table.HasValue(stored:GetArgs(), "Rank") and valid and (time < 300) then
+		if table.HasValue(storedCommand:GetArgs(), "Rank") and valid and (time < 300) then
 			return false, "Expiration time shouln't be less than 5 minutes"
 		end
 
@@ -140,12 +140,12 @@ kate.Commands.Validators = {
 		return false, "Map not found"
 	end,
 	["AmmoType"] = function(pl, cmd, index, value, args)
-		local ammo_id = tonumber(value)
-		local ammo_types = game.GetAmmoTypes()
+		local ammoId = tonumber(value)
+		local ammoTypes = game.GetAmmoTypes()
 
-		if not ammo_id then
-			for id, ammotype in ipairs(ammo_types) do
-				if string.find(ammotype, value) then
+		if not ammoId then
+			for id, ammoType in ipairs(ammoTypes) do
+				if string.find(ammoType, value) then
 					return id
 				end
 			end
@@ -153,8 +153,8 @@ kate.Commands.Validators = {
 			return false, "Invalid ammotype"
 		end
 
-		if ammo_types[ammo_id] then
-			return ammo_id
+		if ammoTypes[ammoId] then
+			return ammoId
 		end
 
 		return false, "Invalid ammotype"

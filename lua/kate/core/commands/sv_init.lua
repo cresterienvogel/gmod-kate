@@ -16,12 +16,12 @@ function kate.Commands.Run(pl, cmd, args)
 	local collected = {}
 	local formatted = {}
 
-	local command_args = stored:GetArgs()
-	local optional_args = stored:GetOptionalArgs()
+	local commandArgs = stored:GetArgs()
+	local optionalArgs = stored:GetOptionalArgs()
 
 	-- check if something is uncertain
-	for k, arg in ipairs(command_args) do
-		if table.HasValue(optional_args, arg) then
+	for k, arg in ipairs(commandArgs) do
+		if table.HasValue(optionalArgs, arg) then
 			continue
 		end
 
@@ -36,10 +36,10 @@ function kate.Commands.Run(pl, cmd, args)
 	-- validate
 	for k, arg in ipairs(args) do
 		local value, fail
-		local arg_type = command_args[k]
+		local argType = commandArgs[k]
 
-		if kate.Commands.Validators[arg_type] then
-			value, fail = kate.Commands.Validators[arg_type](pl, cmd, k, arg, args)
+		if kate.Commands.Validators[argType] then
+			value, fail = kate.Commands.Validators[argType](pl, cmd, k, arg, args)
 
 			if not value then
 				if fail then
@@ -53,7 +53,7 @@ function kate.Commands.Run(pl, cmd, args)
 			collected[k] = value
 		else
 			if (not arg) or (arg == "") then
-				local msg = arg_type .. " not found"
+				local msg = argType .. " not found"
 				kate.Message(pl, 2, msg)
 
 				return false, msg
@@ -68,7 +68,7 @@ function kate.Commands.Run(pl, cmd, args)
 
 	-- format collected args
 	for k, arg in ipairs(collected) do
-		local edited = string.Trim(command_args[k])
+		local edited = string.Trim(commandArgs[k])
 		edited = string.lower(edited)
 		edited = string.Replace(edited, " ", "_")
 

@@ -73,25 +73,25 @@ function PANEL:Init()
 		end
 
 		vbar.Think = function(s)
-			local frame_time = RealFrameTime() * 14
-			local scroll_target = s.ScrollTarget
+			local frameTime = RealFrameTime() * 14
+			local scrollTarget = s.ScrollTarget
 
 			s.Scroll = Lerp(
-				frame_time,
+				frameTime,
 				s.Scroll,
-				scroll_target
+				scrollTarget
 			)
 
 			if not s.Dragging then
 				s.ScrollTarget = Lerp(
-					frame_time,
-					scroll_target,
-					math.Clamp(scroll_target, 0, s.CanvasSize)
+					frameTime,
+					scrollTarget,
+					math.Clamp(scrollTarget, 0, s.CanvasSize)
 				)
 			end
 
 			s.ScrollSpeed = Lerp(
-				frame_time / 14,
+				frameTime / 14,
 				s.ScrollSpeed,
 				self.Speed
 			)
@@ -99,13 +99,13 @@ function PANEL:Init()
 
 		vbar.PerformLayout = function(s, w, h)
 			local scroll = s:GetScroll() / s.CanvasSize
-			local bar_size = math.max(s:BarScale() * h, 10)
+			local barSize = math.max(s:BarScale() * h, 10)
 
-			local track = (h - bar_size) + 1
+			local track = (h - barSize) + 1
 			scroll = scroll * track
 
 			s.btnGrip.y = scroll
-			s.btnGrip:SetSize(w, bar_size)
+			s.btnGrip:SetSize(w, barSize)
 		end
 	end
 end

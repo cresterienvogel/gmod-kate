@@ -4,10 +4,10 @@ do
 		local time = args.time
 		local reason = args.reason
 
-		local admin_name = IsValid(pl) and pl:Name() or "Console"
-		local admin_id = IsValid(pl) and pl:SteamID64() or "None"
+		local adminName = IsValid(pl) and pl:Name() or "Console"
+		local adminId = IsValid(pl) and pl:SteamID64() or "None"
 
-		kate.Ban(target, time, reason, admin_name, admin_id)
+		kate.Ban(target, time, reason, adminName, adminId)
 
 		do
 			local msg = string.format("%s has banned %s for %s: %s",
@@ -33,9 +33,9 @@ do
 		local target = args.target
 		local reason = args.reason
 
-		local admin_id = IsValid(pl) and pl:SteamID64() or "Console"
+		local adminId = IsValid(pl) and pl:SteamID64() or "Console"
 
-		kate.Unban(target, reason, admin_id)
+		kate.Unban(target, reason, adminId)
 
 		do
 			local msg = string.format("%s has unbanned %s: %s",

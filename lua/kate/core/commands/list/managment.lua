@@ -29,10 +29,10 @@ do
 
 		local target = args.target
 		local rank = args.rank
-		local time = args.time
-		local exp_in = args.expire_rank
+		local expireTime = args.time
+		local expireRank = args.expire_rank
 
-		kate.Ranks.Set(target, rank, time, exp_in)
+		kate.Ranks.Set(target, rank, expireTime, expireRank)
 
 		do
 			local msg = "%s has set a %s rank to %s"
@@ -41,7 +41,7 @@ do
 				msg = msg .. " with expiration in %s"
 			end
 
-			if exp_in then
+			if expireRank then
 				msg = msg .. " to %s"
 			end
 
@@ -49,8 +49,8 @@ do
 				kate.GetExecuter(pl),
 				stored[rank]:GetTitle(),
 				kate.GetTarget(target),
-				time and kate.ConvertTime(time) or nil,
-				stored[exp_in] and stored[exp_in]:GetTitle() or nil
+				expireTime and kate.ConvertTime(expireTime) or nil,
+				stored[expireRank] and stored[expireRank]:GetTitle() or nil
 			)
 
 			kate.Print(msg)

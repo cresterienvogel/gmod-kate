@@ -1,4 +1,4 @@
-local content_blacklist = {
+local blacklist = {
 	[CONTENTS_SOLID] = true,
 	[CONTENTS_MOVEABLE] = true,
 	[CONTENTS_LADDER] = true,
@@ -10,7 +10,7 @@ local content_blacklist = {
 function kate.IsPosEmpty(vector, ignore)
 	ignore = ignore or {}
 
-	local point, a = util.PointContents(vector), not content_blacklist[point]
+	local point, a = util.PointContents(vector), not blacklist[point]
 
 	if not a then
 		return false

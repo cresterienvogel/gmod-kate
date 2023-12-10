@@ -40,7 +40,7 @@ function PANEL:Build()
 
 		entry.Think = function(s)
 			local val = s:GetValue()
-			self.Data[i] = val ~= "" and val or nil
+			self.Data[i] = (val ~= "") and val or nil
 		end
 	end
 

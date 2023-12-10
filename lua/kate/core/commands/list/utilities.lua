@@ -119,13 +119,13 @@ end
 do
 	kate.Commands:Register("cloak", function(self, pl, args)
 		local target = args.target or pl
-		local should_cloak = not target:GetCloak()
-		local toggle = should_cloak and "enabled" or "disabled"
+		local shouldCloak = not target:GetCloak()
+		local toggle = shouldCloak and "enabled" or "disabled"
 
-		target:SetCloak(should_cloak)
+		target:SetCloak(shouldCloak)
 
-		kate.CloakPlayer(pl, should_cloak)
-		kate.CloakWeapons(pl, should_cloak)
+		kate.CloakPlayer(pl, shouldCloak)
+		kate.CloakWeapons(pl, shouldCloak)
 
 		do
 			kate.Message(pl, 1, string.format("You've %s cloak to %s", toggle, kate.GetTarget(target)))
@@ -150,16 +150,16 @@ do
 		local amt = args.amount or 100
 		local ammotype = args.ammotype
 
-		local ammotype_given
+		local ammoTypeGiven
 
 		if ammotype then
-			ammotype_given = game.GetAmmoTypes()[ammotype]
+			ammoTypeGiven = game.GetAmmoTypes()[ammotype]
 
 			pl:GiveAmmo(amt, ammotype, true)
 
 			goto log
 		else
-			ammotype_given = "every ammotype registered"
+			ammoTypeGiven = "every ammotype registered"
 
 			for ammo in pairs(game.GetAmmoTypes()) do
 				pl:GiveAmmo(amt, ammo, true)
@@ -173,7 +173,7 @@ do
 			local msg = string.format("%s has added %s ammo of %s to %s",
 				kate.GetExecuter(pl),
 				amt,
-				ammotype_given,
+				ammoTypeGiven,
 				kate.GetTarget(target)
 			)
 

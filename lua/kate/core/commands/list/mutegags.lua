@@ -14,9 +14,9 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 			local time = args.time
 			local reason = args.reason
 
-			local admin_id = IsValid(pl) and pl:SteamID64() or "Console"
+			local adminId = IsValid(pl) and pl:SteamID64() or "Console"
 
-			kate[tag](target, time, reason, admin_id)
+			kate[tag](target, time, reason, adminId)
 
 			do
 				local msg = string.format("%s has run %s on %s for %s with reason %s",
@@ -24,7 +24,7 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 					tag_lower,
 					kate.GetTarget(target),
 					kate.ConvertTime(time),
-					reason
+					blockReason
 				)
 
 				kate.Print(msg)
@@ -43,9 +43,9 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 			local target = args.target
 			local reason = args.reason
 
-			local admin_id = IsValid(pl) and pl:SteamID64() or "Console"
+			local adminId = IsValid(pl) and pl:SteamID64() or "Console"
 
-			kate["Un" .. tag_lower](target, reason, admin_id)
+			kate["Un" .. tag_lower](target, reason, adminId)
 
 			do
 				local msg = string.format("%s has run un%s on %s: %s",

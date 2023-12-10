@@ -3,25 +3,25 @@ if SERVER then
 end
 
 if CLIENT then
-	local frame, frame_query, frame_player
+	local frame, frameQuery, framePlayer
 	local showQuery, showPlayers
 
 	showQuery = function(command, queries, pl)
-		if IsValid(frame_query) then
-			frame_query:Close()
+		if IsValid(frameQuery) then
+			frameQuery:Close()
 		end
 
-		local parent = IsValid(frame_player) and frame_player or frame
+		local parent = IsValid(framePlayer) and framePlayer or frame
 
-		frame_query = vgui.Create("KQuery")
-		frame_query:SetTitle("Fill args for " .. kate.Commands.Stored[command]:GetTitle())
-		frame_query:SetSize(ScrW() / 3.5, ScrH() / 3.5)
-		frame_query:SetPos(parent:GetPos())
-		frame_query:MoveTo(parent:GetX() + frame_query:GetWide() + 16, parent:GetY(), 0.1)
+		frameQuery = vgui.Create("KQuery")
+		frameQuery:SetTitle(string.format("Fill args for %s", kate.Commands.Stored[command]:GetTitle()))
+		frameQuery:SetSize(ScrW() / 3.5, ScrH() / 3.5)
+		frameQuery:SetPos(parent:GetPos())
+		frameQuery:MoveTo(parent:GetX() + frameQuery:GetWide() + 16, parent:GetY(), 0.1)
 
-		frame_query:SetQueries(queries)
+		frameQuery:SetQueries(queries)
 
-		frame_query:SetFunction(function()
+		frameQuery:SetFunction(function()
 			local args = {"kate", command}
 
 			if pl then
@@ -32,16 +32,16 @@ if CLIENT then
 				end
 			end
 
-			for query, val in pairs(frame_query:GetQueries()) do
+			for query, val in pairs(frameQuery:GetQueries()) do
 				args[#args + 1] = val
 			end
 
 			RunConsoleCommand(unpack(args))
 		end)
 
-		frame_query:Build()
+		frameQuery:Build()
 
-		frame_query.Close = function(s)
+		frameQuery.Close = function(s)
 			s:AlphaTo(0, 0.05)
 			s:MoveTo(frame:GetX(), parent:GetY(), 0.1, 0, -1, function()
 				s:Remove()
@@ -50,42 +50,42 @@ if CLIENT then
 	end
 
 	showPlayers = function(data)
-		if IsValid(frame_player) then
-			frame_player:Close()
+		if IsValid(framePlayer) then
+			framePlayer:Close()
 		end
 
-		if IsValid(frame_query) then
-			frame_query:Close()
+		if IsValid(frameQuery) then
+			frameQuery:Close()
 		end
 
 		local name = data:GetName()
 
-		frame_player = vgui.Create("DFrame")
-		frame_player:SetTitle("Choose player for " .. data:GetTitle())
-		frame_player:SetSize(ScrW() / 3.5, ScrH() / 3.5)
-		frame_player:SetPos(frame:GetPos())
-		frame_player:MoveTo(frame_player:GetX() + frame_player:GetWide() + 16, frame_player:GetY(), 0.1)
-		frame_player:MakePopup(true)
+		framePlayer = vgui.Create("DFrame")
+		framePlayer:SetTitle(string.format("Choose player for %s", data:GetTitle()))
+		framePlayer:SetSize(ScrW() / 3.5, ScrH() / 3.5)
+		framePlayer:SetPos(frame:GetPos())
+		framePlayer:MoveTo(framePlayer:GetX() + framePlayer:GetWide() + 16, framePlayer:GetY(), 0.1)
+		framePlayer:MakePopup(true)
 
-		frame_player.Close = function(s)
-			if IsValid(frame_query) then
-				frame_query:Close()
+		framePlayer.Close = function(s)
+			if IsValid(frameQuery) then
+				frameQuery:Close()
 			end
 
 			s:AlphaTo(0, 0.05)
-			s:MoveTo(frame:GetX(), frame_player:GetY(), 0.1, 0, -1, function()
+			s:MoveTo(frame:GetX(), framePlayer:GetY(), 0.1, 0, -1, function()
 				s:Remove()
 			end)
 		end
 
-		local fill = vgui.Create("DPanel", frame_player)
+		local fill = vgui.Create("DPanel", framePlayer)
 		fill:Dock(FILL)
 		fill:DockMargin(2, 2, 2, 2)
 
 		local scroll = vgui.Create("KScrollPanel", fill)
 		scroll:Dock(LEFT)
 		scroll:DockMargin(2, 2, 2, 2)
-		scroll:SetWide(frame_player:GetWide())
+		scroll:SetWide(framePlayer:GetWide())
 
 		local layout = vgui.Create("DIconLayout", scroll)
 		layout:Dock(FILL)
@@ -98,11 +98,11 @@ if CLIENT then
 		for _, pl in ipairs(player.GetAll()) do
 			surface.SetFont("Default")
 			local text = pl:Name()
-			local text_w = surface.GetTextSize(text)
+			local textWidth = surface.GetTextSize(text)
 
 			local act = vgui.Create("DButton", layout)
 			act:SetText(text)
-			act:SetSize(text_w + 12, 24)
+			act:SetSize(textWidth + 12, 24)
 			act:SetFont("Default")
 			act:SetTooltip(pl:GetTitle())
 
@@ -130,8 +130,8 @@ if CLIENT then
 		frame:MakePopup(true)
 
 		frame.Close = function(s)
-			if IsValid(frame_player) then
-				frame_player:Close()
+			if IsValid(framePlayer) then
+				framePlayer:Close()
 			end
 
 			s:AlphaTo(0, 0.05)
@@ -183,7 +183,7 @@ if CLIENT then
 					act:SetText(data:GetTitle())
 					act:SetSize(frame:GetWide() / 4 - 5, 24)
 					act:SetFont("Default")
-					act:SetTooltip("kate " .. cmd)
+					act:SetTooltip(string.format("kate %s", cmd))
 
 					if icon then
 						act:SetIcon(icon)
