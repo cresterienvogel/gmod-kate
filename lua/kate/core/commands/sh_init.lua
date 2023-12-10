@@ -161,7 +161,6 @@ concommand.Add(
 		cmd = string.Trim(string.Explode(" ", str)[2])
 
 		local stored, args = kate.Commands.Stored[cmd], {}
-
 		if not stored then
 			return
 		end

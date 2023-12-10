@@ -91,7 +91,6 @@ kate.Commands.Validators = {
 	end,
 	["Amount"] = function(pl, cmd, index, value, args)
 		local info = tonumber(value)
-
 		if info then
 			return info
 		end
@@ -100,7 +99,6 @@ kate.Commands.Validators = {
 	end,
 	["Unsigned Amount"] = function(pl, cmd, index, value, args)
 		local info = tonumber(value)
-
 		if info and (info > 0) then
 			return info
 		end
@@ -109,12 +107,6 @@ kate.Commands.Validators = {
 	end,
 	["Time"] = function(pl, cmd, index, value, args)
 		local valid, time = kate.FormatTime(value)
-		local storedCommand = kate.Commands.Stored[cmd]
-
-		if table.HasValue(storedCommand:GetArgs(), "Rank") and valid and (time < 300) then
-			return false, "Expiration time shouln't be less than 5 minutes"
-		end
-
 		if valid then
 			return time
 		end

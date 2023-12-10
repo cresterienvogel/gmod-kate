@@ -7,7 +7,6 @@ meta.__index = meta
 do
 	function meta:SetImmunity(amt)
 		self.Immunity = amt
-
 		return self
 	end
 
@@ -17,7 +16,6 @@ do
 
 	function meta:SetTitle(title)
 		self.Title = title
-
 		return self
 	end
 
@@ -45,7 +43,6 @@ function kate.Ranks:RegisterMeta(special)
 
 	do
 		local rank = kate.Ranks.Stored[special]
-
 		if not rank then
 			return
 		end
@@ -109,6 +106,10 @@ do
 	kate.Ranks:Register("moderator")
 		:SetTitle("Moderator")
 		:SetImmunity(1000)
+
+	kate.Ranks:Register("user")
+		:SetTitle("User")
+		:SetImmunity(0)
 
 	kate.Ranks:RegisterMeta()
 end

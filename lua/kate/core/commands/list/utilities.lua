@@ -123,9 +123,7 @@ do
 		local toggle = shouldCloak and "enabled" or "disabled"
 
 		target:SetCloak(shouldCloak)
-
 		kate.CloakPlayer(pl, shouldCloak)
-		kate.CloakWeapons(pl, shouldCloak)
 
 		do
 			kate.Message(pl, 1, string.format("You've %s cloak to %s", toggle, kate.GetTarget(target)))

@@ -2,80 +2,83 @@ kate.Bans = kate.Bans or {}
 
 function kate.Ban(targetId, unbanTime, banReason, adminName, adminId)
 	local db = kate.Data.DB
-
 	if not db then
 		return
 	end
 
-	local unixNow = os.time()
-
 	targetId = kate.SteamIDTo64(targetId)
+	if not targetId then
+		return
+	end
+
 	adminName = adminName or "Console"
+
+	local unixNow = os.time()
 	unbanTime = (unbanTime > 0) and (unixNow + unbanTime) or 0
 
-	kate.Bans[targetId] = {}
+	kate.Bans[targetId] = {} -- cache
 
-	local querySelect = db:prepare("SELECT * FROM `kate_bans` WHERE steamid = ? AND expired = ? LIMIT 1")
-	querySelect:setString(1, targetId)
-	querySelect:setString(2, "active")
+	do
+		local querySelect = db:prepare("SELECT * FROM `kate_bans` WHERE steamid = ? AND expired = ? LIMIT 1")
+			querySelect:setString(1, targetId)
+			querySelect:setString(2, "active")
 
-	querySelect.onSuccess = function(_, data)
-		if not data[1] then
-			goto newBan
-		end
-
-		do
-			local queryUpdate = db:prepare("UPDATE `kate_bans` SET admin_name = ?, admin_steamid = ?, unban_time = ?, reason = ? WHERE steamid = ? AND expired = ? AND case_id = ? LIMIT 1")
-			queryUpdate:setString(1, adminName)
-
-			if adminId then
-				queryUpdate:setString(2, adminId)
-			else
-				queryUpdate:setNull(2)
-			end
-
-			queryUpdate:setNumber(3, unbanTime)
-			queryUpdate:setString(4, banReason)
-			queryUpdate:setString(5, targetId)
-			queryUpdate:setString(6, "active")
-			queryUpdate:setNumber(7, data[1].case_id)
-
-			queryUpdate:start()
-
-			return
-		end
-
-		::newBan::
-		do
-			local queryCase = db:query("SELECT COUNT(`case_id`) AS `case_id` FROM `kate_bans`")
-
-			queryCase.onSuccess = function(_, cases)
-				cases = cases[1].case_id or 0
-				local newCase = cases + 1
-
-				local queryInsert = db:prepare("INSERT INTO `kate_bans` (admin_name, admin_steamid, steamid, ban_time, unban_time, reason, expired, case_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-				queryInsert:setString(1, adminName)
-
-				if adminId then
-					queryInsert:setString(2, adminId)
-				else
-					queryInsert:setNull(2)
+			querySelect.onSuccess = function(_, data)
+				if not data[1] then
+					goto newBan
 				end
 
-				queryInsert:setString(3, targetId)
-				queryInsert:setNumber(4, unixNow)
-				queryInsert:setNumber(5, unbanTime)
-				queryInsert:setString(6, banReason)
-				queryInsert:setString(7, "active")
-				queryInsert:setNumber(8, newCase)
+				do
+					local queryUpdate = db:prepare("UPDATE `kate_bans` SET admin_name = ?, admin_steamid = ?, unban_time = ?, reason = ? WHERE steamid = ? AND expired = ? AND case_id = ? LIMIT 1")
+						queryUpdate:setString(1, adminName)
 
-				queryInsert:start()
+						if adminId then
+							queryUpdate:setString(2, adminId)
+						else
+							queryUpdate:setNull(2)
+						end
 
-				kate.Bans[targetId].case_id = newCase
+						queryUpdate:setNumber(3, unbanTime)
+						queryUpdate:setString(4, banReason)
+						queryUpdate:setString(5, targetId)
+						queryUpdate:setString(6, "active")
+						queryUpdate:setNumber(7, data[1].case_id)
+					queryUpdate:start()
+
+					return
+				end
+
+				::newBan::
+				do
+					local queryCase = db:query("SELECT COUNT(`case_id`) AS `case_id` FROM `kate_bans`")
+
+					queryCase.onSuccess = function(_, cases)
+						local newCase = (cases[1].case_id or 0) + 1
+
+						local queryInsert = db:prepare("INSERT INTO `kate_bans` (admin_name, admin_steamid, steamid, ban_time, unban_time, reason, expired, case_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+							queryInsert:setString(1, adminName)
+
+							if adminId then
+								queryInsert:setString(2, adminId)
+							else
+								queryInsert:setNull(2)
+							end
+
+							queryInsert:setString(3, targetId)
+							queryInsert:setNumber(4, unixNow)
+							queryInsert:setNumber(5, unbanTime)
+							queryInsert:setString(6, banReason)
+							queryInsert:setString(7, "active")
+							queryInsert:setNumber(8, newCase)
+						queryInsert:start()
+
+						kate.Bans[targetId].case_id = newCase
+					end
+
+					queryCase:start()
+				end
 			end
-
-			queryCase:start()
-		end
+		querySelect:start()
 	end
 
 	game.KickID(kate.SteamIDFrom64(targetId), banReason)
@@ -87,45 +90,45 @@ function kate.Ban(targetId, unbanTime, banReason, adminName, adminId)
 		kate.Bans[targetId].unban_time = unbanTime
 		kate.Bans[targetId].reason = banReason
 	end
-
-	querySelect:start()
 end
 
 function kate.Unban(targetId, unbanReason, adminId)
 	local db = kate.Data.DB
-
 	if not db then
 		return
 	end
 
 	targetId = kate.SteamIDTo64(targetId)
-
-	local querySelect = db:prepare("SELECT * FROM `kate_bans` WHERE steamid = ? AND expired = ? LIMIT 1")
-	querySelect:setString(1, targetId)
-	querySelect:setString(2, "active")
-
-	querySelect.onSuccess = function(_, data)
-		if not data[1] then
-			return
-		end
-
-		local queryUpdate = db:prepare("UPDATE `kate_bans` SET expired = ?, admin_steamid = ?, unban_time = ? WHERE steamid = ? AND case_id = ? LIMIT 1")
-		queryUpdate:setString(1, unbanReason or "time out")
-		queryUpdate:setString(2, adminId or data[1].admin_steamid)
-		queryUpdate:setNumber(3, os.time())
-		queryUpdate:setString(4, targetId)
-		queryUpdate:setNumber(5, data[1].case_id)
-		queryUpdate:start()
-
-		kate.Bans[targetId] = nil
+	if not targetId then
+		return
 	end
 
+	local querySelect = db:prepare("SELECT * FROM `kate_bans` WHERE steamid = ? AND expired = ? LIMIT 1")
+		querySelect:setString(1, targetId)
+		querySelect:setString(2, "active")
+
+		querySelect.onSuccess = function(_, data)
+			if not data[1] then
+				return
+			end
+
+			data = data[1]
+
+			local queryUpdate = db:prepare("UPDATE `kate_bans` SET expired = ?, admin_steamid = ?, unban_time = ? WHERE steamid = ? AND case_id = ? LIMIT 1")
+				queryUpdate:setString(1, unbanReason or "time out")
+				queryUpdate:setString(2, adminId or data.admin_steamid)
+				queryUpdate:setNumber(3, os.time())
+				queryUpdate:setString(4, targetId)
+				queryUpdate:setNumber(5, data.case_id)
+			queryUpdate:start()
+
+			kate.Bans[targetId] = nil
+		end
 	querySelect:start()
 end
 
 function kate.UpdateBans()
 	local db = kate.Data.DB
-
 	if not db then
 		return
 	end
@@ -159,7 +162,6 @@ end
 
 hook.Add("CheckPassword", "Kate CheckPassword", function(id)
 	local cached = kate.Bans[id]
-
 	if not cached then
 		return
 	end

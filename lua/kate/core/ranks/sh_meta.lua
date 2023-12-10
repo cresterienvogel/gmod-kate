@@ -1,23 +1,23 @@
 local meta = debug.getregistry()["Player"]
 
 function meta:GetImmunity()
-	local data = kate.Ranks.Stored[self:GetUserGroup()]
-
-	if not data then
+	local storedRank = kate.Ranks.Stored[self:GetUserGroup()]
+	if not storedRank then
 		return 0
 	end
 
-	return data:GetImmunity()
+	return storedRank:GetImmunity()
 end
 
 function meta:GetTitle()
-	local data = kate.Ranks.Stored[self:GetUserGroup()]
+	local userGroup = self:GetUserGroup()
 
-	if not data then
-		return "User"
+	local storedRank = kate.Ranks.Stored[userGroup]
+	if not storedRank then
+		return userGroup
 	end
 
-	return data:GetTitle()
+	return storedRank:GetTitle()
 end
 
 function meta:GetRank() -- comfy

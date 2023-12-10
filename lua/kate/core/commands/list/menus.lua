@@ -17,15 +17,15 @@ do
 		query.onSuccess = function(_, data)
 			for i, params in pairs(data) do
 				for param, val in pairs(params) do
-					if param == "joined" then
-						data[i][param] = os.date("%d %B %Y", val)
-					end
-
-					if param == "seen" then
+					if param == "first_join" then
 						data[i][param] = os.date("%d %B %Y at %H:%M", val)
 					end
 
-					if param == "playtime" then
+					if param == "last_seen" then
+						data[i][param] = os.date("%d %B %Y at %H:%M", val)
+					end
+
+					if param == "play_time" then
 						local res = kate.ConvertTime(val)
 						data[i][param] = (res ~= "∞") and res or "less than 5 minutes"
 					end

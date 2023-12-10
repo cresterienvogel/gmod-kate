@@ -11,7 +11,6 @@ end)
 
 hook.Add("CAMI.OnUsergroupRegistered", "Kate CAMI", function(group, source)
 	local name = group.Name
-
 	if (source and source == "Kate") or kate.Ranks.Stored[name] then
 		return
 	end
@@ -24,7 +23,6 @@ end)
 
 hook.Add("CAMI.OnUsergroupUnregistered", "Kate CAMI", function(group, source)
 	local name = group.Name
-
 	if (source and source == "Kate") or (not kate.Ranks.Stored[name]) then
 		return
 	end
@@ -92,7 +90,6 @@ hook.Add("CAMI.PlayerHasAccess", "Kate CAMI", function(pl, privilege, callback, 
 		-- check other
 		do
 			local stored = kate.Ranks.Stored[privilege]
-
 			if not stored then
 				reason = "Rank not found"
 				goto done

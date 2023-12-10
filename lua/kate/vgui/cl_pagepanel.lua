@@ -153,13 +153,11 @@ function PANEL:Init()
 		-- let fields load
 		timer.Simple(0.01, function()
 			local data = self.Data
-
 			if not data then
 				return
 			end
 
 			local eg = data[1]
-
 			if not eg then
 				return
 			end
@@ -406,7 +404,6 @@ function PANEL:Build(page)
 
 		self.SearchBy.OnSelect = function(s, val)
 			local entry_val = self.TextEntry:GetValue()
-
 			if entry_val and (entry_val ~= "") then
 				self.TextEntry:SetValue(entry_val)
 				onChange(s, val)

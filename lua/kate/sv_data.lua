@@ -7,7 +7,7 @@ kate.Data = kate.Data or {}
 		kate.Data.User
 		kate.Data.Password
 		kate.Data.Table
-		kate.Data.Table
+		kate.Data.Port
 
 	to setup your custom data outside a kate addon
 	a next tick timer will save you a bit of time to adjust mysqloo.connect
@@ -52,8 +52,8 @@ kate.Data.DB = kate.Data.DB or timer.Simple(0, function()
 		s:query([[CREATE TABLE IF NOT EXISTS `kate_expirations`
 			(
 				steamid TINYTEXT,
+				temp_rank TINYTEXT,
 				expire_rank TINYTEXT,
-				expire_in TINYTEXT,
 				expire_time INT
 			)
 		]]):start()
@@ -63,9 +63,9 @@ kate.Data.DB = kate.Data.DB or timer.Simple(0, function()
 				name TEXT,
 				steamid TINYTEXT,
 				rank TINYTEXT,
-				joined INT,
-				seen INT,
-				playtime INT
+				first_join INT,
+				last_seen INT,
+				play_time INT
 			)
 		]]):start()
 

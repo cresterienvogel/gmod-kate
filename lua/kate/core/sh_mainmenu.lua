@@ -1,8 +1,6 @@
 if SERVER then
 	util.AddNetworkString("Kate Menu")
-end
-
-if CLIENT then
+else -- CLIENT
 	local frame, frameQuery, framePlayer
 	local showQuery, showPlayers
 
@@ -15,9 +13,10 @@ if CLIENT then
 
 		frameQuery = vgui.Create("KQuery")
 		frameQuery:SetTitle(string.format("Fill args for %s", kate.Commands.Stored[command]:GetTitle()))
-		frameQuery:SetSize(ScrW() / 3.5, ScrH() / 3.5)
+		frameQuery:SetSize((ScrW() / 3.5) / 2, ScrH() / 3.5)
 		frameQuery:SetPos(parent:GetPos())
-		frameQuery:MoveTo(parent:GetX() + frameQuery:GetWide() + 16, parent:GetY(), 0.1)
+		frameQuery:SetDraggable(false)
+		frameQuery:MoveTo(parent:GetX() + (frameQuery:GetWide() * 2) + 16, parent:GetY(), 0.1)
 
 		frameQuery:SetQueries(queries)
 
@@ -64,6 +63,7 @@ if CLIENT then
 		framePlayer:SetTitle(string.format("Choose player for %s", data:GetTitle()))
 		framePlayer:SetSize(ScrW() / 3.5, ScrH() / 3.5)
 		framePlayer:SetPos(frame:GetPos())
+		framePlayer:SetDraggable(false)
 		framePlayer:MoveTo(framePlayer:GetX() + framePlayer:GetWide() + 16, framePlayer:GetY(), 0.1)
 		framePlayer:MakePopup(true)
 
@@ -126,6 +126,7 @@ if CLIENT then
 		frame:SetTitle("Kate Menu")
 		frame:SetSize(ScrW() / 3.5, ScrH() / 3.5)
 		frame:SetPos(-frame:GetWide(), ScrH() / 2 - (frame:GetWide() / 2))
+		frame:SetDraggable(false)
 		frame:MoveTo(32, frame:GetY(), 0.1)
 		frame:MakePopup(true)
 

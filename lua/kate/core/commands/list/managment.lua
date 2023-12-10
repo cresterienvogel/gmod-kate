@@ -1,13 +1,11 @@
 do
 	kate.Commands:Register("pingdb", function(self, pl, args)
 		local db = kate.Data.DB
-
 		if not db then
 			return
 		end
 
 		local online = db:ping()
-
 		if not online then
 			db:connect()
 		end
@@ -25,19 +23,21 @@ end
 
 do
 	kate.Commands:Register("setrank", function(self, pl, args)
-		local stored = kate.Ranks.Stored
-
 		local target = args.target
 		local rank = args.rank
 		local expireTime = args.time
 		local expireRank = args.expire_rank
 
-		kate.Ranks.Set(target, rank, expireTime, expireRank)
+		local stored = kate.Ranks.Stored
+		local storedRank = stored[rank]
+		local storedExpireRank = stored[expireRank]
+
+		kate.Ranks.SetRank(target, rank, expireTime, expireRank)
 
 		do
 			local msg = "%s has set a %s rank to %s"
 
-			if exp then
+			if expireTime then
 				msg = msg .. " with expiration in %s"
 			end
 
@@ -47,10 +47,10 @@ do
 
 			msg = string.format(msg,
 				kate.GetExecuter(pl),
-				stored[rank]:GetTitle(),
+				storedRank:GetTitle(),
 				kate.GetTarget(target),
 				expireTime and kate.ConvertTime(expireTime) or nil,
-				stored[expireRank] and stored[expireRank]:GetTitle() or nil
+				storedExpireRank and storedExpireRank:GetTitle() or nil
 			)
 
 			kate.Print(msg)

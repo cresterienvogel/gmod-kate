@@ -3,20 +3,18 @@ function kate.RegisterMenu(name)
 
 	if SERVER then
 		util.AddNetworkString(tag)
-	end
-
-	if CLIENT then
+	else -- CLIENT
 		local frame
 
 		net.Receive(tag, function()
+			if IsValid(frame) then
+				frame:Remove()
+			end
+
 			local len = net.ReadUInt(32)
 			local data = net.ReadData(len)
 
 			data = util.JSONToTable(util.Decompress(data))
-
-			if IsValid(frame) then
-				frame:Remove()
-			end
 
 			frame = vgui.Create("KFrame")
 			frame:SetSize(ScrW() / 1.5, ScrH() / 2)

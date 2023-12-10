@@ -2,13 +2,11 @@ kate = kate or {}
 
 if SERVER then
 	require("mysqloo")
-end
-
-if CLIENT then
+else -- CLIENT
 	CreateClientConVar("kate_touchplayers", "1", true, true, "Enable/disable whether you can pick up players with physgun", 0, 1)
 end
 
-function kate.Include(f, dir, sh)
+function kate.Include(f, dir)
 	local realm = string.lower(string.Left(f, 3))
 
 	if SERVER and (realm == "sv_") then
@@ -19,7 +17,7 @@ function kate.Include(f, dir, sh)
 		else
 			include(dir .. f)
 		end
-	elseif sh and (realm == "sh_") or (not sh) then
+	else
 		if SERVER then
 			AddCSLuaFile(dir .. f)
 		end

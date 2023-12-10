@@ -100,7 +100,6 @@ function kate.FormatTime(time)
 	end
 
 	time = string.lower(time)
-
 	if time == "0" then
 		return true, 0
 	end

@@ -36,22 +36,22 @@ function PANEL:Init()
 		canvas.children = children
 	end
 
-	local vbar = self.VBar
+	local vBar = self.VBar
 
-	vbar:SetHideButtons(true)
-	vbar.btnUp:SetVisible(false)
-	vbar.btnDown:SetVisible(false)
+	vBar:SetHideButtons(true)
+	vBar.btnUp:SetVisible(false)
+	vBar.btnDown:SetVisible(false)
 
-	vbar.ScrollTarget = 0
-	vbar.ScrollSpeed = self.Speed
+	vBar.ScrollTarget = 0
+	vBar.ScrollSpeed = self.Speed
 
 	do
-		vbar.OnMouseWheeled = function(s, delta)
+		vBar.OnMouseWheeled = function(s, delta)
 			s.ScrollSpeed = s.ScrollSpeed + (RealFrameTime() * 14)
 			s:AddScroll(delta * -s.ScrollSpeed)
 		end
 
-		vbar.SetScroll = function(s, amount)
+		vBar.SetScroll = function(s, amount)
 			if not s.Enabled then
 				s.Scroll = 0
 				return
@@ -61,7 +61,7 @@ function PANEL:Init()
 			s:InvalidateLayout()
 		end
 
-		vbar.OnCursorMoved = function(s, _, y)
+		vBar.OnCursorMoved = function(s, _, y)
 			if not s.Dragging then
 				return
 			end
@@ -72,7 +72,7 @@ function PANEL:Init()
 			s.ScrollTarget = y * s.CanvasSize
 		end
 
-		vbar.Think = function(s)
+		vBar.Think = function(s)
 			local frameTime = RealFrameTime() * 14
 			local scrollTarget = s.ScrollTarget
 
@@ -97,7 +97,7 @@ function PANEL:Init()
 			)
 		end
 
-		vbar.PerformLayout = function(s, w, h)
+		vBar.PerformLayout = function(s, w, h)
 			local scroll = s:GetScroll() / s.CanvasSize
 			local barSize = math.max(s:BarScale() * h, 10)
 
@@ -120,17 +120,17 @@ function PANEL:ChildAdded()
 end
 
 function PANEL:ScrollToBottom()
-	local vbar = self.VBar
+	local vBar = self.VBar
 
-	for k, anim in pairs(vbar.m_AnimList or {}) do
-		anim:Think(vbar, 1)
-		vbar.m_AnimList[k] = nil
+	for k, anim in pairs(vBar.m_AnimList or {}) do
+		anim:Think(vBar, 1)
+		vBar.m_AnimList[k] = nil
 	end
 
 	self:InvalidateParent(true)
 	self:InvalidateChildren(true)
 
-	vbar:SetScroll(vbar.CanvasSize)
+	vBar:SetScroll(vBar.CanvasSize)
 end
 
 function PANEL:PerformLayoutInternal(w, h)
@@ -141,11 +141,11 @@ function PANEL:PerformLayoutInternal(w, h)
 
 	self:Rebuild()
 
-	local vbar = self.VBar
-	vbar:SetUp(h, canvas:GetTall())
+	local vBar = self.VBar
+	vBar:SetUp(h, canvas:GetTall())
 
-	if vbar.Enabled then
-		w = w - vbar:GetWide() - self.m_iVBarPadding
+	if vBar.Enabled then
+		w = w - vBar:GetWide() - self.m_iVBarPadding
 	end
 
 	canvas:SetWide(w)
@@ -155,17 +155,17 @@ end
 
 function PANEL:Think()
 	local canvas = self.pnlCanvas
-	local vbar = self.VBar
+	local vBar = self.VBar
 
-	if vbar.Enabled then
-		canvas.y = -vbar.Scroll
+	if vBar.Enabled then
+		canvas.y = -vBar.Scroll
 		return
 	end
 
 	canvas._y = Lerp(
 		RealFrameTime() * 14,
 		canvas._y or canvas.y,
-		self:GetFromBottom() and (self:GetTall() - canvas:GetTall()) or -vbar.Scroll
+		self:GetFromBottom() and (self:GetTall() - canvas:GetTall()) or -vBar.Scroll
 	)
 
 	canvas.y = canvas._y

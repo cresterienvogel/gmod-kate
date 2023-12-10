@@ -2,9 +2,7 @@ function kate.Commands.Run(pl, cmd, args)
 	cmd = string.lower(cmd)
 
 	local stored = kate.Commands.Stored[cmd]
-
-	-- validate command
-	if not stored then
+	if not stored then -- validate command
 		return false, "Command not found"
 	end
 
@@ -137,9 +135,7 @@ hook.Add("PlayerSay", "Kate Commands", function(pl, text)
 
 	-- cut junk
 	text = string.Trim(text)
-
-	-- it should be a command, right?
-	if text[1] ~= "!" then
+	if text[1] ~= "!" then -- it should be a command, right?
 		return
 	end
 
@@ -149,9 +145,7 @@ hook.Add("PlayerSay", "Kate Commands", function(pl, text)
 	cmd = string.lower(args[1]) -- get command
 
 	local stored = kate.Commands.Stored[cmd]
-
-	-- validate command
-	if not stored then
+	if not stored then -- validate command
 		kate.Message(pl, 2, "Command not found")
 		return
 	end

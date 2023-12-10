@@ -92,9 +92,7 @@ function nw.Register(var) -- You must always call this on both the client and se
 
 	if SERVER then
 		util.AddNetworkString(t.NetworkString)
-	end
-
-	if CLIENT then
+	else -- CLIENT
 		net.Receive(t.NetworkString, function()
 			local index, value = t:_Read()
 
@@ -287,7 +285,6 @@ if SERVER then
 		for index, _vars in pairs(data) do
 			for var, value in pairs(_vars) do
 				local ent = Entity(index)
-
 				if ((not vars[var].LocalPlayerVar) and (not vars[var].NoSync)) or (ent == pl) then
 					vars[var]:_Send(ent, value, pl)
 				end
@@ -305,7 +302,6 @@ if SERVER then
 
 	hook.Add("EntityRemoved", "nw.EntityRemoved", function(ent)
 		local index = ent:EntIndex()
-
 		if (index ~= 0) and (data[index] ~= nil) then -- For some reason this kept getting called on Entity(0), not sure why...
 			if ent:IsPlayer() then
 				net_Start("nw.PlayerRemoved")
@@ -350,7 +346,6 @@ if SERVER then
 
 	function ENTITY:SetNetVar(var, value)
 		local index = self:EntIndex()
-
 		if not data[index] then
 			data[index] = {}
 		end
