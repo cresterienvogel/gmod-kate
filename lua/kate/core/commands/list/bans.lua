@@ -17,7 +17,7 @@ do
 				reason
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)
@@ -33,9 +33,10 @@ do
 		local target = args.target
 		local reason = args.reason
 
+		local adminName = IsValid(pl) and pl:Name() or "Console"
 		local adminId = IsValid(pl) and pl:SteamID64() or "Console"
 
-		kate.Unban(target, reason, adminId)
+		kate.Unban(target, reason, adminName, adminId)
 
 		do
 			local msg = string.format("%s has unbanned %s: %s",
@@ -44,7 +45,7 @@ do
 				reason
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)
@@ -69,7 +70,7 @@ do
 				reason
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)

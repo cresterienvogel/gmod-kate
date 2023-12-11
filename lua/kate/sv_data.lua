@@ -23,7 +23,7 @@ kate.Data.DB = kate.Data.DB or timer.Simple(0, function()
 	)
 
 	db.onConnected = function(s)
-		kate.Print("Database connection successfully established")
+		kate.Print(1, "Database connection successfully established")
 
 		s:query([[CREATE TABLE IF NOT EXISTS `kate_mutes`
 			(
@@ -84,12 +84,18 @@ kate.Data.DB = kate.Data.DB or timer.Simple(0, function()
 	end
 
 	db.onConnectionFailed = function(s, err)
-		kate.Print("Database connection error:", err)
+		kate.Print(2, "Database connection error:", err)
 	end
 
 	-- for changelevel purpose
 	if not db:ping() then
 		db:connect()
+	end
+
+	-- check hibernate
+	local hibernate = GetConVar("sv_hibernate_think"):GetInt()
+	if hibernate == 0 then
+		kate.Print(2, "It's recommended to use ConVar \"sv_hibernate_think\" set on \"1\" for punishments to work properly")
 	end
 
 	kate.Data.DB = db

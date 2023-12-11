@@ -25,7 +25,10 @@ function kate.Commands.Run(pl, cmd, args)
 
 		if not args[k] then
 			local msg = string.format("%s not found", arg)
-			kate.Message(pl, 2, msg)
+
+			if IsValid(pl) then
+				kate.Message(pl, 2, msg)
+			end
 
 			return false, msg
 		end
@@ -36,12 +39,16 @@ function kate.Commands.Run(pl, cmd, args)
 		local value, fail
 		local argType = commandArgs[k]
 
-		if kate.Commands.Validators[argType] then
-			value, fail = kate.Commands.Validators[argType](pl, cmd, k, arg, args)
+		local argValidator = kate.Commands.Validators[argType]
+		if argValidator then
+			value, fail = argValidator:Validate(pl, cmd, k, arg, args)
 
 			if not value then
 				if fail then
-					kate.Message(pl, 2, fail)
+					if IsValid(pl) then
+						kate.Message(pl, 2, fail)
+					end
+
 					return false, fail
 				end
 
@@ -51,8 +58,11 @@ function kate.Commands.Run(pl, cmd, args)
 			collected[k] = value
 		else
 			if (not arg) or (arg == "") then
-				local msg = argType .. " not found"
-				kate.Message(pl, 2, msg)
+				local msg = string.format("%s not found", argType)
+
+				if IsValid(pl) then
+					kate.Message(pl, 2, msg)
+				end
 
 				return false, msg
 			end
@@ -82,11 +92,13 @@ concommand.Add("_kate", function(pl, cmd, args)
 	end
 
 	local msg = kate.GetExecuter(pl)
+	local status = 1
 
 	cmd = string.lower(args[1])
 
 	-- validate command
-	if not kate.Commands.Stored[cmd] then
+	local stored = kate.Commands.Stored[cmd]
+	if not stored then
 		kate.Message(pl, 2, "Command not found")
 		return
 	end
@@ -106,22 +118,23 @@ concommand.Add("_kate", function(pl, cmd, args)
 		args[1] = nil
 		args = table.ClearKeys(args)
 
-		local success, failure = kate.Commands.Run(pl, cmd, args)
+		local success, failReason = kate.Commands.Run(pl, cmd, args)
+		local cmdTitle = stored:GetTitle() or cmd
 
 		if not success then
-			msg = msg .. " tried executing " .. cmd .. " command with failure: " .. string.lower(failure)
+			msg, status = string.format("%s tried to execute the %s command, but failed: %s", msg, cmdTitle, string.lower(failReason)), 2
 			goto log
 		end
 
-		msg = msg .. " has executed command " .. cmd
+		msg = string.format("%s executed %s command", msg, cmdTitle)
 
 		if args[1] then
-			msg = msg .. " with args \"" .. table.concat(args, "\", \"") .. "\""
+			msg = string.format("%s with args \"%s\"", msg, table.concat(args, "\", \""))
 		end
 	end
 
 	::log::
-	kate.Print(msg)
+	kate.Print(status, msg)
 end)
 
 hook.Add("PlayerSay", "Kate Commands", function(pl, text)
@@ -130,6 +143,7 @@ hook.Add("PlayerSay", "Kate Commands", function(pl, text)
 	end
 
 	local msg = kate.GetExecuter(pl)
+	local status = 1
 
 	-- cut junk
 	text = string.Trim(text)
@@ -165,7 +179,7 @@ hook.Add("PlayerSay", "Kate Commands", function(pl, text)
 
 		-- make it e-e-e-easy
 		local params = stored:GetArgs()
-		if stored:GetSelfRun() and (params[1] == "Target") then
+		if params[1] == "Target" then
 			local arg = args[1]
 			if arg then
 				if (arg == "me") or (arg == "^") then
@@ -178,21 +192,22 @@ hook.Add("PlayerSay", "Kate Commands", function(pl, text)
 	end
 
 	do
-		local success, failure = kate.Commands.Run(pl, cmd, args)
+		local success, failReason = kate.Commands.Run(pl, cmd, args)
+		local cmdTitle = stored:GetTitle() or cmd
 
 		if not success then
-			msg = msg .. " tried executing " .. cmd .. " command with failure: " .. string.lower(failure)
+			msg, status = string.format("%s tried to execute the %s command, but failed: %s", msg, cmdTitle, string.lower(failReason)), 2
 			goto log
 		end
 
-		msg = msg .. " has executed command " .. cmd
+		msg = string.format("%s executed %s command", msg, cmdTitle)
 
 		if args[1] then
-			msg = msg .. " with args \"" .. table.concat(args, "\", \"") .. "\""
+			msg = string.format("%s with args \"%s\"", msg, table.concat(args, "\", \""))
 		end
 	end
 
 	::log::
-	kate.Print(msg)
+	kate.Print(status, msg)
 	return ""
 end)

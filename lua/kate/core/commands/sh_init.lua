@@ -4,108 +4,110 @@ kate.Commands.Stored = kate.Commands.Stored or {}
 local meta = {}
 meta.__index = meta
 
-function meta:GetName()
-	return self.Name
-end
-
-function meta:SetTitle(title)
-	self.Title = title
-	return self
-end
-
-function meta:GetTitle()
-	return self.Title
-end
-
-function meta:SetCategory(cat)
-	self.Category = cat
-	return self
-end
-
-function meta:GetCategory()
-	return self.Category
-end
-
-function meta:SetImmunity(amt)
-	self.Immunity = amt
-	return self
-end
-
-function meta:GetImmunity()
-	return self.Immunity
-end
-
-function meta:SetVisible(bool)
-	self.Visible = bool
-	return self
-end
-
-function meta:GetVisible()
-	return self.Visible
-end
-
-function meta:SetIcon(icon)
-	self.Icon = icon
-	return self
-end
-
-function meta:GetIcon()
-	return self.Icon
-end
-
-function meta:AddAlias(name)
-	name = string.lower(name)
-
-	kate.Commands.Stored[name] = table.Copy(self)
-	kate.Commands.Stored[name].IsAlias = true
-
-	return self
-end
-
-function meta:GetAlias()
-	return self.IsAlias
-end
-
-function meta:SetArgs(...)
-	for _, arg in ipairs({...}) do
-		self.Args[#self.Args + 1] = arg
+do
+	function meta:GetName()
+		return self.Name
 	end
 
-	return self
-end
-
-function meta:GetArgs()
-	return self.Args
-end
-
-function meta:SetOptionalArgs(...)
-	for _, arg in ipairs({...}) do
-		self.OptionalArgs[#self.OptionalArgs + 1] = arg
+	function meta:SetTitle(title)
+		self.Title = title
+		return self
 	end
 
-	return self
-end
+	function meta:GetTitle()
+		return self.Title
+	end
 
-function meta:GetOptionalArgs()
-	return self.OptionalArgs
-end
+	function meta:SetCategory(cat)
+		self.Category = cat
+		return self
+	end
 
-function meta:SetOnlineTarget(bool)
-	self.OnlineTarget = bool
-	return self
-end
+	function meta:GetCategory()
+		return self.Category
+	end
 
-function meta:GetOnlineTarget()
-	return self.GetOnlineTarget
-end
+	function meta:SetImmunity(amt)
+		self.Immunity = amt
+		return self
+	end
 
-function meta:SetSelfRun(bool)
-	self.SelfRun = bool
-	return self
-end
+	function meta:GetImmunity()
+		return self.Immunity
+	end
 
-function meta:GetSelfRun()
-	return self.SelfRun
+	function meta:SetVisible(bool)
+		self.Visible = bool
+		return self
+	end
+
+	function meta:GetVisible()
+		return self.Visible
+	end
+
+	function meta:SetIcon(icon)
+		self.Icon = icon
+		return self
+	end
+
+	function meta:GetIcon()
+		return self.Icon
+	end
+
+	function meta:AddAlias(name)
+		name = string.lower(name)
+
+		kate.Commands.Stored[name] = table.Copy(self)
+		kate.Commands.Stored[name].IsAlias = true
+
+		return self
+	end
+
+	function meta:GetAlias()
+		return self.IsAlias
+	end
+
+	function meta:SetArgs(...)
+		for _, arg in ipairs({...}) do
+			self.Args[#self.Args + 1] = arg
+		end
+
+		return self
+	end
+
+	function meta:GetArgs()
+		return self.Args
+	end
+
+	function meta:SetOptionalArgs(...)
+		for _, arg in ipairs({...}) do
+			self.OptionalArgs[#self.OptionalArgs + 1] = arg
+		end
+
+		return self
+	end
+
+	function meta:GetOptionalArgs()
+		return self.OptionalArgs
+	end
+
+	function meta:SetOnlineTarget(bool)
+		self.OnlineTarget = bool
+		return self
+	end
+
+	function meta:GetOnlineTarget()
+		return self.GetOnlineTarget
+	end
+
+	function meta:SetSelfRun(bool)
+		self.SelfRun = bool
+		return self
+	end
+
+	function meta:GetSelfRun()
+		return self.SelfRun
+	end
 end
 
 function kate.Commands:Register(name, callback)
@@ -141,12 +143,12 @@ concommand.Add(
 					continue
 				end
 
-				local _args = {}
+				local helpArgs = {}
 				for i, arg in ipairs(data:GetArgs()) do
-					_args[i] = "<" .. arg .. ">"
+					helpArgs[i] = "<" .. arg .. ">"
 				end
 
-				print(string.format(" %s %s", c, table.concat(_args, " ")))
+				print(string.format(" %s %s", c, table.concat(helpArgs, " ")))
 			end
 
 			return

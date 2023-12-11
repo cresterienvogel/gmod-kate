@@ -5,8 +5,10 @@ PANEL.Speed = 17
 AccessorFunc(PANEL, "m_iMaxPerPage", "MaxPerPage", FORCE_NUMBER)
 
 function PANEL:Init()
-	self.Players = {}
 	self.Page = 1
+
+	self.Pages = {}
+	self.Columns = {}
 
 	local parent = self:GetParent()
 	local wide = parent:GetWide() / 6
@@ -179,12 +181,13 @@ function PANEL:Init()
 		view:SetMultiSelect(false)
 
 		view.OnRowRightClick = function(s, id, row)
-			local dmenu = DermaMenu()
-			dmenu:SetPos(input.GetCursorPos())
+			local dMenu = DermaMenu()
+			dMenu:SetPos(input.GetCursorPos())
 
 			for i, column in ipairs(s.Columns) do
-				dmenu:AddOption("Copy " .. column.Header:GetText(), function()
-					SetClipboardText(row:GetColumnText(i))
+				dMenu:AddOption("Copy " .. column.Header:GetText(), function()
+					local pseudo = row.PseudoColumns[i]
+					SetClipboardText(pseudo and pseudo:GetValue() or row:GetColumnText(i))
 				end)
 			end
 
@@ -194,7 +197,7 @@ function PANEL:Init()
 				for _, data in pairs(options) do
 					for i, column in ipairs(s.Columns) do
 						if column.Header:GetText() == data.parsed then
-							dmenu:AddOption(data.name, function()
+							dMenu:AddOption(data.name, function()
 								data.func(row:GetColumnText(i))
 							end)
 						end
@@ -202,24 +205,24 @@ function PANEL:Init()
 				end
 			end
 
-			dmenu:Open()
+			dMenu:Open()
 		end
 
-		local vbar = view.VBar
+		local vBar = view.VBar
 
-		vbar:SetHideButtons(true)
-		vbar.btnUp:SetVisible(false)
-		vbar.btnDown:SetVisible(false)
+		vBar:SetHideButtons(true)
+		vBar.btnUp:SetVisible(false)
+		vBar.btnDown:SetVisible(false)
 
-		vbar.ScrollTarget = 0
-		vbar.ScrollSpeed = self.Speed
+		vBar.ScrollTarget = 0
+		vBar.ScrollSpeed = self.Speed
 
-		vbar.OnMouseWheeled = function(s, delta)
+		vBar.OnMouseWheeled = function(s, delta)
 			s.ScrollSpeed = s.ScrollSpeed + (RealFrameTime() * 14)
 			s:AddScroll(delta * -s.ScrollSpeed)
 		end
 
-		vbar.SetScroll = function(s, amount)
+		vBar.SetScroll = function(s, amount)
 			if not s.Enabled then
 				s.Scroll = 0
 				return
@@ -229,7 +232,7 @@ function PANEL:Init()
 			s:InvalidateLayout()
 		end
 
-		vbar.OnCursorMoved = function(s, _, y)
+		vBar.OnCursorMoved = function(s, _, y)
 			if not s.Dragging then
 				return
 			end
@@ -240,7 +243,7 @@ function PANEL:Init()
 			s.ScrollTarget = y * s.CanvasSize
 		end
 
-		vbar.Think = function(s)
+		vBar.Think = function(s)
 			local frameTime = RealFrameTime() * 14
 			local scrollTarget = s.ScrollTarget
 
@@ -265,7 +268,7 @@ function PANEL:Init()
 			)
 		end
 
-		vbar.PerformLayout = function(s, w, h)
+		vBar.PerformLayout = function(s, w, h)
 			local scroll = s:GetScroll() / s.CanvasSize
 			local barSize = math.max(s:BarScale() * h, 10)
 
@@ -279,10 +282,10 @@ function PANEL:Init()
 		view.Think = function(s)
 			local canvas = s.pnlCanvas
 
-			canvas.y = vbar.Enabled and -vbar.Scroll or Lerp(
+			canvas.y = vBar.Enabled and -vBar.Scroll or Lerp(
 				RealFrameTime() * 14,
 				canvas._y or canvas.y,
-				-vbar.Scroll
+				-vBar.Scroll
 			)
 		end
 
@@ -290,8 +293,8 @@ function PANEL:Init()
 	end
 end
 
-function PANEL:SetPage(n)
-	if self.Page == n then
+function PANEL:SetPage(n, forced)
+	if (not forced) and (self.Page == n) then
 		return
 	end
 
@@ -313,7 +316,30 @@ function PANEL:AddOption(name, func, parsed)
 end
 
 function PANEL:SetData(tbl)
-	if not self.InitData then -- const
+	tbl = tbl or {}
+
+	if not self.InitData then
+		local ratings = {}
+
+		for column, data in ipairs(tbl) do
+			ratings[data] = 0
+
+			for _, value in pairs(data) do
+				local validTimeRating, timeRating = kate.RatingFromTime(value)
+				local validDateRating, dateRating = kate.RatingFromDate(value)
+
+				if validTimeRating or validDateRating then
+					ratings[data] = timeRating or dateRating
+					self.RatingColumn = column
+					break
+				end
+			end
+		end
+
+		table.sort(tbl, function(a, b)
+			return ratings[a] > ratings[b]
+		end)
+
 		self.InitData = tbl
 	end
 
@@ -322,57 +348,118 @@ function PANEL:SetData(tbl)
 	self.Pages = {}
 	self.Columns = {}
 
-	local page = 0
+	local page, handled = 1, 0
 	for i, data in ipairs(tbl) do
-		if (i % self:GetMaxPerPage()) == 0 then
+		if handled == self:GetMaxPerPage() then
 			page = page + 1
+			handled = 0
 		end
 
 		self.Pages[page] = self.Pages[page] or {}
 		self.Pages[page][#self.Pages[page] + 1] = data
+
+		handled = handled + 1
 	end
 
-	local eg = tbl[1]
 	local view = self.ListView
-	if eg and (#view.Columns == 0) then
-		for param in pairs(eg) do
+	if tbl[1] and (#view.Columns == 0) then
+		for param in pairs(tbl[1]) do
 			view:AddColumn(param)
 			self.Columns[param] = table.Count(self.Columns) + 1
 		end
 	end
 end
 
+PANEL.DataFound = {}
+PANEL.DataAdded = {}
+
 function PANEL:Build(page)
 	page = page or 1
 
-	do
-		local tbl = self.Pages[page]
-		if tbl then
-			for i, data in ipairs(tbl) do
-				self.ListView:AddLine(unpack(table.ClearKeys(data)))
+	local pageData = self.Pages[page]
+	if not pageData then
+		goto buildPage
+	end
+
+	for i, data in ipairs(pageData) do
+		local lineData = table.ClearKeys(data)
+
+		local line = self.ListView:AddLine(unpack(lineData))
+		line.PseudoColumns = {}
+
+		for k, value in ipairs(lineData) do
+			local validTimeRating, ratingTimeNumber = kate.RatingFromTime(value)
+			local validDateRating, ratingDateNumber = kate.RatingFromDate(value)
+
+			if not (validTimeRating or validDateRating) then
+				continue
+			end
+
+			do
+				local pseudo = vgui.Create("DListViewLabel", line)
+				pseudo:SetMouseInputEnabled(false)
+				pseudo:SetText(tostring(value))
+				pseudo.Value = value
+
+				line.PseudoColumns[k] = pseudo
+			end
+
+			line:SetValue(k, ratingTimeNumber or ratingDateNumber)
+		end
+
+		line.SetSelected = function(s, bool)
+			s.m_bSelected = bool
+
+			for k, column in pairs(s.Columns) do
+				column:ApplySchemeSettings()
+
+				local pseudo = s.PseudoColumns[k]
+				if pseudo then
+					pseudo:ApplySchemeSettings()
+				end
+			end
+		end
+
+		line.DataLayout = function(s, listView)
+			s:ApplySchemeSettings()
+
+			local x = 0
+			local height = s:GetTall()
+
+			for k, column in pairs(s.Columns) do
+				local w = listView:ColumnWidth(k)
+
+				column:SetPos(x, 0)
+				column:SetSize(w, height)
+
+				local pseudo = s.PseudoColumns[k]
+				if pseudo then
+					column:SetVisible(false)
+					pseudo:SetPos(x, 0)
+					pseudo:SetSize(w, height)
+				end
+
+				x = x + w
 			end
 		end
 	end
 
+	::buildPage::
 	do
-		local tbl, added = {}, {}
+		local onChange = function(s, searched)
+			searched = string.Trim(string.lower(searched))
 
-		local onChange = function(s, val)
-			added = {}
+			self.DataAdded = {}
+			self.DataFound = {}
 
-			if (not val) or (val == "") then
-				tbl = {}
-
+			if (not searched) or (searched == "") then
 				if util.TableToJSON(self.Data) ~= util.TableToJSON(self.InitData) then
 					self:SetData(self.InitData)
-					self:Build()
-					self:SetPage(1)
+					self:SetPage(1, true)
 				end
 
 				return
 			end
-
-			val = string.lower(val)
 
 			for i, data in ipairs(self.InitData) do
 				local json = util.TableToJSON(data)
@@ -382,33 +469,42 @@ function PANEL:Build(page)
 
 					local searchBy = self.SearchBy:GetSelected()
 					if searchBy and searchBy ~= "all fields" then
-						if (not added[json]) and (field == searchBy) and string.find(value, val) then
-							tbl[#tbl + 1] = data
-							added[json] = true
+						if (not self.DataAdded[json]) and (field == searchBy) and string.find(value, searched) then
+							self.DataFound[#self.DataFound + 1] = data
+							self.DataAdded[json] = true
 						end
 					else
-						if (not added[json]) and string.find(value, val) then
-							tbl[#tbl + 1] = data
-							added[json] = true
+						if (not self.DataAdded[json]) and string.find(value, searched) then
+							self.DataFound[#self.DataFound + 1] = data
+							self.DataAdded[json] = true
 						end
 					end
 				end
 			end
 
-			self:SetData(tbl)
-			self:Build()
-			self:SetPage(1)
+			self:SetData(self.DataFound)
+			self:SetPage(1, true)
 		end
 
 		self.TextEntry.OnValueChange = onChange
 
-		self.SearchBy.OnSelect = function(s, val)
-			local entry_val = self.TextEntry:GetValue()
-			if entry_val and (entry_val ~= "") then
-				self.TextEntry:SetValue(entry_val)
-				onChange(s, val)
+		self.SearchBy.OnSelect = function(s, searchBy)
+			local entryValue = self.TextEntry:GetValue()
+			onChange(s, searchBy)
+
+			if entryValue and (entryValue ~= "") then
+				timer.Simple(0, function()
+					if IsValid(self) then
+						self.TextEntry:SetValue(entryValue)
+					end
+				end)
 			end
 		end
+	end
+
+	local ratingColumn = self.RatingColumn
+	if ratingColumn then
+		self.ListView:SortByColumn(ratingColumn, true)
 	end
 end
 

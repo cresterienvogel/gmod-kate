@@ -53,7 +53,7 @@ do
 				storedExpireRank and storedExpireRank:GetTitle() or nil
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)

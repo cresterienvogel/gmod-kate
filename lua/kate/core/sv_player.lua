@@ -5,6 +5,8 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 	end
 
 	local id = pl:SteamID64()
+	local name = pl:Name()
+
 	local unixNow = os.time()
 
 	-- find player's data
@@ -45,12 +47,12 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 					end
 
 					if curRank ~= "user" then
-						kate.Message(pl, 3, string.format("Your current rank is %s", curRank))
+						kate.Message(pl, 3, string.format("Your current rank is %s", kate.Ranks.Stored[curRank]:GetTitle()))
 					end
 				end
 
 				local queryUpdate = db:prepare("UPDATE `kate_users` SET name = ?, last_seen = ? WHERE steamid = ? LIMIT 1")
-					queryUpdate:setString(1, pl:Name())
+					queryUpdate:setString(1, name)
 					queryUpdate:setNumber(2, unixNow)
 					queryUpdate:setString(3, id)
 				queryUpdate:start()
@@ -61,7 +63,7 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 			::insert::
 			do
 				local queryInsert = db:prepare("INSERT INTO `kate_users` (name, steamid, rank, first_join, last_seen, play_time) VALUES (?, ?, ?, ?, ?, ?)")
-					queryInsert:setString(1, pl:Name())
+					queryInsert:setString(1, name)
 					queryInsert:setString(2, id)
 					queryInsert:setString(3, "user")
 					queryInsert:setNumber(4, unixNow)

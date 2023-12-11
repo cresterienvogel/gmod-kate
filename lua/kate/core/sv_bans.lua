@@ -15,7 +15,6 @@ function kate.Ban(targetId, unbanTime, banReason, adminName, adminId)
 
 	local unixNow = os.time()
 	unbanTime = (unbanTime > 0) and (unixNow + unbanTime) or 0
-
 	kate.Bans[targetId] = {} -- cache
 
 	do
@@ -72,7 +71,9 @@ function kate.Ban(targetId, unbanTime, banReason, adminName, adminId)
 							queryInsert:setNumber(8, newCase)
 						queryInsert:start()
 
-						kate.Bans[targetId].case_id = newCase
+						if kate.Bans[targetId] then
+							kate.Bans[targetId].case_id = newCase
+						end
 					end
 
 					queryCase:start()
@@ -92,7 +93,7 @@ function kate.Ban(targetId, unbanTime, banReason, adminName, adminId)
 	end
 end
 
-function kate.Unban(targetId, unbanReason, adminId)
+function kate.Unban(targetId, unbanReason, adminName, adminId)
 	local db = kate.Data.DB
 	if not db then
 		return
@@ -114,12 +115,13 @@ function kate.Unban(targetId, unbanReason, adminId)
 
 			data = data[1]
 
-			local queryUpdate = db:prepare("UPDATE `kate_bans` SET expired = ?, admin_steamid = ?, unban_time = ? WHERE steamid = ? AND case_id = ? LIMIT 1")
+			local queryUpdate = db:prepare("UPDATE `kate_bans` SET expired = ?, admin_name = ?, admin_steamid = ?, unban_time = ? WHERE steamid = ? AND case_id = ? LIMIT 1")
 				queryUpdate:setString(1, unbanReason or "time out")
-				queryUpdate:setString(2, adminId or data.admin_steamid)
-				queryUpdate:setNumber(3, os.time())
-				queryUpdate:setString(4, targetId)
-				queryUpdate:setNumber(5, data.case_id)
+				queryUpdate:setString(2, adminName or data.admin_name)
+				queryUpdate:setString(3, adminId or data.admin_steamid)
+				queryUpdate:setNumber(4, os.time())
+				queryUpdate:setString(5, targetId)
+				queryUpdate:setNumber(6, data.case_id)
 			queryUpdate:start()
 
 			kate.Bans[targetId] = nil
@@ -204,5 +206,5 @@ hook.Add("CheckPassword", "Kate CheckPassword", function(id)
 	)
 end)
 
+timer.Simple(0, kate.UpdateBans)
 timer.Create("Kate Update Bans", 180, 0, kate.UpdateBans) -- in case the database is used on several servers at time
-hook.Add("Initialize", "Kate Bans", kate.UpdateBans)

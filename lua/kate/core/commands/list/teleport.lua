@@ -11,7 +11,7 @@ do
 				kate.GetTarget(target)
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(kate.GetAdmins(), 3, msg)
 		end
 	end)
@@ -39,7 +39,7 @@ do
 				kate.GetTarget(target)
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(kate.GetAdmins(), 3, msg)
 		end
 	end)
@@ -71,7 +71,7 @@ do
 				kate.GetTarget(target)
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(kate.GetAdmins(), 3, msg)
 		end
 	end)

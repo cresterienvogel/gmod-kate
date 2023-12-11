@@ -25,7 +25,6 @@ else -- CLIENT
 
 			if pl then
 				local id = kate.SteamIDTo64(pl)
-
 				if id then
 					args[#args + 1] = id
 				end
@@ -150,7 +149,6 @@ else -- CLIENT
 
 			for _, cmd in pairs(cmds) do
 				local cat = cmd:GetCategory()
-
 				if not cats[cat] then
 					cats[cat] = true
 				end

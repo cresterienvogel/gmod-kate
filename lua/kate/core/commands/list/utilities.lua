@@ -12,7 +12,7 @@ do
 				text
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(kate.GetAdmins(), 3, msg)
 		end
 	end)
@@ -41,7 +41,7 @@ do
 				kate.GetTarget(target)
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)
@@ -71,7 +71,7 @@ do
 				kate.GetTarget(target)
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)
@@ -103,7 +103,7 @@ do
 				kate.GetTarget(target)
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)
@@ -147,11 +147,10 @@ do
 		local target = args.target or pl
 		local amt = args.amount or 100
 		local ammotype = args.ammotype
-
 		local ammoTypeGiven
 
 		if ammotype then
-			ammoTypeGiven = game.GetAmmoTypes()[ammotype]
+			ammoTypeGiven = string.format("%s ammotype", game.GetAmmoTypes()[ammotype])
 
 			pl:GiveAmmo(amt, ammotype, true)
 
@@ -175,7 +174,7 @@ do
 				kate.GetTarget(target)
 			)
 
-			kate.Print(msg)
+			kate.Print(3, msg)
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)

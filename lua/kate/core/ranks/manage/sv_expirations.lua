@@ -46,8 +46,8 @@ local function checkExpiration(db, targetId)
 						stored[expireRank]:GetTitle()
 					)
 
+					kate.Print(3, msg)
 					kate.Message(player.GetAll(), 3, msg)
-					kate.Print(msg)
 				end
 			end
 

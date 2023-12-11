@@ -84,7 +84,7 @@ end
 	To seconds
 ]]
 
-local units = {
+local timeUnits = {
 	["s"] = TIME_SECOND,
 	["mi"] = TIME_MINUTE,
 	["h"] = TIME_HOUR,
@@ -107,11 +107,11 @@ function kate.FormatTime(time)
 	local s = 0
 
 	for u, t in string.gmatch(time, "(%d+)(%a+)") do
-		if not units[t] then
+		if not timeUnits[t] then
 			return false
 		end
 
-		s = s + (u * units[t])
+		s = s + (u * timeUnits[t])
 	end
 
 	if s == 0 then
@@ -119,4 +119,121 @@ function kate.FormatTime(time)
 	end
 
 	return true, s
+end
+
+--[[
+	Rating from time units
+	for sorting purpose
+]]
+
+local ratingTime = {
+	["second"] = TIME_SECOND,
+	["minute"] = TIME_MINUTE,
+	["hour"] = TIME_HOUR,
+	["day"] = TIME_DAY,
+	["week"] = TIME_WEEK,
+	["month"] = TIME_MONTH,
+	["year"] = TIME_YEAR
+}
+
+function kate.RatingFromTime(str)
+	str = string.lower(str)
+	if string.find(str, "∞") then
+		return true, 0
+	end
+
+	do
+		local valid = false
+
+		for unit in pairs(ratingTime) do
+			if string.find(str, unit) then
+				valid = true
+				break
+			end
+		end
+
+		if not valid then
+			return false
+		end
+	end
+
+	local rating = 0
+
+	for num, unit in string.gmatch(str, "(%d+)%s-([%a]+[sn]?[g]?)") do
+		unit = ratingTime[unit] or ratingTime[string.sub(unit, 1, string.len(unit) - 1)]
+		if unit then
+			rating = rating + (tonumber(num) * unit)
+		end
+	end
+
+	return true, rating
+end
+
+--[[
+	Rating from month units
+	for sorting purpose
+]]
+
+local ratingMonths = {
+	["january"] = 1,
+	["february"] = 2,
+	["march"] = 3,
+	["april"] = 4,
+	["may"] = 5,
+	["june"] = 6,
+	["july"] = 7,
+	["august"] = 8,
+	["september"] = 9,
+	["october"] = 10,
+	["november"] = 11,
+	["december"] = 12
+}
+
+function kate.RatingFromDate(str)
+	str = string.lower(str)
+
+	do
+		local valid = false
+
+		for unit in pairs(ratingMonths) do
+			if string.find(str, unit) then
+				valid = true
+				break
+			end
+		end
+
+		if not valid then
+			return false
+		end
+	end
+
+	local args = {}
+
+	do
+		local matchFull = {string.match(str, "(%d+)%s(%a+)%s(%d+)%s?at%s?([%d:]+)")}
+		table.Merge(args, matchFull)
+
+		local matchDate = {string.match(str, "(%d+)%s(%a+)%s(%d+)%s?")}
+		table.Merge(args, matchDate)
+	end
+
+	local day, month, year, time = unpack(args)
+
+	local rating = 0
+
+	if day and month and year then
+		local monthRating = ratingMonths[month]
+		if monthRating then
+			rating = (tonumber(year) * TIME_YEAR) + (monthRating * TIME_MONTH) + (tonumber(day) * TIME_DAY)
+		end
+	end
+
+	if time then
+		local hour, minute = string.match(time, "(%d+):(%d+)")
+		if hour and minute then
+			rating = rating + (tonumber(hour) * TIME_HOUR) + (tonumber(minute) * TIME_MINUTE)
+		end
+	end
+
+	return true, rating
 end

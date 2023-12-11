@@ -22,11 +22,11 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 
 		local foundPlayer = kate.FindPlayer(targetId)
 
-		local querySelect = db:prepare(string.format("SELECT * FROM `%s` WHERE steamid = ? AND expired = ? LIMIT 1"), tagSQL)
-			querySelect:setString(1, targetId)
-			querySelect:setString(2, "active")
+		local querySelectActive = db:prepare(string.format("SELECT * FROM `%s` WHERE steamid = ? AND expired = ? LIMIT 1", tagSQL))
+			querySelectActive:setString(1, targetId)
+			querySelectActive:setString(2, "active")
 
-			querySelect.onSuccess = function(_, data)
+			querySelectActive.onSuccess = function(_, data)
 				if not data[1] then
 					goto newPunish
 				end
@@ -53,12 +53,10 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 
 				::newPunish::
 				do
-					local query_select = db:querySelect(string.format("SELECT COUNT(`case_id`) AS `case_id` FROM `%s`", tagSQL))
+					local querySelectCaseId = db:query(string.format("SELECT COUNT(`case_id`) AS `case_id` FROM `%s`", tagSQL))
 
-					query_select.onSuccess = function(_, cases)
-						cases = cases[1].case_id or 0
-
-						local caseId = cases + 1
+					querySelectCaseId.onSuccess = function(_, cases)
+						local newCase = (cases[1].case_id or 0) + 1
 
 						local queryInsert = db:prepare(string.format("INSERT INTO `%s` (steamid, reason, %s_time, expire_time, admin_steamid, expired, case_id) VALUES (?, ?, ?, ?, ?, ?, ?)", tagSQL, tagLower))
 							queryInsert:setString(1, targetId)
@@ -73,16 +71,18 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 							end
 
 							queryInsert:setString(6, "active")
-							queryInsert:setNumber(7, caseId)
+							queryInsert:setNumber(7, newCase)
 						queryInsert:start()
 
-						kate[tagPlural][targetId].case_id = caseId
+						if kate[tagPlural][targetId] then
+							kate[tagPlural][targetId].case_id = newCase
+						end
 					end
 
-					query_select:start()
+					querySelectCaseId:start()
 				end
 			end
-		querySelect:start()
+		querySelectActive:start()
 
 		if IsValid(foundPlayer) then
 			foundPlayer:SetNetVar(tagLower, expireTime)
@@ -184,7 +184,7 @@ hook.Add("PlayerCanHearPlayersVoice", "Kate Gag", function(listener, talker)
 
 	if (gag ~= 0) and (os.time() > gag) then
 		kate.Ungag(talker)
-		kate.Print(kate.GetTarget(talker), "has been ungagged since the gag time expired")
+		kate.Print(3, kate.GetTarget(talker), "has been ungagged since the gag time expired")
 		return
 	end
 
@@ -199,7 +199,7 @@ hook.Add("PlayerSay", "Kate Mute", function(pl)
 
 	if (mute ~= 0) and (os.time() > mute) then
 		kate.Unmute(pl)
-		kate.Print(kate.GetTarget(pl), "has been unmuted since the mute time expired")
+		kate.Print(3, kate.GetTarget(pl), "has been unmuted since the mute time expired")
 		return
 	end
 

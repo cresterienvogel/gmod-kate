@@ -197,25 +197,25 @@ function NETVAR:_CallHook(index, value, oldValue)
 end
 
 function NETVAR:_Construct()
-	local WriteFunc = self.WriteFunc
-	local ReadFunc = self.ReadFunc
+	local writeFunc = self.WriteFunc
+	local readFunc = self.ReadFunc
 
 	if self.PlayerVar then
 		self._Write = function(s, ent, value)
 			net_WriteUInt(ent:EntIndex(), 8)
-			WriteFunc(value)
+			writeFunc(value)
 		end
 
 		self._Read = function(s)
-			return net_ReadUInt(8), ReadFunc()
+			return net_ReadUInt(8), readFunc()
 		end
 	elseif self.LocalPlayerVar then
 		self._Write = function(s, ent, value)
-			WriteFunc(value)
+			writeFunc(value)
 		end
 
 		self._Read = function(s)
-			return LocalPlayer():EntIndex(), ReadFunc()
+			return LocalPlayer():EntIndex(), readFunc()
 		end
 
 		self.SendFunc = function(s, ent, value, recipients)
@@ -223,20 +223,20 @@ function NETVAR:_Construct()
 		end
 	elseif self.GlobalVar then
 		self._Write = function(s, ent, value)
-			WriteFunc(value)
+			writeFunc(value)
 		end
 
 		self._Read = function(s)
-			return 0, ReadFunc()
+			return 0, readFunc()
 		end
 	else
 		self._Write = function(s, ent, value)
 			net_WriteUInt(ent:EntIndex(), 13)
-			WriteFunc(value)
+			writeFunc(value)
 		end
 
 		self._Read = function(s)
-			return net_ReadUInt(13), ReadFunc()
+			return net_ReadUInt(13), readFunc()
 		end
 	end
 

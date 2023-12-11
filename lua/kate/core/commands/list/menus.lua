@@ -83,10 +83,10 @@ end
 
 do
 	for _, tag in ipairs({"Gag", "Mute"}) do
-		local low_tag = string.lower(tag)
-		local tbl = "kate_" .. low_tag .. "s"
+		local tagLower = string.lower(tag)
+		local tbl = "kate_" .. tagLower .. "s"
 
-		kate.Commands:Register(low_tag .. "s", function(self, pl)
+		kate.Commands:Register(tagLower .. "s", function(self, pl)
 			local query = kate.Data.DB:query("SELECT * FROM " .. tbl)
 
 			query.onSuccess = function(_, data)

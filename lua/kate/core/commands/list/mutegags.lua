@@ -6,10 +6,10 @@ local icons = {
 }
 
 for _, tag in ipairs({"Gag", "Mute"}) do
-	local tag_lower = string.lower(tag)
+	local tagLower = string.lower(tag)
 
 	do
-		kate.Commands:Register(tag_lower, function(self, pl, args)
+		kate.Commands:Register(tagLower, function(self, pl, args)
 			local target = args.target
 			local time = args.time
 			local reason = args.reason
@@ -21,13 +21,13 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 			do
 				local msg = string.format("%s has run %s on %s for %s with reason %s",
 					kate.GetExecuter(pl),
-					tag_lower,
+					tagLower,
 					kate.GetTarget(target),
 					kate.ConvertTime(time),
 					blockReason
 				)
 
-				kate.Print(msg)
+				kate.Print(3, msg)
 				kate.Message(player.GetAll(), 3, msg)
 			end
 		end)
@@ -39,29 +39,29 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 	end
 
 	do
-		kate.Commands:Register("un" .. tag_lower, function(self, pl, args)
+		kate.Commands:Register("un" .. tagLower, function(self, pl, args)
 			local target = args.target
 			local reason = args.reason
 
 			local adminId = IsValid(pl) and pl:SteamID64() or "Console"
 
-			kate["Un" .. tag_lower](target, reason, adminId)
+			kate["Un" .. tagLower](target, reason, adminId)
 
 			do
 				local msg = string.format("%s has run un%s on %s: %s",
 					kate.GetExecuter(pl),
-					tag_lower,
+					tagLower,
 					kate.GetTarget(target),
 					reason
 				)
 
-				kate.Print(msg)
+				kate.Print(3, msg)
 				kate.Message(player.GetAll(), 3, msg)
 			end
 		end)
-		:SetTitle("Un" .. tag_lower)
+		:SetTitle("Un" .. tagLower)
 		:SetCategory("Punishment")
-		:SetIcon(icons["Un" .. tag_lower])
+		:SetIcon(icons["Un" .. tagLower])
 		:SetImmunity(1000)
 		:SetArgs("Target", "Reason")
 	end

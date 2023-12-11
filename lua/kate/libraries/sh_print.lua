@@ -17,11 +17,11 @@ if CLIENT then
 	end)
 end
 
-function kate.Print(...)
+function kate.Print(status, ...)
 	local text = table.concat({...}, " ")
 
 	timer.Simple(0, function()
-		MsgC(kate.Status[1], "[Kate] ", string.format("[%s] ", os.date("%H:%M:%S", os.time())), color_white, text, "\n")
+		MsgC(kate.Status[status], string.format("Kate [%s] ", os.date("%d/%m/%y at %H:%M:%S", os.time())), color_white, text, "\n")
 	end)
 end
 
@@ -30,7 +30,7 @@ function kate.Message(recip, status, ...)
 
 	timer.Simple(0, function()
 		if (not IsValid(recip)) and (not istable(recip)) then
-			kate.Print(text)
+			kate.Print(status, text)
 			return
 		end
 
