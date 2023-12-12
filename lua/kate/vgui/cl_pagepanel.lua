@@ -3,6 +3,7 @@ local PANEL = {}
 PANEL.Speed = 17
 
 AccessorFunc(PANEL, "m_iMaxPerPage", "MaxPerPage", FORCE_NUMBER)
+AccessorFunc(PANEL, "m_sSortableColumn", "SortableColumn", FORCE_STRING)
 
 function PANEL:Init()
 	self.Page = 1
@@ -320,11 +321,16 @@ function PANEL:SetData(tbl)
 
 	if not self.InitData then
 		local ratings = {}
+		local sortable = self.m_sSortableColumn
 
 		for column, data in ipairs(tbl) do
 			ratings[data] = 0
 
-			for _, value in pairs(data) do
+			for columnName, value in pairs(data) do
+				if sortable and (sortable ~= columnName) then
+					continue
+				end
+
 				local validTimeRating, timeRating = kate.RatingFromTime(value)
 				local validDateRating, dateRating = kate.RatingFromDate(value)
 
@@ -337,7 +343,7 @@ function PANEL:SetData(tbl)
 		end
 
 		table.sort(tbl, function(a, b)
-			return ratings[a] > ratings[b]
+			return (ratings[a] or 0) > (ratings[b] or 0)
 		end)
 
 		self.InitData = tbl

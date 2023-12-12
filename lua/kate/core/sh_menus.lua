@@ -13,6 +13,7 @@ function kate.RegisterMenu(name)
 
 			local len = net.ReadUInt(32)
 			local data = net.ReadData(len)
+			local sortable = net.ReadString()
 
 			data = util.JSONToTable(util.Decompress(data))
 
@@ -26,6 +27,7 @@ function kate.RegisterMenu(name)
 				local records = vgui.Create("KPagePanel", frame)
 				records:Dock(FILL)
 				records:SetMaxPerPage(200)
+				records:SetSortableColumn(sortable)
 
 				records:AddOption("Copy steamid32", function(id)
 					SetClipboardText(util.SteamIDFrom64(id))
