@@ -35,11 +35,11 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 
 				do
 					if firstJoin then
-						kate.Message(pl, 3, string.format("Your first visit was %s, %s ago", os.date("%d %B %Y", firstJoin), kate.ConvertTime(unixNow - firstJoin)))
+						kate.Message(pl, 3, string.format("Your first visit was %s, %s ago", os.date("%d %B %Y", firstJoin), kate.ConvertTime(unixNow - firstJoin, 3)))
 					end
 
 					if lastSeen then
-						kate.Message(pl, 3, string.format("Your last visit was %s, %s ago", os.date("%d %B %Y", lastSeen), kate.ConvertTime(unixNow - lastSeen)))
+						kate.Message(pl, 3, string.format("Your last visit was %s, %s ago", os.date("%d %B %Y", lastSeen), kate.ConvertTime(unixNow - lastSeen, 3)))
 					end
 
 					if playTime then
