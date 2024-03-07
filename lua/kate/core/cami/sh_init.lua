@@ -15,9 +15,12 @@ hook.Add("CAMI.OnUsergroupRegistered", "Kate CAMI", function(group, source)
 		return
 	end
 
-	kate.Ranks.Register(name)
-		:SetImmunity(5000)
+	local rank = kate.Ranks.Register(name)
+	if rank == nil then
+		return
+	end
 
+	rank:SetImmunity(5000)
 	kate.Ranks.RegisterMeta(name)
 end)
 

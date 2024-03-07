@@ -25,6 +25,10 @@ do
 end
 
 function kate.Ranks:Register(name)
+	if name == nil then
+		return nil
+	end
+
 	local rank = {
 		Title = name,
 		Immunity = 0
