@@ -11,7 +11,7 @@ end)
 
 hook.Add("CAMI.OnUsergroupRegistered", "Kate CAMI", function(group, source)
 	local name = group.Name
-	if (source and source == "Kate") or kate.Ranks.Stored[name] then
+	if (source and (source == "Kate")) or kate.Ranks.Stored[name] then
 		return
 	end
 
@@ -26,7 +26,7 @@ end)
 
 hook.Add("CAMI.OnUsergroupUnregistered", "Kate CAMI", function(group, source)
 	local name = group.Name
-	if (source and source == "Kate") or (not kate.Ranks.Stored[name]) then
+	if (source and (source == "Kate")) or (not kate.Ranks.Stored[name]) then
 		return
 	end
 
@@ -35,7 +35,7 @@ hook.Add("CAMI.OnUsergroupUnregistered", "Kate CAMI", function(group, source)
 end)
 
 hook.Add("CAMI.PlayerUsergroupChanged", "Kate CAMI", function(pl, old, new, source)
-	if (source and source == "Kate") or (not IsValid(pl)) then
+	if (source and (source == "Kate")) or (not IsValid(pl)) then
 		return
 	end
 

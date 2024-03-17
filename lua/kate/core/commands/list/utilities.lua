@@ -92,9 +92,13 @@ do
 		local target = args.target or pl
 
 		local god = target:HasGodMode()
-		local toggle = toggle and "disabled" or "enabled"
+		local toggle = god and "disabled" or "enabled"
 
-		target:GodEnable(not god)
+		if god then
+			target:GodDisable()
+		else
+			target:GodEnable()
+		end
 
 		do
 			local msg = string.format("%s has %s god to %s",

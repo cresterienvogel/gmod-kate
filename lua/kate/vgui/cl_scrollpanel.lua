@@ -21,7 +21,6 @@ function PANEL:Init()
 		function canvas:OnChildRemoved(child)
 			for i = 1, #children do
 				local v = children[i]
-
 				if v == child then
 					children[i] = nil
 					return
