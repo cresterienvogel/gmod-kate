@@ -1,10 +1,10 @@
 local meta = debug.getregistry()["Player"]
 
 hook.Add("PostGamemodeLoaded", "Kate CAMI", function()
-	for rank, data in pairs(kate.Ranks.Stored) do
+	for rank, info in pairs(kate.Ranks.Stored) do
 		CAMI.RegisterUsergroup({
 			Name = rank,
-			Inherits = data:GetImmunity() >= 25000 and "superadmin" or "admin"
+			Inherits = info:GetImmunity() >= 25000 and "superadmin" or "admin"
 		}, "Kate")
 	end
 end)

@@ -1,12 +1,12 @@
 local function addUser(db, targetId, newRank)
-	local unixNow = os.time()
+	local curTime = os.time()
 
 	local queryInsert = db:prepare("INSERT INTO `kate_users` (name, steamid, rank, joined, seen, playtime) VALUES (?, ?, ?, ?, ?, ?)")
 		queryInsert:setString(1, "Unknown")
 		queryInsert:setString(2, targetId)
 		queryInsert:setString(3, newRank)
-		queryInsert:setNumber(4, unixNow)
-		queryInsert:setNumber(5, unixNow)
+		queryInsert:setNumber(4, curTime)
+		queryInsert:setNumber(5, curTime)
 		queryInsert:setNumber(6, 0)
 	queryInsert:start()
 end

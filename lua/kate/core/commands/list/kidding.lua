@@ -7,7 +7,6 @@ do
 
 		do
 			local text = "%s has slayed %s"
-
 			if reason then
 				text = text .. ": %s"
 			end
@@ -101,7 +100,6 @@ do
 
 		do
 			local text = "%s has %s %s"
-
 			if reason then
 				text = text .. ": %s"
 			end
@@ -129,13 +127,14 @@ end
 do
 	kate.Commands:Register("strip", function(self, pl, args)
 		local target = args.target or pl
-		local wep = args.weapon
+		local weapon = args.weapon
 		local reason = args.reason
-		local strippedWep
 
-		if wep then
-			strippedWep = weapons.Get(wep) and weapons.Get(wep).PrintName or wep
-			target:StripWeapon(wep)
+		local strippedWep
+		if weapon then
+			strippedWep = weapons.Get(weapon) and weapons.Get(weapon).PrintName or weapon
+			target:StripWeapon(weapon)
+
 			goto log
 		end
 
@@ -145,7 +144,6 @@ do
 		::log::
 		do
 			local text = "%s has stripped %s from %s"
-
 			if reason then
 				text = text .. ": %s"
 			end
@@ -175,8 +173,8 @@ do
 		local target = args.target or pl
 		local time = args.time or 10
 		local reason = args.reason
-		local msg
 
+		local msg
 		if target:IsOnFire() then
 			msg = "%s has extinguished %s"
 			target:Extinguish()
@@ -184,11 +182,11 @@ do
 		end
 
 		msg = "%s has ignited %s for %s"
-		target:Ignite(time)
-
 		if reason then
 			msg = msg .. ": %s"
 		end
+
+		target:Ignite(time)
 
 		::log::
 		do

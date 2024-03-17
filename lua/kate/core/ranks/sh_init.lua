@@ -7,6 +7,7 @@ meta.__index = meta
 do
 	function meta:SetImmunity(amt)
 		self.Immunity = amt
+
 		return self
 	end
 
@@ -16,6 +17,7 @@ do
 
 	function meta:SetTitle(title)
 		self.Title = title
+
 		return self
 	end
 

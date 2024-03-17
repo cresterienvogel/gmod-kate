@@ -170,7 +170,6 @@ do
 	kate.Commands:CreateValidator("Map")
 		:SetFunction(function(pl, cmd, index, value, args)
 			local maps = file.Find("maps/*", "GAME")
-
 			for _, bsp in ipairs(maps) do
 				if value == string.StripExtension(bsp) then
 					return value

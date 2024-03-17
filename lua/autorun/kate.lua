@@ -2,7 +2,7 @@ kate = kate or {}
 
 if SERVER then
 	require("mysqloo")
-else -- CLIENT
+else
 	CreateClientConVar("kate_touchplayers", "1", true, true, "Enable/disable whether you can pick up players with physgun", 0, 1)
 end
 
@@ -30,7 +30,6 @@ function kate.IncludeDir(dir, recursive)
 	dir = dir .. "/"
 
 	local files, dirs = file.Find(dir .. "*", "LUA")
-
 	for _, v in ipairs(files) do
 		kate.Include(v, dir)
 	end

@@ -144,7 +144,6 @@ function kate.RatingFromTime(str)
 
 	do
 		local valid = false
-
 		for unit in pairs(ratingTime) do
 			if string.find(str, unit) then
 				valid = true
@@ -158,7 +157,6 @@ function kate.RatingFromTime(str)
 	end
 
 	local rating = 0
-
 	for num, unit in string.gmatch(str, "(%d+)%s-([%a]+[sn]?[g]?)") do
 		unit = ratingTime[unit] or ratingTime[string.sub(unit, 1, string.len(unit) - 1)]
 		if unit then
@@ -192,8 +190,8 @@ local ratingMonths = {
 function kate.RatingFromDate(str)
 	str = string.lower(str)
 
-	do
-		local valid = false
+	local valid do
+		valid = false
 
 		for unit in pairs(ratingMonths) do
 			if string.find(str, unit) then
@@ -207,9 +205,9 @@ function kate.RatingFromDate(str)
 		end
 	end
 
-	local args = {}
+	local args do
+		args = {}
 
-	do
 		local matchFull = {string.match(str, "(%d+)%s(%a+)%s(%d+)%s?at%s?([%d:]+)")}
 		table.Merge(args, matchFull)
 
@@ -220,7 +218,6 @@ function kate.RatingFromDate(str)
 	local day, month, year, time = unpack(args)
 
 	local rating = 0
-
 	if day and month and year then
 		local monthRating = ratingMonths[month]
 		if monthRating then

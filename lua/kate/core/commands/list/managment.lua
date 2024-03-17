@@ -35,8 +35,7 @@ do
 		kate.Ranks.SetRank(target, rank, expireTime, expireRank)
 
 		do
-			local msg = "%s has set a %s rank to %s"
-
+			local msg = "%s has set %s rank to %s"
 			if expireTime then
 				msg = msg .. " with expiration in %s"
 			end

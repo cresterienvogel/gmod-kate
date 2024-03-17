@@ -18,14 +18,13 @@ function kate.Commands.Run(pl, cmd, args)
 	local optionalArgs = stored:GetOptionalArgs()
 
 	-- check if something is uncertain
-	for k, arg in ipairs(commandArgs) do
+	for i, arg in ipairs(commandArgs) do
 		if table.HasValue(optionalArgs, arg) then
 			continue
 		end
 
-		if not args[k] then
+		if not args[i] then
 			local msg = string.format("%s not found", arg)
-
 			if IsValid(pl) then
 				kate.Message(pl, 2, msg)
 			end
@@ -35,14 +34,13 @@ function kate.Commands.Run(pl, cmd, args)
 	end
 
 	-- validate
-	for k, arg in ipairs(args) do
+	for i, arg in ipairs(args) do
 		local value, fail
-		local argType = commandArgs[k]
+		local argType = commandArgs[i]
 
 		local argValidator = kate.Commands.Validators[argType]
 		if argValidator then
-			value, fail = argValidator:Validate(pl, cmd, k, arg, args)
-
+			value, fail = argValidator:Validate(pl, cmd, i, arg, args)
 			if not value then
 				if fail then
 					if IsValid(pl) then
@@ -55,7 +53,7 @@ function kate.Commands.Run(pl, cmd, args)
 				return false
 			end
 
-			collected[k] = value
+			collected[i] = value
 		else
 			if (not arg) or (arg == "") then
 				local msg = string.format("%s not found", argType)
@@ -67,15 +65,15 @@ function kate.Commands.Run(pl, cmd, args)
 				return false, msg
 			end
 
-			value = string.Trim(table.concat(args, " ", k))
-			collected[k] = value
+			value = string.Trim(table.concat(args, " ", i))
+			collected[i] = value
 			break
 		end
 	end
 
 	-- format collected args
-	for k, arg in ipairs(collected) do
-		local edited = string.Trim(commandArgs[k])
+	for i, arg in ipairs(collected) do
+		local edited = string.Trim(commandArgs[i])
 		edited = string.lower(edited)
 		edited = string.Replace(edited, " ", "_")
 
@@ -91,10 +89,10 @@ concommand.Add("_kate", function(pl, cmd, args)
 		return
 	end
 
-	local msg = kate.GetExecuter(pl)
-	local status = 1
-
 	cmd = string.lower(args[1])
+
+	local status = 1
+	local msg = kate.GetExecuter(pl)
 
 	-- validate command
 	local stored = kate.Commands.Stored[cmd]
@@ -118,16 +116,15 @@ concommand.Add("_kate", function(pl, cmd, args)
 		args[1] = nil
 		args = table.ClearKeys(args)
 
-		local success, failReason = kate.Commands.Run(pl, cmd, args)
 		local cmdTitle = stored:GetTitle() or cmd
 
+		local success, failReason = kate.Commands.Run(pl, cmd, args)
 		if not success then
 			msg, status = string.format("%s tried to execute the %s command, but failed: %s", msg, cmdTitle, string.lower(failReason)), 2
 			goto log
 		end
 
 		msg = string.format("%s executed %s command", msg, cmdTitle)
-
 		if args[1] then
 			msg = string.format("%s with args \"%s\"", msg, table.concat(args, "\", \""))
 		end
@@ -142,8 +139,8 @@ hook.Add("PlayerSay", "Kate Commands", function(pl, text)
 		return
 	end
 
-	local msg = kate.GetExecuter(pl)
 	local status = 1
+	local msg = kate.GetExecuter(pl)
 
 	-- cut junk
 	text = string.Trim(text)
@@ -192,16 +189,15 @@ hook.Add("PlayerSay", "Kate Commands", function(pl, text)
 	end
 
 	do
-		local success, failReason = kate.Commands.Run(pl, cmd, args)
 		local cmdTitle = stored:GetTitle() or cmd
 
+		local success, failReason = kate.Commands.Run(pl, cmd, args)
 		if not success then
 			msg, status = string.format("%s tried to execute the %s command, but failed: %s", msg, cmdTitle, string.lower(failReason)), 2
 			goto log
 		end
 
 		msg = string.format("%s executed %s command", msg, cmdTitle)
-
 		if args[1] then
 			msg = string.format("%s with args \"%s\"", msg, table.concat(args, "\", \""))
 		end

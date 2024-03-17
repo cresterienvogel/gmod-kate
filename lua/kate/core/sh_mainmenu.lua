@@ -1,6 +1,6 @@
 if SERVER then
 	util.AddNetworkString("Kate Menu")
-else -- CLIENT
+else
 	local frame, frameQuery, framePlayer
 	local showQuery, showPlayers
 
@@ -146,7 +146,6 @@ else -- CLIENT
 
 		do
 			local cmds, cats = kate.Commands.Stored, {}
-
 			for _, cmd in pairs(cmds) do
 				local cat = cmd:GetCategory()
 				if not cats[cat] then

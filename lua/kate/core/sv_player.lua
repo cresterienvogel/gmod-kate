@@ -7,7 +7,7 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 	local id = pl:SteamID64()
 	local name = pl:Name()
 
-	local unixNow = os.time()
+	local curTime = os.time()
 
 	-- find player's data
 	local querySelect = db:prepare("SELECT * FROM `kate_users` WHERE steamid = ? LIMIT 1")
@@ -35,11 +35,11 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 
 				do
 					if firstJoin then
-						kate.Message(pl, 3, string.format("Your first visit was %s, %s ago", os.date("%d %B %Y", firstJoin), kate.ConvertTime(unixNow - firstJoin, 3)))
+						kate.Message(pl, 3, string.format("Your first visit was %s, %s ago", os.date("%d %B %Y", firstJoin), kate.ConvertTime(curTime - firstJoin, 3)))
 					end
 
 					if lastSeen then
-						kate.Message(pl, 3, string.format("Your last visit was %s, %s ago", os.date("%d %B %Y", lastSeen), kate.ConvertTime(unixNow - lastSeen, 3)))
+						kate.Message(pl, 3, string.format("Your last visit was %s, %s ago", os.date("%d %B %Y", lastSeen), kate.ConvertTime(curTime - lastSeen, 3)))
 					end
 
 					if playTime then
@@ -53,7 +53,7 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 
 				local queryUpdate = db:prepare("UPDATE `kate_users` SET name = ?, last_seen = ? WHERE steamid = ? LIMIT 1")
 					queryUpdate:setString(1, name)
-					queryUpdate:setNumber(2, unixNow)
+					queryUpdate:setNumber(2, curTime)
 					queryUpdate:setString(3, id)
 				queryUpdate:start()
 
@@ -66,15 +66,15 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 					queryInsert:setString(1, name)
 					queryInsert:setString(2, id)
 					queryInsert:setString(3, "user")
-					queryInsert:setNumber(4, unixNow)
-					queryInsert:setNumber(5, unixNow)
+					queryInsert:setNumber(4, curTime)
+					queryInsert:setNumber(5, curTime)
 					queryInsert:setNumber(6, 0)
 				queryInsert:start()
 
 				do
 					pl:SetUserGroup("user")
-					pl:SetFirstJoin(unixNow)
-					pl:SetLastSeen(unixNow)
+					pl:SetFirstJoin(curTime)
+					pl:SetLastSeen(curTime)
 					pl:SetPlayTime(0)
 				end
 			end
@@ -91,14 +91,14 @@ hook.Add("PlayerAuthed", "Kate PlayerAuthed", function(pl)
 		end
 
 		expireTime = cached.expire_time
-		if (expireTime ~= 0) and (unixNow > expireTime) then
+		if (expireTime ~= 0) and (curTime > expireTime) then
 			kate["Un" .. tag](pl)
 			return
 		end
 
 		pl:SetNetVar(tagLower, expireTime)
 
-		kate.Message(pl, 3, string.format("Your %s will end in %s", tagLower, kate.ConvertTime(expireTime - unixNow)))
+		kate.Message(pl, 3, string.format("Your %s will end in %s", tagLower, kate.ConvertTime(expireTime - curTime)))
 	end
 
 	-- check expirations
@@ -111,10 +111,10 @@ hook.Add("PlayerDisconnected", "Kate PlayerDisconnected", function(pl)
 		return
 	end
 
-	local querySelect = db:prepare("UPDATE `kate_users` SET last_seen = ? WHERE steamid = ? LIMIT 1")
-		querySelect:setNumber(1, os.time())
-		querySelect:setString(2, pl:SteamID64())
-	querySelect:start()
+	local queryUpdate = db:prepare("UPDATE `kate_users` SET last_seen = ? WHERE steamid = ? LIMIT 1")
+		queryUpdate:setNumber(1, os.time())
+		queryUpdate:setString(2, pl:SteamID64())
+	queryUpdate:start()
 end)
 
 timer.Create("Kate Players", 60, 0, function()

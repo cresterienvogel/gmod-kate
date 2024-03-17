@@ -151,13 +151,11 @@ do
 
 		if ammotype then
 			ammoTypeGiven = string.format("%s ammotype", game.GetAmmoTypes()[ammotype])
-
 			pl:GiveAmmo(amt, ammotype, true)
 
 			goto log
 		else
 			ammoTypeGiven = "every ammotype registered"
-
 			for ammo in pairs(game.GetAmmoTypes()) do
 				pl:GiveAmmo(amt, ammo, true)
 			end

@@ -70,19 +70,22 @@ function PANEL:Init()
 			entry:SetNumeric(true)
 
 			entry.Think = function(s)
-				local val = s:GetValue()
-
-				if string.find(val, "/") then
-					val = tonumber(string.Explode("/", val)[1])
+				local page = s:GetValue()
+				if (page == nil) or (page == "") then
+					return
 				end
 
-				if val == 0 then
-					val = 1
+				page = tonumber(page)
+				if not page then
+					return
 				end
 
-				local pages = self.Pages
-				self:SetPage(math.Clamp(val ~= "" and val or 1, 1, #pages))
-				s:SetValue(s:IsEditing() and val or (val .. "/" .. (#pages == 0 and 1 or #pages)))
+				page = math.Clamp(page, 1, #self.Pages)
+
+				if not s:IsEditing() then
+					s:SetValue(page)
+					self:SetPage(page)
+				end
 			end
 
 			bottom.Entry = entry
@@ -355,7 +358,7 @@ function PANEL:SetData(tbl)
 	self.Columns = {}
 
 	local page, handled = 1, 0
-	for i, data in ipairs(tbl) do
+	for _, data in ipairs(tbl) do
 		if handled == self:GetMaxPerPage() then
 			page = page + 1
 			handled = 0
@@ -387,7 +390,7 @@ function PANEL:Build(page)
 		goto buildPage
 	end
 
-	for i, data in ipairs(pageData) do
+	for _, data in ipairs(pageData) do
 		local lineData = table.ClearKeys(data)
 
 		local line = self.ListView:AddLine(unpack(lineData))
@@ -467,7 +470,7 @@ function PANEL:Build(page)
 				return
 			end
 
-			for i, data in ipairs(self.InitData) do
+			for _, data in ipairs(self.InitData) do
 				local json = util.TableToJSON(data)
 
 				for field, value in pairs(data) do

@@ -13,8 +13,8 @@ function kate.Ban(targetId, unbanTime, banReason, adminName, adminId)
 
 	adminName = adminName or "Console"
 
-	local unixNow = os.time()
-	unbanTime = (unbanTime > 0) and (unixNow + unbanTime) or 0
+	local curTime = os.time()
+	unbanTime = (unbanTime > 0) and (curTime + unbanTime) or 0
 	kate.Bans[targetId] = {} -- cache
 
 	do
@@ -64,7 +64,7 @@ function kate.Ban(targetId, unbanTime, banReason, adminName, adminId)
 							end
 
 							queryInsert:setString(3, targetId)
-							queryInsert:setNumber(4, unixNow)
+							queryInsert:setNumber(4, curTime)
 							queryInsert:setNumber(5, unbanTime)
 							queryInsert:setString(6, banReason)
 							queryInsert:setString(7, "active")
@@ -87,7 +87,7 @@ function kate.Ban(targetId, unbanTime, banReason, adminName, adminId)
 	do
 		kate.Bans[targetId].admin_name = adminName
 		kate.Bans[targetId].admin_steamid = adminId
-		kate.Bans[targetId].ban_time = unixNow
+		kate.Bans[targetId].ban_time = curTime
 		kate.Bans[targetId].unban_time = unbanTime
 		kate.Bans[targetId].reason = banReason
 	end
@@ -168,7 +168,7 @@ hook.Add("CheckPassword", "Kate CheckPassword", function(id)
 		return
 	end
 
-	local unixNow = os.time()
+	local curTime = os.time()
 
 	local banReason = cached.reason
 	local unbanTime = cached.unban_time
@@ -183,13 +183,13 @@ hook.Add("CheckPassword", "Kate CheckPassword", function(id)
 		return false, "Sorry, but we can't identify your ban details.\nTry join later.\n\n" .. [[¯\_(ツ)_/¯]]
 	end
 
-	if (unbanTime ~= 0) and (unixNow > unbanTime) then
+	if (unbanTime ~= 0) and (curTime > unbanTime) then
 		kate.Unban(id)
 		return
 	end
 
 	if unbanTime > 0 then
-		local timeLast = unbanTime - unixNow
+		local timeLast = unbanTime - curTime
 
 		return false, string.format("You are banned by %s (%s).\nShame on you.\n\nReason: %s\nRemaining: %s\nCase ID: %s",
 			adminName,

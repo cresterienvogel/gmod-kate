@@ -11,6 +11,7 @@ do
 
 	function meta:SetTitle(title)
 		self.Title = title
+
 		return self
 	end
 
@@ -20,6 +21,7 @@ do
 
 	function meta:SetCategory(cat)
 		self.Category = cat
+
 		return self
 	end
 
@@ -29,6 +31,7 @@ do
 
 	function meta:SetImmunity(amt)
 		self.Immunity = amt
+
 		return self
 	end
 
@@ -38,6 +41,7 @@ do
 
 	function meta:SetVisible(bool)
 		self.Visible = bool
+
 		return self
 	end
 
@@ -47,6 +51,7 @@ do
 
 	function meta:SetIcon(icon)
 		self.Icon = icon
+
 		return self
 	end
 
@@ -93,6 +98,7 @@ do
 
 	function meta:SetOnlineTarget(bool)
 		self.OnlineTarget = bool
+
 		return self
 	end
 
@@ -102,6 +108,7 @@ do
 
 	function meta:SetSelfRun(bool)
 		self.SelfRun = bool
+
 		return self
 	end
 
@@ -138,17 +145,17 @@ concommand.Add(
 	"kate",
 	function(pl, cmd, args)
 		if not args[1] then
-			for c, data in pairs(kate.Commands.Stored) do
-				if data:GetAlias() then
+			for command, info in pairs(kate.Commands.Stored) do
+				if info:GetAlias() then
 					continue
 				end
 
 				local helpArgs = {}
-				for i, arg in ipairs(data:GetArgs()) do
+				for i, arg in ipairs(info:GetArgs()) do
 					helpArgs[i] = "<" .. arg .. ">"
 				end
 
-				print(string.format(" %s %s", c, table.concat(helpArgs, " ")))
+				print(string.format(" %s %s", command, table.concat(helpArgs, " ")))
 			end
 
 			return

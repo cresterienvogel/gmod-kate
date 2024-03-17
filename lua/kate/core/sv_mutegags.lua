@@ -16,8 +16,8 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 			return
 		end
 
-		local unixNow = os.time()
-		expireTime = (expireTime > 0) and (unixNow + expireTime) or 0
+		local curTime = os.time()
+		expireTime = (expireTime > 0) and (curTime + expireTime) or 0
 		kate[tagPlural][targetId] = {} -- cache
 
 		local foundPlayer = kate.FindPlayer(targetId)
@@ -61,7 +61,7 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 						local queryInsert = db:prepare(string.format("INSERT INTO `%s` (steamid, reason, %s_time, expire_time, admin_steamid, expired, case_id) VALUES (?, ?, ?, ?, ?, ?, ?)", tagSQL, tagLower))
 							queryInsert:setString(1, targetId)
 							queryInsert:setString(2, blockReason)
-							queryInsert:setNumber(3, unixNow)
+							queryInsert:setNumber(3, curTime)
 							queryInsert:setNumber(4, expireTime)
 
 							if adminId then
@@ -92,7 +92,7 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 			kate[tagPlural][targetId].reason = blockReason
 			kate[tagPlural][targetId].expire_time = expireTime
 			kate[tagPlural][targetId].admin_id = adminId
-			kate[tagPlural][targetId][tagLower .. "_time"] = unixNow
+			kate[tagPlural][targetId][tagLower .. "_time"] = curTime
 		end
 	end
 

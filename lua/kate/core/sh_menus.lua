@@ -3,7 +3,7 @@ function kate.RegisterMenu(name)
 
 	if SERVER then
 		util.AddNetworkString(tag)
-	else -- CLIENT
+	else
 		local frame
 
 		net.Receive(tag, function()

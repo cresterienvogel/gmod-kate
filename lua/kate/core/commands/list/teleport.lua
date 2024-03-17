@@ -55,8 +55,8 @@ end
 do
 	kate.Commands:Register("return", function(self, pl, args)
 		local target = args.target or pl
-		local pos = target:GetReturnPos()
 
+		local pos = target:GetReturnPos()
 		if not pos then
 			kate.Message(pl, 2, "Target has no pos to return")
 			return

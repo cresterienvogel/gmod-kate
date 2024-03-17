@@ -15,7 +15,6 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 			local reason = args.reason
 
 			local adminId = IsValid(pl) and pl:SteamID64() or "Console"
-
 			kate[tag](target, time, reason, adminId)
 
 			do
@@ -24,7 +23,7 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 					tagLower,
 					kate.GetTarget(target),
 					kate.ConvertTime(time),
-					blockReason
+					reason
 				)
 
 				kate.Print(3, msg)
@@ -44,7 +43,6 @@ for _, tag in ipairs({"Gag", "Mute"}) do
 			local reason = args.reason
 
 			local adminId = IsValid(pl) and pl:SteamID64() or "Console"
-
 			kate["Un" .. tagLower](target, reason, adminId)
 
 			do

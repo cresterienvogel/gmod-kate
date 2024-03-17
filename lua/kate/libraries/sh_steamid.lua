@@ -5,7 +5,6 @@ function kate.IsSteamID(id)
 	end
 
 	id = tostring(id)
-
 	return tobool(string.match(id, "^STEAM_%d:%d:%d+$"))
 end
 
@@ -16,7 +15,6 @@ function kate.IsSteamID64(id)
 	end
 
 	id = tostring(id)
-
 	return tobool((utf8.len(id) == 17) and (string.sub(id, 1, 4) == "7656"))
 end
 
