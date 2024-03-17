@@ -13,7 +13,7 @@ else
 
 		frameQuery = vgui.Create("KQuery")
 		frameQuery:SetTitle(string.format("Fill args for %s", kate.Commands.Stored[command]:GetTitle()))
-		frameQuery:SetSize((ScrW() / 3.5) / 2, ScrH() / 3.5)
+		frameQuery:SetWide(math.Clamp((ScrW() / 3.5) / 2, 200, 275))
 		frameQuery:SetPos(parent:GetPos())
 		frameQuery:SetDraggable(false)
 		frameQuery:MoveTo(parent:GetX() + (frameQuery:GetWide() * 2) + 16, parent:GetY(), 0.1)
@@ -58,9 +58,12 @@ else
 
 		local name = data:GetName()
 
+		local wideClamp = math.Clamp(ScrW() / 3.5, 389, 549)
+		local tallClamp = math.Clamp(ScrH() / 3.5, 220, 308)
+
 		framePlayer = vgui.Create("DFrame")
 		framePlayer:SetTitle(string.format("Choose player for %s", data:GetTitle()))
-		framePlayer:SetSize(ScrW() / 3.5, ScrH() / 3.5)
+		framePlayer:SetSize(wideClamp, tallClamp)
 		framePlayer:SetPos(frame:GetPos())
 		framePlayer:SetDraggable(false)
 		framePlayer:MoveTo(framePlayer:GetX() + framePlayer:GetWide() + 16, framePlayer:GetY(), 0.1)
@@ -82,9 +85,10 @@ else
 		fill:DockMargin(2, 2, 2, 2)
 
 		local scroll = vgui.Create("KScrollPanel", fill)
-		scroll:Dock(LEFT)
-		scroll:DockMargin(2, 2, 2, 2)
-		scroll:SetWide(framePlayer:GetWide())
+		scroll:Dock(FILL)
+		scroll:DockMargin(1, 1, 1, 1)
+
+		scroll.VBar:SetSize(0, 0)
 
 		local layout = vgui.Create("DIconLayout", scroll)
 		layout:Dock(FILL)
@@ -121,10 +125,13 @@ else
 			return
 		end
 
+		local wideClamp = math.Clamp(ScrW() / 3.5, 389, 549)
+		local tallClamp = math.Clamp(ScrH() / 3.5, 220, 308)
+
 		frame = vgui.Create("DFrame")
 		frame:SetTitle("Kate Menu")
-		frame:SetSize(ScrW() / 3.5, ScrH() / 3.5)
-		frame:SetPos(-frame:GetWide(), ScrH() / 2 - (frame:GetWide() / 2))
+		frame:SetSize(wideClamp, tallClamp)
+		frame:SetPos(-frame:GetWide(), 32)
 		frame:SetDraggable(false)
 		frame:MoveTo(32, frame:GetY(), 0.1)
 		frame:MakePopup(true)
@@ -142,7 +149,7 @@ else
 
 		local fill = vgui.Create("DPanel", frame)
 		fill:Dock(FILL)
-		fill:DockMargin(2, 2, 2, 2)
+		fill:DockMargin(1, 1, 1, 1)
 
 		do
 			local cmds, cats = kate.Commands.Stored, {}
@@ -154,9 +161,10 @@ else
 			end
 
 			local scroll = vgui.Create("KScrollPanel", fill)
-			scroll:Dock(LEFT)
-			scroll:DockMargin(2, 2, 2, 2)
-			scroll:SetWide(frame:GetWide())
+			scroll:Dock(FILL)
+			scroll:DockMargin(1, 1, 1, 1)
+
+			scroll.VBar:SetSize(0, 0)
 
 			for category in pairs(cats) do
 				local cat = vgui.Create("DCollapsibleCategory", scroll)
@@ -165,8 +173,8 @@ else
 
 				local layout = vgui.Create("DIconLayout", cat)
 				layout:Dock(FILL)
-				layout:SetSpaceY(1)
-				layout:SetSpaceX(1)
+				layout:SetSpaceY(3)
+				layout:SetSpaceX(3)
 
 				for cmd, data in pairs(cmds) do
 					if (not data:GetVisible()) or (data:GetImmunity() > LocalPlayer():GetImmunity()) or data:GetAlias() or (data:GetCategory() ~= category) then
@@ -179,9 +187,15 @@ else
 
 					local act = vgui.Create("DButton", layout)
 					act:SetText(data:GetTitle())
-					act:SetSize(frame:GetWide() / 4 - 5, 24)
 					act:SetFont("Default")
 					act:SetTooltip(string.format("kate %s", cmd))
+
+					act._PerformLayout = act.PerformLayout
+
+					act.PerformLayout = function(s, w, h)
+						s:SetSize((layout:GetWide() / 4) - 2, 24)
+						s:_PerformLayout(w, h)
+					end
 
 					if icon then
 						act:SetIcon(icon)

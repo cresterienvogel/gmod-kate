@@ -15,7 +15,7 @@ do
 			online and "everything is fine" or "reconnecting..."
 		))
 	end)
-	:SetTitle("Ping Kate DB")
+	:SetTitle("Ping")
 	:SetCategory("Managment")
 	:SetIcon("icon16/database_refresh.png")
 	:SetImmunity(1000000)
@@ -56,7 +56,7 @@ do
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)
-	:SetTitle("Set Rank")
+	:SetTitle("Rank")
 	:SetCategory("Managment")
 	:SetIcon("icon16/key_add.png")
 	:SetImmunity(50000)

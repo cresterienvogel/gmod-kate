@@ -45,7 +45,7 @@ do
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)
-	:SetTitle("Set health")
+	:SetTitle("Health")
 	:SetCategory("Utilities")
 	:SetIcon("icon16/heart.png")
 	:SetImmunity(2500)
@@ -75,7 +75,7 @@ do
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)
-	:SetTitle("Set armor")
+	:SetTitle("Armor")
 	:SetCategory("Utilities")
 	:SetIcon("icon16/shield.png")
 	:SetImmunity(2500)
@@ -176,7 +176,7 @@ do
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)
-	:SetTitle("Give ammo")
+	:SetTitle("Ammo")
 	:SetCategory("Utilities")
 	:SetIcon("icon16/bomb.png")
 	:SetImmunity(5000)

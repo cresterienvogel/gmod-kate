@@ -49,7 +49,7 @@ do
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)
-	:SetTitle("Set model")
+	:SetTitle("Model")
 	:SetCategory("Kidding")
 	:SetIcon("icon16/status_online.png")
 	:SetImmunity(10000)
@@ -66,7 +66,7 @@ do
 		target:SetModelScale(scale)
 
 		do
-			local msg = string.format("%s has set %s model scale to %s",
+			local msg = string.format("%s has set model scale %s to %s",
 				kate.GetExecuter(pl),
 				scale,
 				kate.GetTarget(target)
@@ -76,7 +76,7 @@ do
 			kate.Message(player.GetAll(), 3, msg)
 		end
 	end)
-	:SetTitle("Set scale")
+	:SetTitle("Scale")
 	:SetCategory("Kidding")
 	:SetIcon("icon16/arrow_up.png")
 	:SetImmunity(10000)
