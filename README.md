@@ -1,9 +1,10 @@
 # Kate
 Powerful and elegant Garry's mod Administration System
 
-# Requirements
-* [MySQLOO](https://github.com/FredyH/MySQLOO/releases/)
+# Menu
+There are no menus due to the instinctively named commands.<br>
+If the menu is an important part for you, consider using the "old" branch.
 
 # Aliases
-Keep in mind that there are aliases so you don't have to type entirely !teleport but you can also type !tp or !tele.<br>
-This is provided for the most part of the commands so you can type commands instinctively and it would be ok in the most cases.
+Keep in mind that there are aliases here, so you can literally write !tp or !tele instead of !teleport.<br>
+Aliases have been added to almost every command, so you can write commands on instinct and in most cases they will run.

@@ -1,44 +1,59 @@
 kate = kate or {}
 
-if SERVER then
-	require("mysqloo")
-else
-	CreateClientConVar("kate_touchplayers", "1", true, true, "Enable/disable whether you can pick up players with physgun", 0, 1)
+CreateClientConVar( 'kate_physgun', '1', true, true,
+  'Enable/disable whether you can pick up players with physgun',
+  0, 1
+)
+
+local vendor = {
+  ['sv_'] = function( fileName, fileDir )
+    if SERVER then
+      include( fileDir .. fileName )
+    end
+  end,
+  ['cl_'] = function( fileName, fileDir )
+    if SERVER then
+      AddCSLuaFile( fileDir .. fileName )
+    else
+      include( fileDir .. fileName )
+    end
+  end,
+  ['sh_'] = function( fileName, fileDir )
+    if SERVER then
+      AddCSLuaFile( fileDir .. fileName )
+    end
+
+    include( fileDir .. fileName )
+  end
+}
+
+local function includeFile( fileName, fileDir )
+  local filePrefix = string.lower( string.Left( fileName, 3 ) )
+
+  includeFunc = vendor[filePrefix]
+  if includeFunc == nil then
+    return
+  end
+
+  includeFunc( fileName, fileDir )
 end
 
-function kate.Include(f, dir)
-	local realm = string.lower(string.Left(f, 3))
+local function includeDir( curDir, isRecursive )
+  curDir = curDir .. '/'
 
-	if SERVER and (realm == "sv_") then
-		include(dir .. f)
-	elseif realm == "cl_" then
-		if SERVER then
-			AddCSLuaFile(dir .. f)
-		else
-			include(dir .. f)
-		end
-	else
-		if SERVER then
-			AddCSLuaFile(dir .. f)
-		end
+  local filesOfDir, dirsOfDir = file.Find( curDir .. '*', 'LUA' )
 
-		include(dir .. f)
-	end
+  for _, includable in ipairs( filesOfDir ) do
+    includeFile( includable, curDir )
+  end
+
+  if isRecursive then
+    for _, includable in ipairs( dirsOfDir ) do
+      includeDir( curDir .. includable, true )
+    end
+  end
 end
 
-function kate.IncludeDir(dir, recursive)
-	dir = dir .. "/"
-
-	local files, dirs = file.Find(dir .. "*", "LUA")
-	for _, v in ipairs(files) do
-		kate.Include(v, dir)
-	end
-
-	if recursive then
-		for _, v in ipairs(dirs) do
-			kate.IncludeDir(dir .. v, true)
-		end
-	end
-end
-
-kate.IncludeDir("kate", true)
+includeDir( 'kate/libraries', true )
+includeDir( 'kate/core', true )
+includeDir( 'kate/modules', true )

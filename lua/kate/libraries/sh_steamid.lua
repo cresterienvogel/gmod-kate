@@ -1,55 +1,61 @@
 -- https://github.com/SuperiorServers/dash/blob/770bd90d77e077b2b1b975f517f815e9ff24d693/lua/dash/extensions/string.lua#L26
-function kate.IsSteamID(id)
-	if not id then
-		return false
-	end
-
-	id = tostring(id)
-	return tobool(string.match(id, "^STEAM_%d:%d:%d+$"))
+function kate.IsSteamID( info )
+  return ( type( info ) == 'string' ) and string.match( info, '^STEAM_%d:%d:%d+$' )
 end
 
 -- https://github.com/SuperiorServers/dash/blob/770bd90d77e077b2b1b975f517f815e9ff24d693/lua/dash/extensions/string.lua#L30
-function kate.IsSteamID64(id)
-	if not id then
-		return false
-	end
-
-	id = tostring(id)
-	return tobool((utf8.len(id) == 17) and (string.sub(id, 1, 4) == "7656"))
+function kate.IsSteamID64( info )
+  return ( type( info ) == 'string' ) and ( utf8.len( info ) == 17 ) and ( string.sub( info, 1, 4 ) == '7656' )
 end
 
-function kate.SteamIDTo64(id)
-	local pl = kate.FindPlayer(id)
+function kate.SteamIDTo64( info )
+  local pl = ( IsValid( info ) and ( type( info ) == 'Player' ) ) and info or kate.FindPlayer( info )
 
-	if IsValid(pl or id) and (pl or id):IsPlayer() then
-		return (pl or id):SteamID64()
-	end
+  if IsValid( pl ) then
+    return pl:SteamID64()
+  end
 
-	if kate.IsSteamID64(id) then
-		return id
-	end
+  if kate.IsSteamID64( info ) then
+    return info
+  end
 
-	if kate.IsSteamID(id) then
-		return util.SteamIDTo64(id)
-	end
+  if kate.IsSteamID( info ) then
+    return util.SteamIDTo64( info )
+  end
 
-	return nil
+  return nil
 end
 
-function kate.SteamIDFrom64(id)
-	local pl = kate.FindPlayer(id)
+function kate.SteamIDFrom64( info )
+  local pl = ( IsValid( info ) and ( type( info ) == 'Player' ) ) and info or kate.FindPlayer( info )
 
-	if IsValid(pl or id) and (pl or id):IsPlayer() then
-		return (pl or id):SteamID()
-	end
+  if IsValid( pl ) then
+    return pl:SteamID()
+  end
 
-	if kate.IsSteamID(id) then
-		return id
-	end
+  if kate.IsSteamID( info ) then
+    return info
+  end
 
-	if kate.IsSteamID64(id) then
-		return util.SteamIDFrom64(id)
-	end
+  if kate.IsSteamID64( info ) then
+    return util.SteamIDFrom64( info )
+  end
 
-	return nil
+  return nil
+end
+
+function kate.TargetToSteamID64( target )
+  if IsValid( target ) then
+    return target:SteamID64()
+  end
+
+  if kate.IsSteamID64( target ) then
+    return target
+  end
+
+  if kate.IsSteamID( target ) then
+    return kate.SteamIDTo64( target )
+  end
+
+  return nil
 end

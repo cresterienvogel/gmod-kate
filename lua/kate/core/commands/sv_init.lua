@@ -1,209 +1,50 @@
-function kate.Commands.Run(pl, cmd, args)
-	cmd = string.lower(cmd)
+function kate.RunCommand( pl, cmd, args )
+  local cmdObj = kate.Commands.StoredCommands[cmd]
+  if cmdObj == nil then
+    hook.Run( 'Kate_OnCommandError', pl, nil, 'ERROR_INVALID_COMMAND', { cmd } )
 
-	local stored = kate.Commands.Stored[cmd]
-	if not stored then -- validate command
-		return false, "Command not found"
-	end
+    return
+  end
 
-	-- check if player exists and he's immunity is higher than target's
-	if IsValid(pl) and (stored:GetImmunity() > pl:GetImmunity()) then
-		return false, "Command's immunity is higher than yours"
-	end
+  local flag = cmdObj:GetFlag()
+  if IsValid( pl ) and ( flag ~= nil ) and ( not ( pl:HasFlag( '*' ) or pl:HasFlag( flag ) ) ) then
+    hook.Run( 'Kate_OnCommandError', pl, cmdObj, 'ERROR_COMMAND_NOACCESS', { cmdObj:GetName() } )
 
-	local collected = {}
-	local formatted = {}
+    return
+  end
 
-	local commandArgs = stored:GetArgs()
-	local optionalArgs = stored:GetOptionalArgs()
+  for i = 1, #args do
+    if ( string.upper( tostring( args[i] ) ) == 'STEAM_0' ) and ( args[i + 4] ) then
+      args[i] = table.concat( args, '', i, i + 4 )
 
-	-- check if something is uncertain
-	for i, arg in ipairs(commandArgs) do
-		if table.HasValue(optionalArgs, arg) then
-			continue
-		end
+      for _ = 1, 4 do
+        table.remove( args, i + 1 )
+      end
 
-		if not args[i] then
-			local msg = string.format("%s not found", arg)
-			if IsValid(pl) then
-				kate.Message(pl, 2, msg)
-			end
+      break
+    end
+  end
 
-			return false, msg
-		end
-	end
+  for k, v in ipairs( args ) do
+    args[k] = string.sub( v, 1, 126 )
+  end
 
-	-- validate
-	for i, arg in ipairs(args) do
-		local value, fail
-		local argType = commandArgs[i]
+  if hook.Run( 'Kate_CanRunCommand', nil, pl, cmdObj, args ) == false then
+    return
+  end
 
-		local argValidator = kate.Commands.Validators[argType]
-		if argValidator then
-			value, fail = argValidator:Validate(pl, cmd, i, arg, args)
-			if not value then
-				if fail then
-					if IsValid(pl) then
-						kate.Message(pl, 2, fail)
-					end
+  if IsValid( pl ) and pl:IsPlayer() then
+    if CurTime() < ( pl.KateDelay or 0 ) then
+      hook.Run( 'Kate_OnCommandError', pl, cmdObj, 'ERROR_COMMAND_COOLDOWN' )
 
-					return false, fail
-				end
+      return
+    end
 
-				return false
-			end
+    pl.KateDelay = CurTime() + 1
+  end
 
-			collected[i] = value
-		else
-			if (not arg) or (arg == "") then
-				local msg = string.format("%s not found", argType)
-
-				if IsValid(pl) then
-					kate.Message(pl, 2, msg)
-				end
-
-				return false, msg
-			end
-
-			value = string.Trim(table.concat(args, " ", i))
-			collected[i] = value
-			break
-		end
-	end
-
-	-- format collected args
-	for i, arg in ipairs(collected) do
-		local edited = string.Trim(commandArgs[i])
-		edited = string.lower(edited)
-		edited = string.Replace(edited, " ", "_")
-
-		formatted[edited] = arg
-	end
-
-	stored:Run(pl, formatted)
-	return true
+  local succ, parsedArgs = kate.Parse( pl, cmdObj, table.concat( args, ' ' ) )
+  if succ ~= false then
+    hook.Run( 'Kate_OnCommandRun', pl, cmdObj, parsedArgs, cmdObj:Run( pl, unpack( parsedArgs ) ) )
+  end
 end
-
-concommand.Add("_kate", function(pl, cmd, args)
-	if not args[1] then
-		return
-	end
-
-	cmd = string.lower(args[1])
-
-	local status = 1
-	local msg = kate.GetExecuter(pl)
-
-	-- validate command
-	local stored = kate.Commands.Stored[cmd]
-	if not stored then
-		kate.Message(pl, 2, "Command not found")
-		return
-	end
-
-	-- manage delay
-	if IsValid(pl) then
-		if CurTime() < (pl.KateCommandDelay or 0) then
-			kate.Message(pl, 2, "Wait a bit")
-			return
-		end
-
-		pl.KateCommandDelay = CurTime() + 0.3
-	end
-
-	-- run command
-	do
-		args[1] = nil
-		args = table.ClearKeys(args)
-
-		local cmdTitle = stored:GetTitle() or cmd
-
-		local success, failReason = kate.Commands.Run(pl, cmd, args)
-		if not success then
-			msg, status = string.format("%s tried to execute the %s command, but failed: %s", msg, cmdTitle, string.lower(failReason)), 2
-			goto log
-		end
-
-		msg = string.format("%s executed %s command", msg, cmdTitle)
-		if args[1] then
-			msg = string.format("%s with args \"%s\"", msg, table.concat(args, "\", \""))
-		end
-	end
-
-	::log::
-	kate.Print(status, msg)
-end)
-
-hook.Add("PlayerSay", "Kate Commands", function(pl, text)
-	if not text[1] then
-		return
-	end
-
-	local status = 1
-	local msg = kate.GetExecuter(pl)
-
-	-- cut junk
-	text = string.Trim(text)
-	if text[1] ~= "!" then -- it should be a command, right?
-		return
-	end
-
-	local args, cmd = {}
-	text = string.sub(text, 2) -- cut prefix
-	args = kate.ParseArgs(text) -- get args
-	cmd = string.lower(args[1]) -- get command
-
-	local stored = kate.Commands.Stored[cmd]
-	if not stored then -- validate command
-		kate.Message(pl, 2, "Command not found")
-		return
-	end
-
-	-- check delay
-	do
-		if CurTime() < (pl.KateCommandDelay or 0) then
-			kate.Message(pl, 2, "Wait a bit")
-			return
-		end
-
-		pl.KateCommandDelay = CurTime() + 0.3
-	end
-
-	-- manage args
-	do
-		args[1] = nil
-		args = table.ClearKeys(args)
-
-		-- make it e-e-e-easy
-		local params = stored:GetArgs()
-		if params[1] == "Target" then
-			local arg = args[1]
-			if arg then
-				if (arg == "me") or (arg == "^") then
-					args[1] = pl:SteamID64()
-				end
-			else
-				args[1] = pl:SteamID64()
-			end
-		end
-	end
-
-	do
-		local cmdTitle = stored:GetTitle() or cmd
-
-		local success, failReason = kate.Commands.Run(pl, cmd, args)
-		if not success then
-			msg, status = string.format("%s tried to execute the %s command, but failed: %s", msg, cmdTitle, string.lower(failReason)), 2
-			goto log
-		end
-
-		msg = string.format("%s executed %s command", msg, cmdTitle)
-		if args[1] then
-			msg = string.format("%s with args \"%s\"", msg, table.concat(args, "\", \""))
-		end
-	end
-
-	::log::
-	kate.Print(status, msg)
-	return ""
-end)
