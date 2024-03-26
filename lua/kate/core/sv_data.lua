@@ -10,7 +10,8 @@ kate.DB = kate.DB or SickQL:New(
 function kate.DB:OnConnected()
   kate.Print( 1, kate.GetPhrase( false, 'DATABASE_CONNECTION_SUCCESS' ) )
 
-  self:Query( [[CREATE TABLE IF NOT EXISTS kate_users (
+  self:Query(
+    [[CREATE TABLE IF NOT EXISTS kate_users (
       SteamID64 VARCHAR ( 17 ) PRIMARY KEY,
       Name TEXT NOT NULL,
       FirstJoin INT NOT NULL,
@@ -21,7 +22,8 @@ function kate.DB:OnConnected()
   )
     :Start()
 
-  self:Query( [[CREATE TABLE IF NOT EXISTS kate_usergroups (
+  self:Query(
+    [[CREATE TABLE IF NOT EXISTS kate_usergroups (
       SteamID64 VARCHAR ( 17 ) PRIMARY KEY,
       UserGroup TINYTEXT NOT NULL,
       ExpireGroup TINYTEXT NOT NULL,
@@ -31,7 +33,8 @@ function kate.DB:OnConnected()
   )
     :Start()
 
-  self:Query( [[CREATE TABLE IF NOT EXISTS kate_bans (
+  self:Query(
+    [[CREATE TABLE IF NOT EXISTS kate_bans (
       SteamID64 VARCHAR ( 17 ) NOT NULL,
       Name TEXT NOT NULL,
       IP VARCHAR ( 15 ) NOT NULL,
