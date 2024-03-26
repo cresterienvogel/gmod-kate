@@ -3,7 +3,7 @@ Powerful and elegant Garry's mod Administration System
 
 # Menu
 There are no menus due to the instinctively named commands.<br>
-If the menu is an important part for you, consider using the "old" branch.
+If the menu is an important part for you, consider using the 1.0 branch.
 
 # Aliases
 Keep in mind that there are aliases here, so you can literally write !tp or !tele instead of !teleport.<br>
