@@ -56,8 +56,8 @@ local vendor = {
     local expireObj = kate.UserGroups.Stored[args[4]]
 
     local givenGroup = givenObj:GetName()
-    local expireTime = os.date( '%d.%m.%y (%H:%M)', args[3] )
-    local expireGroup = expireObj:GetName()
+    local expireTime = ( args[3] ~= nil ) and os.date( '%d.%m.%y (%H:%M)', args[3] )
+    local expireGroup = ( args[4] ~= nil ) and expireObj:GetName()
 
     local phrase = function( showSteamId )
       local actor = kate.GetActor( pl, showSteamId )
