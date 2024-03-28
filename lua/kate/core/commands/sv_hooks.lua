@@ -1,11 +1,5 @@
 hook.Add( 'Kate_OnCommandError', 'Kate_CommandErrorNotify', function( pl, _, phrase, phraseArgs )
-  if not IsValid( pl ) then
-    kate.Print( 2, kate.GetPhrase( false, phrase, unpack( phraseArgs or {} ) ) )
-
-    return
-  end
-
-  kate.Notify( pl, 2, kate.GetPhrase( true, phrase, unpack( phraseArgs or {} ) ) )
+  kate.Notify( pl, LOG_ERROR, kate.GetPhrase( IsValid( pl ), phrase, unpack( phraseArgs or {} ) ) )
 end )
 
 hook.Add( 'PlayerSay', 'Kate_RunCommand', function( pl, text )

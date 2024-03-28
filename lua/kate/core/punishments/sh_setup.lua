@@ -20,16 +20,16 @@ kate.AddPunishment( 'Gag',
 
       if ( gag ~= 0 ) and ( os.time() > gag ) then
         kate.UnGag( pl:SteamID64() )
-        kate.Print( 3, kate.GetPhrase( false, 'LOG_UNGAG_AUTO', kate.GetTarget( pl, true ) ) )
+        kate.Print( LOG_COMMON, kate.GetPhrase( false, 'LOG_UNGAG_AUTO', kate.GetTarget( pl, true ) ) )
 
         return
       end
 
       if pl:IsSpeaking() and ( CurTime() > ( pl.KateGagMessageDelay or 0 ) ) then
         if gag == 0 then
-          kate.Notify( pl, 2, kate.GetPhrase( true, 'ERROR_GAG_PERMA' ) )
+          kate.Notify( pl, LOG_ERROR, kate.GetPhrase( true, 'ERROR_GAG_PERMA' ) )
         else
-          kate.Notify( pl, 2, kate.GetPhrase( true, 'ERROR_GAG', os.date( '%d.%m.%y (%H:%M)', gag ) ) )
+          kate.Notify( pl, LOG_ERROR, kate.GetPhrase( true, 'ERROR_GAG', os.date( '%d.%m.%y (%H:%M)', gag ) ) )
         end
 
         pl.KateGagMessageDelay = CurTime() + 1
@@ -62,16 +62,16 @@ kate.AddPunishment( 'Mute',
 
       if ( mute ~= 0 ) and ( os.time() > mute ) then
         kate.UnMute( pl:SteamID64() )
-        kate.Print( 3, kate.GetPhrase( false, 'LOG_UNMUTE_AUTO', kate.GetTarget( pl, true ) ) )
+        kate.Print( LOG_COMMON, kate.GetPhrase( false, 'LOG_UNMUTE_AUTO', kate.GetTarget( pl, true ) ) )
 
         return
       end
 
       if CurTime() > ( pl.KateMuteMessageDelay or 0 ) then
         if gag == 0 then
-          kate.Notify( pl, 2, kate.GetPhrase( true, 'ERROR_MUTE_PERMA' ) )
+          kate.Notify( pl, LOG_ERROR, kate.GetPhrase( true, 'ERROR_MUTE_PERMA' ) )
         else
-          kate.Notify( pl, 2, kate.GetPhrase( true, 'ERROR_MUTE', os.date( '%d.%m.%y (%H:%M)', gag ) ) )
+          kate.Notify( pl, LOG_ERROR, kate.GetPhrase( true, 'ERROR_MUTE', os.date( '%d.%m.%y (%H:%M)', gag ) ) )
         end
 
         pl.KateMuteMessageDelay = CurTime() + 1

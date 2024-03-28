@@ -5,8 +5,8 @@ kate.AddCommand( 'Slay', function( pl, target )
     return { 'LOG_SLAY', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'slay' )
   :AddParam( 'PLAYER_ENTITY' )
@@ -19,8 +19,8 @@ kate.AddCommand( 'Model', function( pl, target, model )
     return { 'LOG_MODEL', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ), model }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'model' )
   :AddParam( 'PLAYER_ENTITY' )
@@ -35,8 +35,8 @@ kate.AddCommand( 'Size', function( pl, target, size )
     return { 'LOG_SIZE', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ), size }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'model' )
   :AddParam( 'PLAYER_ENTITY' )
@@ -55,8 +55,8 @@ kate.AddCommand( 'Freeze', function( pl, target )
       'LOG_FREEZE', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'freeze' )
   :AddParam( 'PLAYER_ENTITY' )
@@ -75,8 +75,8 @@ kate.AddCommand( 'Ignite', function( pl, target, time )
       'LOG_IGNITE', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ), time }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'ignite' )
   :AddParam( 'PLAYER_ENTITY' )
@@ -95,8 +95,8 @@ kate.AddCommand( 'Strip', function( pl, target, swep )
       'LOG_STRIP_ALL', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'strip' )
   :AddParam( 'PLAYER_ENTITY' )

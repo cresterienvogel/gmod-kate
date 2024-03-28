@@ -6,8 +6,8 @@ kate.AddCommand( 'Health', function( pl, target, health )
     return { 'LOG_HEALTH', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ), health }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'health' )
   :AddParam( 'PLAYER_ENTITY' )
@@ -23,8 +23,8 @@ kate.AddCommand( 'Armor', function( pl, target, armor )
     return { 'LOG_ARMOR', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ), armor }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'armor' )
   :AddParam( 'PLAYER_ENTITY' )
@@ -53,8 +53,8 @@ kate.AddCommand( 'God', function( pl, target )
       'LOG_GOD', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'god' )
   :AddParam( 'PLAYER_ENTITY', true )
@@ -79,8 +79,8 @@ kate.AddCommand( 'Cloak', function( pl, target )
     'LOG_UNCLOAK', kate.GetActor( pl, true ), kate.GetTarget( target, true ) } or {
     'LOG_CLOAK', kate.GetActor( pl, true ), kate.GetTarget( target, true ) }
 
-  kate.Notify( target, 3, kate.GetPhrase( true, unpack( phraseMsg ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phraseNotify ) ) )
+  kate.Notify( target, LOG_COMMON, kate.GetPhrase( true, unpack( phraseMsg ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phraseNotify ) ) )
 end )
   :SetFlag( 'cloak' )
   :AddParam( 'PLAYER_ENTITY', true )
@@ -107,8 +107,8 @@ kate.AddCommand( 'Ammo', function( pl, target, count, ammo )
       'LOG_AMMO_ALL', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ), count }
   end
 
-  kate.Notify( kate.GetAdmins(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'ammo' )
   :AddParam( 'PLAYER_ENTITY', true )
@@ -119,14 +119,14 @@ end )
 kate.AddCommand( 'Message', function( pl, target, text )
   if IsValid( pl ) then
     local str = string.format( '[%s] %s: %s', pl:GetRank(), pl:Name(), text )
-    kate.Notify( target, 3, str )
+    kate.Notify( target, LOG_COMMON, str )
   else
     local str = string.format( '%s: %s', 'Console', text )
-    kate.Notify( target, 3, str )
+    kate.Notify( target, LOG_COMMON, str )
   end
 
   local phrase = { 'LOG_MESSAGE', kate.GetActor( pl, true ), kate.GetTarget( target, true ), text }
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase ) ) )
 end )
   :SetFlag( 'message' )
   :AddParam( 'PLAYER_ENTITY' )

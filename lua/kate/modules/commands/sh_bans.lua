@@ -42,8 +42,8 @@ kate.AddCommand( 'Ban', function( pl, target, time, reason )
       'LOG_BAN_PERMA', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), reason }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'ban' )
   :AddParam( 'PLAYER_STEAMID' )
@@ -72,8 +72,8 @@ kate.AddCommand( 'UnBan', function( pl, target, reason )
     return { 'LOG_UNBAN', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), reason }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'unban' )
   :AddParam( 'PLAYER_STEAMID' )
@@ -90,8 +90,8 @@ kate.AddCommand( 'Kick', function( pl, target, reason )
     return { 'LOG_KICK', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ), reason }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'kick' )
   :AddParam( 'PLAYER_ENTITY' )

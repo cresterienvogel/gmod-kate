@@ -25,7 +25,7 @@ kate.AddParam( 'PLAYER_STEAMID' )
     end
 
     if IsValid( result ) then
-      kate.Notify( result, 3, kate.GetPhrase( true, 'LOG_HIGHER_TARGET',
+      kate.Notify( result, LOG_COMMON, kate.GetPhrase( true, 'LOG_HIGHER_TARGET',
         kate.GetActor( caller ),
         cmdObj:GetName()
       ) )
@@ -61,7 +61,7 @@ kate.AddParam( 'PLAYER_STEAMID64' )
     end
 
     if IsValid( result ) then
-      kate.Notify( result, 3, kate.GetPhrase( true, 'LOG_HIGHER_TARGET',
+      kate.Notify( result, LOG_COMMON, kate.GetPhrase( true, 'LOG_HIGHER_TARGET',
         kate.GetActor( caller ),
         cmdObj:GetName()
       ) )
@@ -96,7 +96,7 @@ kate.AddParam( 'PLAYER_ENTITY' )
       return true, result
     end
 
-    kate.Notify( result, 3, kate.GetPhrase( true, 'LOG_HIGHER_TARGET',
+    kate.Notify( result, LOG_COMMON, kate.GetPhrase( true, 'LOG_HIGHER_TARGET',
       kate.GetActor( caller ),
       cmdObj:GetName()
     ) )
@@ -135,7 +135,7 @@ kate.AddParam( 'PLAYER_ENTITY_MULTI' )
         continue
       end
 
-      kate.Notify( result, 3, kate.GetPhrase( true, 'LOG_HIGHER_TARGET',
+      kate.Notify( result, LOG_COMMON, kate.GetPhrase( true, 'LOG_HIGHER_TARGET',
         kate.GetActor( caller ),
         cmdObj:GetName()
       ) )
@@ -294,10 +294,6 @@ kate.AddParam( 'TIME' )
 kate.AddParam( 'USERGROUP' )
   :SetName( 'UserGroup' )
   :SetParse( function( pl, _, arg )
-    if not IsValid( pl ) then
-      return true, arg
-    end
-
     local usergroup = kate.UserGroups.Stored[arg]
     if usergroup == nil then
       return false, 'ERROR_INVALID_USERGROUP', { arg }

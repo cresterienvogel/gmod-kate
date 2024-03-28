@@ -1,19 +1,16 @@
-local LOG_TIMESTAMP = Color( 234, 163, 92 )
-
-local LOG_STATUS = {
-  Color( 133, 213, 196 ), -- success
-  Color( 213, 85, 85 ), -- error
-  Color( 216, 134, 234 ) -- common
-}
+LOG_TIMESTAMP = Color( 234, 163, 92 )
+LOG_SUCCESS = Color( 133, 213, 196 )
+LOG_ERROR = Color( 213, 85, 85 )
+LOG_COMMON = Color( 216, 134, 234 )
 
 if SERVER then
   util.AddNetworkString( 'Kate_Notify' )
 else
   net.Receive( 'Kate_Notify', function()
-    local status = net.ReadUInt( 2 )
+    local status = net.ReadColor()
     local text = net.ReadString()
 
-    chat.AddText( LOG_STATUS[status] or 3, '» ', color_white, text )
+    chat.AddText( status, '» ', color_white, text )
   end )
 end
 
@@ -56,7 +53,7 @@ function kate.Print( status, ... )
     MsgC(
       LOG_TIMESTAMP,
       os.date( '[%d/%m/%y] [%H:%M:%S]', os.time() ),
-      LOG_STATUS[status] or 3,
+      status,
       ' » ',
       color_white,
       text,
@@ -75,13 +72,13 @@ function kate.Notify( recievers, status, ... )
     end
 
     if CLIENT then
-      chat.AddText( LOG_STATUS[status] or 3, '» ', color_white, text )
+      chat.AddText( status, '» ', color_white, text )
 
       return
     end
 
     net.Start( 'Kate_Notify' )
-      net.WriteUInt( status, 2 )
+      net.WriteColor( status )
       net.WriteString( text )
     net.Send( recievers )
   end )

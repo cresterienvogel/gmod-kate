@@ -10,8 +10,8 @@ kate.AddCommand( 'Teleport', function( pl, target )
     return { 'LOG_TELEPORT', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
   end
 
-  kate.Notify( kate.GetAdmins(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'teleport' )
   :AddParam( 'PLAYER_ENTITY' )
@@ -30,8 +30,8 @@ kate.AddCommand( 'Bring', function( pl, target )
     return { 'LOG_TELEPORT', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
   end
 
-  kate.Notify( kate.GetAdmins(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'teleport' )
   :AddParam( 'PLAYER_ENTITY' )
@@ -46,7 +46,7 @@ kate.AddCommand( 'Return', function( pl, target )
   local pos = target:GetReturnPos()
   if pos == nil then
     local phrase = { 'LOG_RETURN_NOPOS', kate.GetTarget( target ) }
-    kate.Notify( pl, 2, kate.GetPhrase( IsValid( pl ), unpack( phrase ) ) )
+    kate.Notify( pl, LOG_ERROR, kate.GetPhrase( IsValid( pl ), unpack( phrase ) ) )
 
     return
   end
@@ -58,8 +58,8 @@ kate.AddCommand( 'Return', function( pl, target )
     return { 'LOG_RETURN', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
   end
 
-  kate.Notify( kate.GetAdmins(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, 'LOG_RETURN', unpack( phrase( true ) ) ) )
+  kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, 'LOG_RETURN', unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'teleport' )
   :AddParam( 'PLAYER_ENTITY', true )

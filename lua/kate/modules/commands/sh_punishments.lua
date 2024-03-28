@@ -19,8 +19,8 @@ kate.AddCommand( 'Mute', function( pl, target, time, reason )
       'LOG_MUTE_PERMA', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), reason }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'mute' )
   :AddParam( 'PLAYER_STEAMID' )
@@ -39,8 +39,8 @@ kate.AddCommand( 'UnMute', function( pl, target )
     return { 'LOG_UNMUTE', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ) }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'mute' )
   :AddParam( 'PLAYER_STEAMID' )
@@ -66,8 +66,8 @@ kate.AddCommand( 'Gag', function( pl, target, time, reason )
       'LOG_GAG_PERMA', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), reason }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'gag' )
   :AddParam( 'PLAYER_STEAMID' )
@@ -86,8 +86,8 @@ kate.AddCommand( 'UnGag', function( pl, target )
     return { 'LOG_UNGAG', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ) }
   end
 
-  kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+  kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'gag' )
   :AddParam( 'PLAYER_STEAMID' )

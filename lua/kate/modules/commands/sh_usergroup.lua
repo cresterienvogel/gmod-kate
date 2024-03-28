@@ -6,8 +6,8 @@ local vendor = {
       return { 'LOG_SETGROUP', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), 'User' }
     end
 
-    kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-    kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+    kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+    kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
   end,
   SetGroup = function( pl, steamId64, givenGroup, expireTime, expireGroup )
     local args = {}
@@ -33,18 +33,21 @@ local vendor = {
   end,
   CanRun = function( pl, givenGroup, expireGroup )
     local givenObj = kate.UserGroups.Stored[givenGroup]
-    local expireObj = kate.UserGroups.Stored[expireGroup]
+    if givenObj == nil then
+      return false
+    end
 
     if IsValid( pl ) and ( givenObj:GetRelevance() > pl:GetRelevance() ) then
       local phrase = { 'ERROR_HIGHER_USERGROUP', givenObj:GetName() }
-      kate.Notify( pl, 2, kate.GetPhrase( true, unpack( phrase ) ) )
+      kate.Notify( pl, LOG_ERROR, kate.GetPhrase( true, unpack( phrase ) ) )
 
       return false
     end
 
+    local expireObj = kate.UserGroups.Stored[expireGroup]
     if ( expireGroup ~= nil ) and ( expireGroup ~= 'user' ) and ( expireObj:GetRelevance() > givenObj:GetRelevance() ) then
       local phrase = { 'ERROR_HIGHER_EXPIRED_USERGROUP', expireObj:GetName(), givenObj:GetName() }
-      kate.Notify( pl, 2, kate.GetPhrase( IsValid( pl ), unpack( phrase ) ) )
+      kate.Notify( pl, LOG_ERROR, kate.GetPhrase( IsValid( pl ), unpack( phrase ) ) )
 
       return false
     end
@@ -69,8 +72,8 @@ local vendor = {
         'LOG_SETGROUP', actor, target, givenGroup }
     end
 
-    kate.Notify( player.GetAll(), 3, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-    kate.Print( 3, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+    kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+    kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
   end
 }
 
