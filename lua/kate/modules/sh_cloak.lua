@@ -53,8 +53,8 @@ if SERVER then
   end )
 end
 
-hook.Add( 'Kate_PlayerCanNoclip', 'Kate_Cloak', function( pl )
-  if pl:GetCloak() then
+hook.Add( 'Kate_PlayerCanNoclip', 'Kate_Cloak', function( pl, desired )
+  if pl:GetCloak() and ( desired == false ) then
     return false
   end
 end )

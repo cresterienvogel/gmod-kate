@@ -293,9 +293,9 @@ kate.AddParam( 'TIME' )
 
 kate.AddParam( 'USERGROUP' )
   :SetName( 'UserGroup' )
-  :SetParse( function( pl, _, arg )
+  :SetParse( function( _, _, arg )
     local usergroup = kate.UserGroups.Stored[arg]
-    if usergroup == nil then
+    if ( usergroup == nil ) and ( arg ~= 'user' ) then
       return false, 'ERROR_INVALID_USERGROUP', { arg }
     end
 
