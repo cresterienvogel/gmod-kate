@@ -23,6 +23,10 @@ hook.Add( 'PhysgunDrop', 'Kate_Physgun', function( pl, ent )
     return
   end
 
+  if ( not IsValid( ent ) ) or ( type( ent ) ~= 'Player' ) then
+    return
+  end
+
   ent:Freeze( false )
   ent:SetMoveType( MOVETYPE_WALK )
   ent:GodDisable()
