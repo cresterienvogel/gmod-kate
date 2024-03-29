@@ -68,7 +68,7 @@ kate.AddCommand( 'Cloak', function( pl, target )
 
   target = target or pl
 
-  local isCloaked = target:GetCloak()
+  local isCloaked = target:GetNetVar( 'Kate_Cloak' )
   kate.Cloak( target, not isCloaked )
 
   local phraseMsg = isCloaked and {

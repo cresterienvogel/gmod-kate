@@ -13,7 +13,7 @@ kate.AddPunishment( 'Gag',
   },
   {
     PlayerCanHearPlayersVoice = function( _, pl )
-      local gag = pl:GetUnGagTime()
+      local gag = pl:GetNetVar( 'Kate_UnGagTime' )
       if gag == nil then
         return
       end
@@ -55,7 +55,7 @@ kate.AddPunishment( 'Mute',
   },
   {
     PlayerSay = function( pl )
-      local mute = pl:GetUnMuteTime()
+      local mute = pl:GetNetVar( 'Kate_UnMuteTime' )
       if mute == nil then
         return
       end

@@ -50,7 +50,6 @@ return {
         :Write( data.write, data.opt )
         :Read( data.read, data.opt )
         :SetLocalPlayer()
-        :Accessor( name )
     end
   end,
   RegisterPunishment = function( name, columns )

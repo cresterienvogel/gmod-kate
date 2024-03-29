@@ -31,9 +31,10 @@ function kate.SetUserGroup( steamId64, givenGroup, expireTime, expireGroup, give
         end
 
         target:SetUserGroup( 'user' )
-        target:SetExpireUserGroup( nil )
-        target:SetExpireTime( nil )
-        target:SetMentor( nil )
+
+        target:SetNetVar( 'Kate_ExpireUserGroup', nil )
+        target:SetNetVar( 'Kate_ExpireUserGroupTime', nil )
+        target:SetNetVar( 'Kate_Mentor', nil )
 
         return
       end
@@ -52,9 +53,10 @@ function kate.SetUserGroup( steamId64, givenGroup, expireTime, expireGroup, give
           end
 
           target:SetUserGroup( givenGroup )
-          target:SetExpireUserGroup( expireGroup )
-          target:SetExpireTime( expireTime )
-          target:SetMentor( adminSteamId64 )
+
+          target:SetNetVar( 'Kate_ExpireUserGroup', expireGroup )
+          target:SetNetVar( 'Kate_ExpireUserGroupTime', expireTime )
+          target:SetNetVar( 'Kate_Mentor', adminSteamId64 )
         end )
         :Start()
     end )

@@ -4,13 +4,13 @@ return {
     local steamId64 = pl:SteamID64()
     local ip = kate.StripPort( pl:IPAddress() )
 
-    pl:SetLastJoin( os.time() )
-    pl:SetSessionStarted( CurTime() )
+    pl:SetNetVar( 'Kate_LastJoin', os.time() )
+    pl:SetNetVar( 'Kate_SessionStarted', os.time() )
 
     kate.DB:Query( string.format( 'SELECT * FROM kate_users WHERE SteamID64 = %q;', steamId64 ) )
       :SetOnSuccess( function( _, info )
         if info[1] then
-          pl:SetFirstJoin( info[1].FirstJoin )
+          pl:SetNetVar( 'Kate_FirstJoin', info[1].FirstJoin )
           pl:SetNetVar( 'Kate_Playtime', info[1].Playtime )
 
           kate.DB:Query(
@@ -20,7 +20,7 @@ return {
           )
             :Start()
         else
-          pl:SetFirstJoin( os.time() )
+          pl:SetNetVar( 'Kate_FirstJoin', os.time() )
           pl:SetNetVar( 'Kate_Playtime', 0 )
 
           kate.DB:Query(
@@ -41,9 +41,10 @@ return {
       end
 
       pl:SetUserGroup( info[1]['UserGroup'] )
-      pl:SetExpireUserGroup( info[1]['ExpireGroup'] )
-      pl:SetExpireTime( info[1]['ExpireTime'] )
-      pl:SetMentor( info[1]['Mentor'] )
+
+      pl:SetNetVar( 'Kate_ExpireUserGroup', info[1]['ExpireGroup'] )
+      pl:SetNetVar( 'Kate_ExpireUserGroupTime', info[1]['ExpireTime'] )
+      pl:SetNetVar( 'Kate_Mentor', info[1]['Mentor'] )
     end )
     :Start()
   end,
@@ -69,7 +70,7 @@ return {
   SaveUserPlaytime = function( pl )
     kate.DB:Query(
       string.format( 'UPDATE kate_users SET Playtime = %i, LastJoin = %i WHERE SteamID64 = %q;',
-        pl:GetPlaytime(), os.time(), pl:SteamID64()
+        pl:GetNetVar( 'Kate_Playtime' ), os.time(), pl:SteamID64()
       )
     )
       :Start()
@@ -78,7 +79,7 @@ return {
     for _, pl in ipairs( player.GetHumans() ) do
       kate.DB:Query(
         string.format( 'UPDATE kate_users SET Playtime = %i, LastJoin = %i WHERE SteamID64 = %q;',
-          pl:GetPlaytime(), os.time(), pl:SteamID64()
+          pl:GetNetVar( 'Kate_Playtime' ), os.time(), pl:SteamID64()
         )
       )
         :Start()

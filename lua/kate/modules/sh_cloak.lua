@@ -19,7 +19,7 @@ if SERVER then
       return
     end
 
-    pl:SetCloak( shouldDraw )
+    pl:SetNetVar( 'Kate_Cloak', shouldDraw )
 
     pl:SetMoveType( shouldDraw and MOVETYPE_NOCLIP or MOVETYPE_WALK )
     pl:SetNoDraw( shouldDraw )
@@ -31,7 +31,7 @@ if SERVER then
   end
 
   hook.Add( 'PlayerSpawn', 'Kate_Cloak', function( pl )
-    local isCloaked = pl:GetCloak()
+    local isCloaked = pl:GetNetVar( 'Kate_Cloak' )
     if not isCloaked then
       return
     end
@@ -42,7 +42,7 @@ if SERVER then
   end )
 
   hook.Add( 'PlayerSwitchWeapon', 'Kate_Cloak', function( pl )
-    local isCloaked = pl:GetCloak()
+    local isCloaked = pl:GetNetVar( 'Kate_Cloak' )
     if not isCloaked then
       return
     end
@@ -54,7 +54,7 @@ if SERVER then
 end
 
 hook.Add( 'Kate_PlayerCanNoclip', 'Kate_Cloak', function( pl, desired )
-  if pl:GetCloak() and ( desired == false ) then
+  if pl:GetNetVar( 'Kate_Cloak' ) and ( desired == false ) then
     return false
   end
 end )
