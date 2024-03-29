@@ -70,7 +70,7 @@ return {
   SaveUserPlaytime = function( pl )
     kate.DB:Query(
       string.format( 'UPDATE kate_users SET Playtime = %i, LastJoin = %i WHERE SteamID64 = %q;',
-        pl:GetNetVar( 'Kate_Playtime' ), os.time(), pl:SteamID64()
+        pl:GetPlaytime(), os.time(), pl:SteamID64()
       )
     )
       :Start()
@@ -79,7 +79,7 @@ return {
     for _, pl in ipairs( player.GetHumans() ) do
       kate.DB:Query(
         string.format( 'UPDATE kate_users SET Playtime = %i, LastJoin = %i WHERE SteamID64 = %q;',
-          pl:GetNetVar( 'Kate_Playtime' ), os.time(), pl:SteamID64()
+          pl:GetPlaytime(), os.time(), pl:SteamID64()
         )
       )
         :Start()
