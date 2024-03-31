@@ -50,7 +50,7 @@ function kate.DB:OnConnected()
 end
 
 function kate.DB:OnConnectionFailed( errorMsg )
-  kate.Print( LOG_ERROR, kate.GetPhrase( false, 'DATABASE_CONNECTION_SUCCESS', errorMsg ) )
+  kate.Print( LOG_ERROR, kate.GetPhrase( false, 'DATABASE_CONNECTION_ERROR', errorMsg ) )
 end
 
 kate.DB:Connect()
