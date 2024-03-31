@@ -161,7 +161,7 @@ return {
               end
             end
 
-            hook.Run( 'Kate_PlayerUn' .. name, target, info )
+            hook.Run( 'Kate_PlayerUn' .. name, target )
           end )
           :Start()
       end

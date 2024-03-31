@@ -1,4 +1,4 @@
-local PLAYER = debug.getregistry()['Player']
+local PLAYER = FindMetaTable( 'Player' )
 
 function PLAYER:GetUserGroupInfo()
   return kate.UserGroups.Stored[self:GetUserGroup()]
@@ -28,7 +28,7 @@ function PLAYER:HasFlag( flag )
     return false
   end
 
-  return info:GetFlag( flag )
+  return info:HasFlag( flag )
 end
 
 function PLAYER:GetFlags()

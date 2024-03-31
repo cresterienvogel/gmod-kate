@@ -10,7 +10,9 @@ local blacklist = {
 function kate.IsPosEmpty( vector, ignore )
   ignore = ignore or {}
 
-  local point, a = util.PointContents( vector ), not blacklist[point]
+  local point = util.PointContents( vector )
+
+  local a = not blacklist[point]
   if not a then
     return false
   end

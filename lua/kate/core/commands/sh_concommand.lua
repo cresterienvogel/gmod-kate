@@ -36,7 +36,7 @@ concommand.Add( 'kate',
       end
 
       local help = tag .. ' ' .. k
-      if ( argsCount == 0 ) or ( ( argsCount ~= 0 ) and string.StartWith( k, string.lower( args[1] ) ) ) then
+      if ( argsCount == 0 ) or ( ( argsCount ~= 0 ) and string.StartsWith( k, string.lower( args[1] ) ) ) then
         for _, param in ipairs( v:GetParams() ) do
           local paramObj = kate.Commands.StoredParams[param.Enum]
           help = help .. ' ' .. ( '<' .. paramObj:GetName() .. '>' )

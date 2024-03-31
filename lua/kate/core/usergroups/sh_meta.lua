@@ -57,7 +57,7 @@ function USERGROUP:GetName()
   return self.Name
 end
 
-function USERGROUP:GetFlag( flag )
+function USERGROUP:HasFlag( flag )
   return ( self.Flags['*'] and true ) or ( self.Flags[flag] or false )
 end
 
