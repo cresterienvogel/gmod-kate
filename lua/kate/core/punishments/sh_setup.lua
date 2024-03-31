@@ -68,10 +68,10 @@ kate.AddPunishment( 'Mute',
       end
 
       if CurTime() > ( pl.KateMuteMessageDelay or 0 ) then
-        if gag == 0 then
+        if mute == 0 then
           kate.Notify( pl, LOG_ERROR, kate.GetPhrase( true, 'ERROR_MUTE_PERMA' ) )
         else
-          kate.Notify( pl, LOG_ERROR, kate.GetPhrase( true, 'ERROR_MUTE', os.date( '%d.%m.%y (%H:%M)', gag ) ) )
+          kate.Notify( pl, LOG_ERROR, kate.GetPhrase( true, 'ERROR_MUTE', os.date( '%d.%m.%y (%H:%M)', mute ) ) )
         end
 
         pl.KateMuteMessageDelay = CurTime() + 1
