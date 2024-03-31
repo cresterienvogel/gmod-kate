@@ -90,7 +90,7 @@ kate.AddCommand( 'Ammo', function( pl, target, count, ammo )
     return
   end
 
-  target = targer or pl
+  target = target or pl
   count = count or 100
 
   if ammo ~= nil then
