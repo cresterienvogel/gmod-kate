@@ -6,8 +6,8 @@ local phrases = {
   LOG_SLAY = '%s убил %s',
   LOG_MODEL = '%s установил модель %s на %s',
   LOG_SIZE = '%s установил размер модели %s на %s',
-  LOG_HEALTH = '%s установил %s здоровья %s',
-  LOG_ARMOR = '%s установил %s брони %s',
+  LOG_HEALTH = '%s установил %s %s здоровья',
+  LOG_ARMOR = '%s установил %s %s брони',
   LOG_MESSAGE = '%s отправил сообщение %s: %s',
   LOG_RCON_SENT = 'RCON команда запущена',
 
