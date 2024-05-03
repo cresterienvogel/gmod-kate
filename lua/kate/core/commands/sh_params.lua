@@ -14,7 +14,7 @@ kate.AddParam( 'PLAYER_STEAMID' )
       return true, result or arg
     end
 
-    local group = kate.UserGroups.Cache[kate.SteamIDTo64( arg )]
+    local group = kate.UserGroups.Cache[kate.SteamIDTo64( result or arg )]
     if group == nil then
       return true, result or arg
     end
@@ -50,7 +50,7 @@ kate.AddParam( 'PLAYER_STEAMID64' )
       return true, result or arg
     end
 
-    local group = kate.UserGroups.Cache[arg]
+    local group = kate.UserGroups.Cache[result or arg]
     if group == nil then
       return true, result or arg
     end
