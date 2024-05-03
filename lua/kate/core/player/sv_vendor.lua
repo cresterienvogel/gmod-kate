@@ -5,7 +5,7 @@ return {
     local ip = kate.StripPort( pl:IPAddress() )
 
     pl:SetNetVar( 'Kate_LastJoin', os.time() )
-    pl:SetNetVar( 'Kate_SessionStarted', os.time() )
+    pl:SetNetVar( 'Kate_SessionStarted', CurTime() )
 
     kate.DB:Query( string.format( 'SELECT * FROM kate_users WHERE SteamID64 = %q;', steamId64 ) )
       :SetOnSuccess( function( _, info )

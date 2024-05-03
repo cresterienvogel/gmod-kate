@@ -1,8 +1,6 @@
-AddCSLuaFile( 'vendor.lua' )
-
 kate.Punishments = kate.Punishments or {
   Stored = {},
-  Vendor = include( 'vendor.lua' )
+  Vendor = include( 'sh_vendor.lua' )
 }
 
 local vendor = {

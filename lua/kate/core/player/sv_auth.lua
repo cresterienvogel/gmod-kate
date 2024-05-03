@@ -1,4 +1,4 @@
-local vendor = include( 'vendor.lua' )
+local vendor = include( 'sv_vendor.lua' )
 
 hook.Add( 'PlayerAuthed', 'Kate_SetUserInfo', function( pl )
   vendor.LoadUserInfo( pl )

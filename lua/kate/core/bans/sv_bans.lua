@@ -1,6 +1,6 @@
 kate.Bans = kate.Bans or {
   Cache = {},
-  Vendor = include( 'vendor.lua' )
+  Vendor = include( 'sv_vendor.lua' )
 }
 
 local vendor = {
