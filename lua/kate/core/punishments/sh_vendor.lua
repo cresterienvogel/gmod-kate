@@ -27,7 +27,6 @@ return {
 
       for k, v in pairs( columns ) do
         handled = handled + 1
-
         content = content .. ( string.format( '%s %s', k, ( datatypes[v] ~= nil ) and datatypes[v].type or datatypes.string.type ) )
 
         if handled ~= total then
@@ -98,7 +97,6 @@ return {
 
               for k in pairs( columns ) do
                 handled = handled + 1
-
                 keys = keys .. k
 
                 if handled ~= total then
@@ -115,7 +113,6 @@ return {
 
               for k in pairs( columns ) do
                 handled = handled + 1
-
                 values = values .. ( ( type( info[k] ) == 'string' ) and string.format( '%q', kate.DB:Escape( info[k] ) ) or info[k] )
 
                 if handled ~= total then

@@ -29,8 +29,8 @@ local vendor = {
 
 local function includeFile( fileName, fileDir )
   local filePrefix = string.lower( string.Left( fileName, 3 ) )
-
   local includeFunc = vendor[filePrefix]
+
   if includeFunc == nil then
     return
   end

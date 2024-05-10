@@ -7,7 +7,7 @@ function kate.FindPlayer( info )
     return info
   end
 
-  for _, pl in ipairs( player.GetAll() ) do
+  for _, pl in player.Iterator() do
     if tonumber( info ) == pl:UserID() then
       return pl
     end

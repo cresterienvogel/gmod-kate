@@ -5,30 +5,29 @@ kate.AddCommand( 'Ban', function( pl, target, time, reason )
   end
 
   local args = {}
-
-  args['Reason'] = reason
+  args.Reason = reason
 
   if time ~= 0 then
-    args['UnbanTime'] = os.time() + time
+    args.UnbanTime = os.time() + time
   end
 
   if IsValid( pl ) then
-    args['AdminSteamID64'] = pl:SteamID64()
-    args['AdminName'] = pl:Name()
-    args['AdminIP'] = kate.StripPort( pl:IPAddress() )
+    args.AdminSteamID64 = pl:SteamID64()
+    args.AdminName = pl:Name()
+    args.AdminIP = kate.StripPort( pl:IPAddress() )
   end
 
   if IsValid( target ) then
-    args['Name'] = target:Name()
-    args['IP'] = kate.StripPort( target:IPAddress() )
+    args.Name = target:Name()
+    args.IP = kate.StripPort( target:IPAddress() )
 
     kate.Ban( steamId64, args )
   else
     kate.DB:Query( string.format( 'SELECT Name, IP FROM kate_users WHERE SteamID64 = %q', steamId64 ) )
       :SetOnSuccess( function( _, info )
         if info[1] then
-          args['Name'] = info[1]['Name']
-          args['IP'] = info[1]['IP']
+          args.Name = info[1].Name
+          args.IP = info[1].IP
         end
 
         kate.Ban( steamId64, args )
@@ -37,8 +36,8 @@ kate.AddCommand( 'Ban', function( pl, target, time, reason )
   end
 
   local phrase = function( showSteamId )
-    return ( args['UnbanTime'] ~= nil ) and {
-      'LOG_BAN', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), os.date( '%d.%m.%y (%H:%M)', args['UnbanTime'] ), reason } or {
+    return ( args.UnbanTime ~= nil ) and {
+      'LOG_BAN', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), os.date( '%d.%m.%y (%H:%M)', args.UnbanTime ), reason } or {
       'LOG_BAN_PERMA', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), reason }
   end
 
@@ -57,13 +56,12 @@ kate.AddCommand( 'UnBan', function( pl, target, reason )
   end
 
   local args = {}
-
-  args['Reason'] = reason
+  args.Reason = reason
 
   if IsValid( pl ) then
-    args['AdminSteamID64'] = pl:SteamID64()
-    args['AdminName'] = pl:Name()
-    args['AdminIP'] = kate.StripPort( pl:IPAddress() )
+    args.AdminSteamID64 = pl:SteamID64()
+    args.AdminName = pl:Name()
+    args.AdminIP = kate.StripPort( pl:IPAddress() )
   end
 
   kate.Unban( steamId64, args )

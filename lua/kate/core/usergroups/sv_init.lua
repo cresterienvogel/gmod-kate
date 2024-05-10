@@ -67,12 +67,12 @@ local function cacheUsers()
   kate.UserGroups.Cache = {}
 
   kate.DB:Query( 'SELECT SteamID64, UserGroup FROM kate_usergroups;' )
-  :SetOnSuccess( function( _, info )
-    for _, data in ipairs( info ) do
-      kate.UserGroups.Cache[data.SteamID64] = data.UserGroup
-    end
-  end )
-  :Start()
+    :SetOnSuccess( function( _, info )
+      for _, data in ipairs( info ) do
+        kate.UserGroups.Cache[data.SteamID64] = data.UserGroup
+      end
+    end )
+    :Start()
 end
 
 timer.Simple( 0, cacheUsers )

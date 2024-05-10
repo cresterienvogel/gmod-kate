@@ -2,7 +2,7 @@ return {
   LoadUserInfo = function( pl )
     local name = pl:Name()
     local steamId64 = pl:SteamID64()
-    local ip = kate.StripPort( pl:IPAddress() )
+    local address = kate.StripPort( pl:IPAddress() )
 
     pl:SetNetVar( 'Kate_LastJoin', os.time() )
     pl:SetNetVar( 'Kate_SessionStarted', CurTime() )
@@ -15,7 +15,7 @@ return {
 
           kate.DB:Query(
             string.format( 'UPDATE kate_users SET Name = %q, LastJoin = %i, IP = %q WHERE SteamID64 = %q;',
-              kate.DB:Escape( name ), os.time(), ip, steamId64
+              kate.DB:Escape( name ), os.time(), address, steamId64
             )
           )
             :Start()
@@ -25,7 +25,7 @@ return {
 
           kate.DB:Query(
             string.format( 'INSERT INTO kate_users ( SteamID64, Name, FirstJoin, LastJoin, Playtime, IP ) VALUES ( %q, %q, %i, %i, %i, %q );',
-              steamId64, kate.DB:Escape( name ), os.time(), os.time(), 0, ip
+              steamId64, kate.DB:Escape( name ), os.time(), os.time(), 0, address
             )
           )
             :Start()
@@ -35,18 +35,18 @@ return {
   end,
   LoadUserGroup = function( pl )
     kate.DB:Query( string.format( 'SELECT * FROM kate_usergroups WHERE SteamID64 = %q;', pl:SteamID64() ) )
-    :SetOnSuccess( function( _, info )
-      if info[1] == nil then
-        return
-      end
+      :SetOnSuccess( function( _, info )
+        if info[1] == nil then
+          return
+        end
 
-      pl:SetUserGroup( info[1]['UserGroup'] )
+        pl:SetUserGroup( info[1]['UserGroup'] )
 
-      pl:SetNetVar( 'Kate_ExpireUserGroup', info[1]['ExpireGroup'] )
-      pl:SetNetVar( 'Kate_ExpireUserGroupTime', info[1]['ExpireTime'] )
-      pl:SetNetVar( 'Kate_Mentor', info[1]['Mentor'] )
-    end )
-    :Start()
+        pl:SetNetVar( 'Kate_ExpireUserGroup', info[1]['ExpireGroup'] )
+        pl:SetNetVar( 'Kate_ExpireUserGroupTime', info[1]['ExpireTime'] )
+        pl:SetNetVar( 'Kate_Mentor', info[1]['Mentor'] )
+      end )
+      :Start()
   end,
   LoadUserPunishments = function( pl )
     for punishment in pairs( kate.Punishments.Stored ) do
