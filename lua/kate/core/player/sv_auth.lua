@@ -1,6 +1,10 @@
 local vendor = include( 'sv_vendor.lua' )
 
 hook.Add( 'PlayerAuthed', 'Kate_SetUserInfo', function( pl )
+  if not IsValid( pl ) then
+    return
+  end
+
   vendor.LoadUserInfo( pl )
   vendor.LoadUserGroup( pl )
   vendor.LoadUserPunishments( pl )

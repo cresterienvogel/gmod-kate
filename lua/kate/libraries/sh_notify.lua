@@ -2,6 +2,7 @@ LOG_TIMESTAMP = Color( 234, 163, 92 )
 LOG_SUCCESS = Color( 133, 213, 196 )
 LOG_ERROR = Color( 213, 85, 85 )
 LOG_COMMON = Color( 216, 134, 234 )
+LOG_PLAYER = Color( 134, 253, 136 )
 
 if SERVER then
   util.AddNetworkString( 'Kate_Notify' )
@@ -9,8 +10,20 @@ else
   net.Receive( 'Kate_Notify', function()
     local status = net.ReadColor()
     local text = net.ReadString()
+    local names = net.ReadTable()
 
-    chat.AddText( status, '» ', color_white, text )
+    local args = {}
+    string.gsub( text, '%S+', function( word )
+      if names[word] ~= nil then
+        args[#args + 1] = LOG_PLAYER
+        args[#args + 1] = word .. ' '
+        args[#args + 1] = color_white
+      else
+        args[#args + 1] = word .. ' '
+      end
+    end )
+
+    chat.AddText( status, '» ', color_white, unpack( args ) )
   end )
 end
 
@@ -77,9 +90,15 @@ function kate.Notify( recievers, status, ... )
       return
     end
 
+    local names = {}
+    for _, pl in player.Iterator() do
+      names[pl:Name()] = true
+    end
+
     net.Start( 'Kate_Notify' )
       net.WriteColor( status )
       net.WriteString( text )
+      net.WriteTable( names )
     net.Send( recievers )
   end )
 end
