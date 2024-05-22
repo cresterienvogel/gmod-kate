@@ -78,7 +78,7 @@ kate.AddCommand( 'Return', function( pl, target )
   end
 
   kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
-  kate.Print( LOG_COMMON, kate.GetPhrase( false, 'LOG_RETURN', unpack( phrase( true ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
 end )
   :SetFlag( 'teleport' )
   :AddParam( 'PLAYER_ENTITY', true )
