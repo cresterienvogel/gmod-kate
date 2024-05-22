@@ -42,8 +42,3 @@ nw.Register( 'Kate_Cloak' )
   :Write( net.WriteBool )
   :Read( net.ReadBool )
   :SetLocalPlayer()
-
-nw.Register( 'Kate_ReturnPos' )
-  :Write( net.WriteVector )
-  :Read( net.ReadVector )
-  :SetLocalPlayer()
