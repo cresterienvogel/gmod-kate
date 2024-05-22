@@ -14,6 +14,10 @@ kate.AddParam( 'PLAYER_STEAMID' )
       return true, result or arg
     end
 
+    if caller == result then
+      return true, result or arg
+    end
+
     local group = kate.UserGroups.Cache[kate.SteamIDTo64( result or arg )]
     if group == nil then
       return true, result or arg
@@ -47,6 +51,10 @@ kate.AddParam( 'PLAYER_STEAMID64' )
     end
 
     if not IsValid( caller ) then
+      return true, result or arg
+    end
+
+    if caller == result then
       return true, result or arg
     end
 
@@ -86,6 +94,10 @@ kate.AddParam( 'PLAYER_ENTITY' )
       return true, result
     end
 
+    if caller == result then
+      return true, result
+    end
+
     local group = kate.UserGroups.Cache[result:SteamID64()]
     if group == nil then
       return true, result
@@ -116,6 +128,12 @@ kate.AddParam( 'PLAYER_ENTITY_MULTI' )
       end
 
       if not IsValid( caller ) then
+        results[#results + 1] = result
+
+        continue
+      end
+
+      if caller == result then
         results[#results + 1] = result
 
         continue
