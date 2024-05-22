@@ -15,6 +15,7 @@ local phrases = {
   LOG_MESSAGE = '%s sent message to %s: %s',
   LOG_RCON_SENT = 'RCON command run',
 
+  LOG_GOTO = '%s teleported to %s',
   LOG_TELEPORT = '%s teleported %s',
   LOG_RETURN = '%s returned %s',
   LOG_RETURN_NOPOS = '%s has no return position',

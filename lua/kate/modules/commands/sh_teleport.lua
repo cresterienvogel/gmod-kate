@@ -1,3 +1,22 @@
+kate.AddCommand( 'GoTo', function( pl, target )
+  if ( not IsValid( pl ) ) or ( pl == target ) then
+    return
+  end
+
+  pl:SetNetVar( 'Kate_ReturnPos', pl:GetPos() )
+  pl:SetPos( kate.FindEmptyPos( target:GetPos(), {}, 32, 32, Vector( 16, 16, 64 ) ) )
+
+  local phrase = function( showSteamId )
+    return { 'LOG_GOTO', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
+  end
+
+  kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+  kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
+end )
+  :SetFlag( 'teleport' )
+  :AddParam( 'PLAYER_ENTITY' )
+  :AddAlias( 'go' )
+
 kate.AddCommand( 'Teleport', function( pl, target )
   if ( not IsValid( pl ) ) or ( pl == target ) then
     return

@@ -11,6 +11,7 @@ local phrases = {
   LOG_MESSAGE = '%s отправил сообщение %s: %s',
   LOG_RCON_SENT = 'RCON команда запущена',
 
+  LOG_GOTO = '%s телепортировался к %s',
   LOG_TELEPORT = '%s телепортировал %s',
   LOG_RETURN = '%s вернул %s',
   LOG_RETURN_NOPOS = '%s не имеет позиции для возврата',
