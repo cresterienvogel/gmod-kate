@@ -9,6 +9,10 @@ return {
 
     kate.DB:Query( string.format( 'SELECT * FROM kate_users WHERE SteamID64 = %q;', steamId64 ) )
       :SetOnSuccess( function( _, info )
+        if not IsValid( pl ) then
+          return
+        end
+
         if info[1] then
           pl:SetNetVar( 'Kate_FirstJoin', info[1].FirstJoin )
           pl:SetNetVar( 'Kate_Playtime', info[1].Playtime )
@@ -36,7 +40,7 @@ return {
   LoadUserGroup = function( pl )
     kate.DB:Query( string.format( 'SELECT * FROM kate_usergroups WHERE SteamID64 = %q;', pl:SteamID64() ) )
       :SetOnSuccess( function( _, info )
-        if info[1] == nil then
+        if ( not IsValid( pl ) ) or ( info[1] == nil ) then
           return
         end
 
@@ -54,7 +58,7 @@ return {
 
       kate.DB:Query( string.format( 'SELECT * FROM kate_punishments_%s WHERE SteamID64 = %q;', tbl, pl:SteamID64() ) )
         :SetOnSuccess( function( _, info )
-          if info[1] == nil then
+          if ( not IsValid( pl ) ) or ( info[1] == nil ) then
             return
           end
 
