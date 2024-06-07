@@ -7,21 +7,49 @@ LOG_PLAYER = Color( 134, 253, 136 )
 if SERVER then
   util.AddNetworkString( 'Kate_Notify' )
 else
+  local function split( text )
+    local tbl = {}
+    for str in string.gmatch( text, '([^%s]+)' ) do
+      tbl[#tbl + 1] = str
+    end
+
+    return tbl
+  end
+
+  local function match( words, names )
+    local phrase = ''
+    for i, word in ipairs( words ) do
+      phrase = ( i > 1 ) and ( phrase .. ' ' .. word ) or word
+      if names[phrase] ~= nil then
+        return phrase, i
+      end
+    end
+
+    return nil, 0
+  end
+
   net.Receive( 'Kate_Notify', function()
     local status = net.ReadColor()
     local text = net.ReadString()
     local names = net.ReadTable()
 
+    local i = 1
     local args = {}
-    string.gsub( text, '%S+', function( word )
-      if names[word] ~= nil then
+    local words = split( text )
+
+    while i <= #words do
+      local phrase, length = match( { unpack( words, i ) }, names )
+      if phrase ~= nil then
         args[#args + 1] = LOG_PLAYER
-        args[#args + 1] = word .. ' '
+        args[#args + 1] = phrase .. ' '
         args[#args + 1] = color_white
+
+        i = i + length
       else
-        args[#args + 1] = word .. ' '
+        args[#args + 1] = words[i] .. ' '
+        i = i + 1
       end
-    end )
+    end
 
     chat.AddText( status, '» ', color_white, unpack( args ) )
   end )
