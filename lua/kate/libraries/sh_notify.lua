@@ -2,7 +2,7 @@ LOG_TIMESTAMP = Color( 234, 163, 92 )
 LOG_SUCCESS = Color( 133, 213, 196 )
 LOG_ERROR = Color( 213, 85, 85 )
 LOG_COMMON = Color( 216, 134, 234 )
-LOG_PLAYER = Color( 134, 253, 136 )
+LOG_HIGHLIGHT = Color( 134, 253, 136 )
 
 if SERVER then
   util.AddNetworkString( 'Kate_Notify' )
@@ -31,16 +31,20 @@ else
   net.Receive( 'Kate_Notify', function()
     local status = net.ReadColor()
     local text = net.ReadString()
-    local names = net.ReadTable()
+    local highlight = net.ReadTable()
+
+    for _, p in pairs( kate.Commands.StoredParams ) do
+      highlight[p:GetName()] = true
+    end
 
     local i = 1
     local args = {}
     local words = split( text )
 
     while i <= #words do
-      local phrase, length = match( { unpack( words, i ) }, names )
+      local phrase, length = match( { unpack( words, i ) }, highlight )
       if phrase ~= nil then
-        args[#args + 1] = LOG_PLAYER
+        args[#args + 1] = LOG_HIGHLIGHT
         args[#args + 1] = phrase .. ' '
         args[#args + 1] = color_white
 
