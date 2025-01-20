@@ -1,4 +1,4 @@
-timer.Create( 'Kate_CheckExpirations', 120, 0, function()
+timer.Create( 'Kate::CheckExpirations', 120, 0, function()
   for _, pl in ipairs( player.GetHumans() ) do
     local steamId64 = pl:SteamID64()
 

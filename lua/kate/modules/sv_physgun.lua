@@ -1,4 +1,4 @@
-hook.Add( 'PhysgunPickup', 'Kate_Physgun', function( pl, ent )
+hook.Add( 'PhysgunPickup', 'Kate::HandlePhysgun', function( pl, ent )
   if ( not ( pl:HasFlag( '*' ) or pl:HasFlag( 'physgun' ) ) ) or ( pl:GetInfoNum( 'kate_physgun', 1 ) == 0 ) then
     return
   end
@@ -18,7 +18,7 @@ hook.Add( 'PhysgunPickup', 'Kate_Physgun', function( pl, ent )
   return true
 end )
 
-hook.Add( 'PhysgunDrop', 'Kate_Physgun', function( pl, ent )
+hook.Add( 'PhysgunDrop', 'Kate::HandlePhysgun', function( pl, ent )
   if ( not ( pl:HasFlag( '*' ) or pl:HasFlag( 'physgun' ) ) ) or ( pl:GetInfoNum( 'kate_physgun', 1 ) == 0 ) then
     return
   end

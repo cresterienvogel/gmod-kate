@@ -41,6 +41,11 @@ function PLAYER:GetFlags()
 end
 
 function PLAYER:GetRelevance()
+  local custom = hook.Run( 'Kate::GetPlayerRelevance', self )
+  if custom ~= nil then
+    return custom
+  end
+
   local info = self:GetUserGroupInfo()
   if info == nil then
     return 0

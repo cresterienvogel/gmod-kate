@@ -44,18 +44,18 @@ function kate.Parse( caller, cmdObj, argString )
     local paramObj = kate.Commands.StoredParams[v.Enum]
 
     if ( args[1] == nil ) and ( not v.Optional ) then
-      hook.Run( 'Kate_OnCommandError', caller, cmdObj, 'ERROR_MISSING_PARAM', { k, paramObj:GetName() } )
+      hook.Run( 'Kate::OnCommandError', caller, cmdObj, 'ERROR_MISSING_PARAM', { k, paramObj:GetName() } )
 
       return false
     elseif args[1] ~= nil then
       local succ, value, used = paramObj:Parse( caller, cmdObj, args[1], args, k )
       if succ == false then
-        hook.Run( 'Kate_OnCommandError', caller, cmdObj, value, used )
+        hook.Run( 'Kate::OnCommandError', caller, cmdObj, value, used )
 
         return false
       end
 
-      if hook.Run( 'Kate_CanParamParse', caller, cmdObj, v.Enum, value ) == false then
+      if hook.Run( 'Kate::CanParamParse', caller, cmdObj, v.Enum, value ) == false then
         return false
       end
 

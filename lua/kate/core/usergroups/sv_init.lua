@@ -76,4 +76,4 @@ local function cacheUsers()
 end
 
 timer.Simple( 0, cacheUsers )
-timer.Create( 'Kate_CacheUsers', 60, 0, cacheUsers )
+timer.Create( 'Kate::CacheUsers', 60, 0, cacheUsers )

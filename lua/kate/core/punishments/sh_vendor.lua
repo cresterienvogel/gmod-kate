@@ -136,7 +136,7 @@ return {
                   end
                 end
 
-                hook.Run( 'Kate_Player' .. name, target, info )
+                hook.Run( 'Kate::Player' .. name, target, info )
               end )
               :Start()
           end )
@@ -158,7 +158,7 @@ return {
               end
             end
 
-            hook.Run( 'Kate_PlayerUn' .. name, target )
+            hook.Run( 'Kate::PlayerUn' .. name, target )
           end )
           :Start()
       end

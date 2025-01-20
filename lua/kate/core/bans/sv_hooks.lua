@@ -1,4 +1,4 @@
-hook.Add( 'CheckPassword', 'Kate_Ban', function( steamId64 )
+hook.Add( 'CheckPassword', 'Kate::HandleBans', function( steamId64 )
   local cached = kate.Bans.Cache[steamId64]
   if cached == nil then
     return

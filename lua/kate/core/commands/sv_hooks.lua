@@ -1,8 +1,8 @@
-hook.Add( 'Kate_OnCommandError', 'Kate_CommandErrorNotify', function( pl, _, phrase, phraseArgs )
+hook.Add( 'Kate::OnCommandError', 'Kate::CommandErrorNotify', function( pl, _, phrase, phraseArgs )
   kate.Notify( pl, LOG_ERROR, kate.GetPhrase( IsValid( pl ), phrase, unpack( phraseArgs or {} ) ) )
 end )
 
-hook.Add( 'PlayerSay', 'Kate_RunCommand', function( pl, text )
+hook.Add( 'PlayerSay', 'Kate::RunCommand', function( pl, text )
   text = string.Trim( text )
   if text[1] ~= '!' then
     return

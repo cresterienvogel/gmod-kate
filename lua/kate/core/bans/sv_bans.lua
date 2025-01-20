@@ -98,4 +98,4 @@ local function cacheBans()
 end
 
 timer.Simple( 0, cacheBans )
-timer.Create( 'Kate_SyncBans', 60, 0, cacheBans )
+timer.Create( 'Kate::SyncBans', 60, 0, cacheBans )

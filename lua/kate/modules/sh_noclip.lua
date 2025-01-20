@@ -1,5 +1,5 @@
-hook.Add( 'PlayerNoClip', 'Kate_HandleNoclip', function( pl, desired )
-  if hook.Run( 'Kate_PlayerCanNoclip', pl, desired ) == false then
+hook.Add( 'PlayerNoClip', 'Kate::HandleNoclip', function( pl, desired )
+  if hook.Run( 'Kate::PlayerCanNoclip', pl, desired ) == false then
     return false
   end
 

@@ -15,13 +15,12 @@ function kate.AddPunishment( name, columns, vars, hooks )
   if SERVER then
     vendor.CreateTable( name, columns )
 
-    local punishment = vendor.RegisterPunishment( name, columns, vars )
-
     for hookName, func in pairs( hooks ) do
-      hook.Add( hookName, 'Kate_' .. name, func )
+      hook.Add( hookName, 'Kate::' .. name, func )
     end
 
+    local punishment = vendor.RegisterPunishment( name, columns, vars )
     timer.Simple( 0, punishment.LoadPlayersCache )
-    timer.Create( 'Kate_Load' .. name, 60, 0, punishment.LoadPlayersCache )
+    timer.Create( 'Kate::Load' .. name, 60, 0, punishment.LoadPlayersCache )
   end
 end
