@@ -78,7 +78,10 @@ local phrases = {
   ERROR_INVALID_SWEP = 'Оружие не найдено: %s',
   ERROR_INVALID_PLAYER = 'Игрок не найден: %s',
   ERROR_INVALID_NUMBER = 'Некорректное число: %s',
-  ERROR_INVALID_TIME = 'Некорректное время: %s'
+  ERROR_INVALID_TIME = 'Некорректное время: %s',
+
+  ADMIN = 'Администратор',
+  SENT_TO = 'Отправлено'
 }
 
 for phrase, translation in pairs( phrases ) do

@@ -77,26 +77,27 @@ local vendor = {
   end
 }
 
-kate.AddCommand( 'Set Group', function( pl, target, givenGroup, expireTime, expireGroup )
-  local steamId64 = kate.TargetToSteamID64( target )
-  if steamId64 == nil then
-    return
-  end
+kate.AddCommand( 'Set Group',
+  function( pl, target, givenGroup, expireTime, expireGroup )
+    local steamId64 = kate.TargetToSteamID64( target )
+    if steamId64 == nil then
+      return
+    end
 
-  if givenGroup == 'user' then
-    vendor.SetUser( pl, steamId64 )
+    if givenGroup == 'user' then
+      vendor.SetUser( pl, steamId64 )
 
-    return
-  end
+      return
+    end
 
-  local canRun = vendor.CanRun( pl, givenGroup, expireGroup )
-  if canRun == false then
-    return
-  end
+    local canRun = vendor.CanRun( pl, givenGroup, expireGroup )
+    if canRun == false then
+      return
+    end
 
-  local args = vendor.SetGroup( pl, steamId64, givenGroup, expireTime, expireGroup )
-  vendor.Log( pl, steamId64, args )
-end )
+    local args = vendor.SetGroup( pl, steamId64, givenGroup, expireTime, expireGroup )
+    vendor.Log( pl, steamId64, args )
+  end )
   :SetFlag( 'usergroup' )
   :AddParam( 'PLAYER_STEAMID' )
   :AddParam( 'USERGROUP' )

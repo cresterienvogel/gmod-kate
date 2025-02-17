@@ -11,6 +11,10 @@ hook.Add( 'PhysgunPickup', 'Kate::HandlePhysgun', function( pl, ent )
     return
   end
 
+  if hook.Run( 'Kate::CanPlayerPhysgun', pl ) == false then
+    return
+  end
+
   ent:Freeze( true )
   ent:SetMoveType( MOVETYPE_NOCLIP )
   ent:GodEnable()
@@ -32,6 +36,10 @@ hook.Add( 'PhysgunDrop', 'Kate::HandlePhysgun', function( pl, ent )
   ent:GodDisable()
 
   if not kate.CanTarget( pl, ent ) then
+    return
+  end
+
+  if hook.Run( 'Kate::CanPlayerPhysgun', pl ) == false then
     return
   end
 

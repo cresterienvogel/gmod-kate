@@ -87,7 +87,10 @@ local phrases = {
   ERROR_INVALID_SWEP = 'Could not find SWEP: %s',
   ERROR_INVALID_PLAYER = 'Could not find player: %s',
   ERROR_INVALID_NUMBER = 'Invalid number: %s',
-  ERROR_INVALID_TIME = 'Invalid time: %s'
+  ERROR_INVALID_TIME = 'Invalid time: %s',
+
+  ADMIN = 'Administrator',
+  SENT_TO = 'Sent to'
 }
 
 for phrase, translation in pairs( phrases ) do

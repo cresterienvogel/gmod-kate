@@ -29,7 +29,7 @@ function kate.RunCommand( pl, cmd, args )
     args[k] = string.sub( v, 1, 126 )
   end
 
-  if hook.Run( 'Kate::CanRunCommand', nil, pl, cmdObj, args ) == false then
+  if hook.Run( 'Kate::CanRunCommand', pl, cmdObj, args ) == false then
     return
   end
 
