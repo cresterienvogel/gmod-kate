@@ -7,7 +7,7 @@ function kate.RunCommand( pl, cmd, args )
   end
 
   local flag = cmdObj:GetFlag()
-  if IsValid( pl ) and ( flag ~= nil ) and ( not ( pl:HasFlag( '*' ) or pl:HasFlag( flag ) ) ) then
+  if IsValid( pl ) and ( flag ~= nil ) and ( not pl:HasFlag( flag ) ) then
     hook.Run( 'Kate::OnCommandError', pl, cmdObj, 'ERROR_COMMAND_NOACCESS', { cmdObj:GetName() } )
 
     return
