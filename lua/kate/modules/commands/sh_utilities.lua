@@ -1,7 +1,7 @@
 kate.AddCommand( 'Health',
   function( pl, target, health )
     health = ( health ~= nil ) and
-      math.max( health, 1 ) or 100
+      math.max( health, 1 ) or pl:GetMaxHealth()
 
     target:SetHealth( health )
 
@@ -20,7 +20,7 @@ kate.AddCommand( 'Health',
 
 kate.AddCommand( 'Armor',
   function( pl, target, armor )
-    armor = armor or 100
+    armor = armor or pl:GetMaxArmor()
     target:SetArmor( armor )
 
     local phrase = function( showSteamId )
