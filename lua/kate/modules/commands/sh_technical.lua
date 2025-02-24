@@ -12,7 +12,8 @@ kate.AddCommand( 'RCON',
 
 kate.AddCommand( 'Run Server',
   function( pl, code )
-    RunString( code )
+    local helpers = string.format( 'local me = Player( %s ) local there = me:GetPos() local this = me:GetEyeTrace().Entity', pl:UserID() )
+    RunString( string.format( '%s %s', helpers, code ) )
 
     local phrase = { 'LOG_LUA_SERVER', kate.GetActor( pl, true ), code }
     kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase ) ) )
@@ -24,7 +25,8 @@ kate.AddCommand( 'Run Server',
 
 kate.AddCommand( 'Run Client',
   function( pl, target, code )
-    target:SendLua( code )
+    local helpers = 'local me = LocalPlayer() local there = me:GetPos() local this = me:GetEyeTrace().Entity'
+    target:SendLua( string.format( '%s %s', helpers, code ) )
 
     local phrase = { 'LOG_LUA_CLIENT', kate.GetActor( pl, true ), kate.GetTarget( target, true ), code }
     kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase ) ) )
@@ -37,7 +39,8 @@ kate.AddCommand( 'Run Client',
 
 kate.AddCommand( 'Run Clients',
   function( pl, code )
-    BroadcastLua( code )
+    local helpers = 'local me = LocalPlayer() local there = me:GetPos() local this = me:GetEyeTrace().Entity'
+    BroadcastLua( string.format( '%s %s', helpers, code ) )
 
     local phrase = { 'LOG_LUA_CLIENTS', kate.GetActor( pl, true ), code }
     kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase ) ) )
