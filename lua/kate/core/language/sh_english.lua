@@ -49,15 +49,15 @@ local phrases = {
   LOG_BAN = '%s banned %s until %s with reason: %s',
   LOG_BAN_PERMA = '%s permabanned %s: %s',
 
-  LOG_UNMUTE = '%s unmuted %s',
+  LOG_UNMUTE = '%s unmuted %s with reason: %s',
+  LOG_UNMUTE_AUTO = '%s has been unmuted since the mute time out',
   LOG_MUTE = '%s muted %s until %s with reason: %s',
   LOG_MUTE_PERMA = '%s permamuted %s with reason: %s',
-  LOG_UNMUTE_AUTO = '%s has been unmuted since the mute time out',
 
-  LOG_UNGAG = '%s ungagged %s',
+  LOG_UNGAG = '%s ungagged %s with reason: %s',
+  LOG_UNGAG_AUTO = '%s has been ungagged since the gag time out',
   LOG_GAG = '%s gagged %s until %s with reason: %s',
   LOG_GAG_PERMA = '%s permagagged %s with reason: %s',
-  LOG_UNGAG_AUTO = '%s has been ungagged since the gag time out',
 
   LOG_SETGROUP_TIME_GROUP = '%s set rank of %s to %s with expiration until %s to %s',
   LOG_SETGROUP_TIME = '%s set rank of %s to %s with expiration until %s',

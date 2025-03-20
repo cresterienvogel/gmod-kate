@@ -28,7 +28,7 @@ kate.AddCommand( 'Mute',
   :AddParam( 'STRING' )
 
 kate.AddCommand( 'UnMute',
-  function( pl, target )
+  function( pl, target, reason )
     local steamId64 = kate.TargetToSteamID64( target )
     if steamId64 == nil then
       return
@@ -37,7 +37,7 @@ kate.AddCommand( 'UnMute',
     kate.UnMute( steamId64 )
 
     local phrase = function( showSteamId )
-      return { 'LOG_UNMUTE', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ) }
+      return { 'LOG_UNMUTE', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), reason }
     end
 
     kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
@@ -45,6 +45,7 @@ kate.AddCommand( 'UnMute',
   end )
   :SetFlag( 'mute' )
   :AddParam( 'PLAYER_STEAMID' )
+  :AddParam( 'STRING' )
 
 kate.AddCommand( 'Gag',
   function( pl, target, time, reason )
@@ -77,7 +78,7 @@ kate.AddCommand( 'Gag',
   :AddParam( 'STRING' )
 
 kate.AddCommand( 'UnGag',
-  function( pl, target )
+  function( pl, target, reason )
     local steamId64 = kate.TargetToSteamID64( target )
     if steamId64 == nil then
       return
@@ -86,7 +87,7 @@ kate.AddCommand( 'UnGag',
     kate.UnGag( steamId64 )
 
     local phrase = function( showSteamId )
-      return { 'LOG_UNGAG', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ) }
+      return { 'LOG_UNGAG', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), reason }
     end
 
     kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
@@ -94,3 +95,4 @@ kate.AddCommand( 'UnGag',
   end )
   :SetFlag( 'gag' )
   :AddParam( 'PLAYER_STEAMID' )
+  :AddParam( 'STRING' )

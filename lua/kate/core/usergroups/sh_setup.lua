@@ -54,9 +54,9 @@ kate.AddUserGroup( 'Admin' )
   :SetAdmin( true )
   :SetRelevance( 102 )
   :SetFlags( {
-    'ban', 'unban', 'kick', 'teleport',
-    'cloak', 'message', 'mute', 'gag',
-    'freeze', 'strip', 'slay', 'ignite'
+    'ban', 'kick', 'teleport', 'cloak',
+    'message', 'mute', 'gag', 'freeze',
+    'strip', 'slay', 'ignite'
   } )
 
 kate.AddUserGroup( 'SuperModerator' )
