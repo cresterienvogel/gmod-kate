@@ -3,14 +3,14 @@ function kate.RunCommand( pl, cmd, args )
   if cmdObj == nil then
     hook.Run( 'Kate::OnCommandError', pl, nil, 'ERROR_INVALID_COMMAND', { cmd } )
 
-    return
+    return false
   end
 
   local flag = cmdObj:GetFlag()
   if IsValid( pl ) and ( flag ~= nil ) and ( not pl:HasFlag( flag ) ) then
     hook.Run( 'Kate::OnCommandError', pl, cmdObj, 'ERROR_COMMAND_NOACCESS', { cmdObj:GetName() } )
 
-    return
+    return false
   end
 
   for i = 1, #args do
@@ -30,21 +30,25 @@ function kate.RunCommand( pl, cmd, args )
   end
 
   if hook.Run( 'Kate::CanRunCommand', pl, cmdObj, args ) == false then
-    return
+    return false
   end
 
   if IsValid( pl ) and pl:IsPlayer() then
     if CurTime() < ( pl.KateDelay or 0 ) then
       hook.Run( 'Kate::OnCommandError', pl, cmdObj, 'ERROR_COMMAND_COOLDOWN' )
 
-      return
+      return false
     end
 
     pl.KateDelay = CurTime() + 1
   end
 
   local succ, parsedArgs = kate.Parse( pl, cmdObj, table.concat( args, ' ' ) )
-  if succ ~= false then
-    hook.Run( 'Kate::OnCommandRun', pl, cmdObj, parsedArgs, cmdObj:Run( pl, unpack( parsedArgs ) ) )
+  if not succ then
+    return false
   end
+
+  hook.Run( 'Kate::OnCommandRun', pl, cmdObj, parsedArgs, cmdObj:Run( pl, unpack( parsedArgs ) ) )
+
+  return true
 end

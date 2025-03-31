@@ -48,7 +48,7 @@ return {
       nw.Register( 'Kate_' .. name )
         :Write( data.write, data.opt )
         :Read( data.read, data.opt )
-        :SetLocalPlayer()
+        :SetPlayer()
     end
   end,
   RegisterPunishment = function( name, columns )
