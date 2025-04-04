@@ -26,20 +26,25 @@ concommand.Add( 'kate',
       return
     end
 
-    local args = kate.ExplodeQuotes( str )
-    local argsCount = #args
+    local client = LocalPlayer()
+
+    local argsExp = kate.ExplodeQuotes( str )
+    local argsCount = #argsExp
 
     local ret = {}
     for k, v in pairs( kate.Commands.StoredCommands ) do
-      if not LocalPlayer():HasFlag( v:GetFlag() ) then
+      local flag = v:GetFlag()
+      if ( flag ~= nil ) and ( not client:HasFlag( flag ) ) then
         continue
       end
 
-      local help = tag .. ' ' .. k
-      if ( argsCount == 0 ) or ( ( argsCount ~= 0 ) and string.StartsWith( k, string.lower( args[1] ) ) ) then
-        for _, param in ipairs( v:GetParams() ) do
+      local params = v:GetParams()
+      local help = string.format( '%s %s', tag, k )
+
+      if ( argsCount == 0 ) or ( ( argsCount ~= 0 ) and string.StartsWith( k, string.lower( argsExp[1] ) ) ) then
+        for _, param in ipairs( params ) do
           local paramObj = kate.Commands.StoredParams[param.Enum]
-          help = help .. ' ' .. ( '<' .. paramObj:GetName() .. '>' )
+          help = string.format( '%s <%s>', help, paramObj:GetName() )
         end
 
         ret[#ret + 1] = help

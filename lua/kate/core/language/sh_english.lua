@@ -89,7 +89,10 @@ local phrases = {
   ERROR_INVALID_NUMBER = 'Invalid number: %s',
   ERROR_INVALID_TIME = 'Invalid time: %s',
 
+  ERROR_SELF_MESSAGE = 'You can\'t message yourself',
+
   ADMIN = 'Administrator',
+  PLAYER = 'Player',
   SENT_TO = 'Sent to'
 }
 

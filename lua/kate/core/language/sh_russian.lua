@@ -82,7 +82,10 @@ local phrases = {
   ERROR_INVALID_NUMBER = 'Некорректное число: %s',
   ERROR_INVALID_TIME = 'Некорректное время: %s',
 
+  ERROR_SELF_MESSAGE = 'Вы не можете отправить сообщение самому себе',
+
   ADMIN = 'Администратор',
+  PLAYER = 'Игрок',
   SENT_TO = 'Отправлено'
 }
 

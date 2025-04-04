@@ -31,7 +31,6 @@ function kate.AddCommand( name, callback )
     Name = name,
     Visible = true,
     Category = 'Other',
-    Flag = '',
     Params = {},
     Callback = callback or function() end
   }

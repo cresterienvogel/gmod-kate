@@ -126,21 +126,26 @@ kate.AddCommand( 'Ammo',
 kate.AddCommand( 'Message',
   function( pl, target, text )
     if IsValid( pl ) then
-      local from = string.format( '[ %s %s ]', kate.GetPhrase( true, 'ADMIN' ), kate.GetActor( pl ) )
-      kate.Notify( target, LOG_COMMON, from, ':', text )
+      if pl == target then
+        local str = kate.GetPhrase( true, 'ERROR_SELF_MESSAGE' )
+        kate.Notify( pl, LOG_ERROR, str )
+      else
+        local from = string.format( '[ %s %s ]', kate.GetPhrase( true, pl:IsAdmin() and 'ADMIN' or 'PLAYER' ), kate.GetActor( pl ) )
+        kate.Notify( target, LOG_COMMON, from, ':', text )
 
-      local to = string.format( '[ %s %s ]', kate.GetPhrase( true, 'SENT_TO' ), kate.GetTarget( target ) )
-      kate.Notify( pl, LOG_COMMON, to, ':', text )
+        local to = string.format( '[ %s %s ]', kate.GetPhrase( true, 'SENT_TO' ), kate.GetTarget( target ) )
+        kate.Notify( pl, LOG_COMMON, to, ':', text )
+      end
     else
-      local str = string.format( '%s: %s', 'Console', text )
+      local str = string.format( '[ %s ]: %s', 'Console', text )
       kate.Notify( target, LOG_COMMON, str )
     end
 
     local phrase = { 'LOG_MESSAGE', kate.GetActor( pl, true ), kate.GetTarget( target, true ), text }
     kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase ) ) )
   end )
-  :SetFlag( 'message' )
   :AddParam( 'PLAYER_ENTITY' )
   :AddParam( 'STRING' )
+  :AddAlias( 'PM' )
   :AddAlias( 'Msg' )
   :AddAlias( 'Send' )
