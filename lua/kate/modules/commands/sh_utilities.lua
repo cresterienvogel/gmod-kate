@@ -129,13 +129,15 @@ kate.AddCommand( 'Message',
       if pl == target then
         local str = kate.GetPhrase( true, 'ERROR_SELF_MESSAGE' )
         kate.Notify( pl, LOG_ERROR, str )
-      else
-        local from = string.format( '[ %s %s ]', kate.GetPhrase( true, pl:IsAdmin() and 'ADMIN' or 'PLAYER' ), kate.GetActor( pl ) )
-        kate.Notify( target, LOG_COMMON, from, ':', text )
 
-        local to = string.format( '[ %s %s ]', kate.GetPhrase( true, 'SENT_TO' ), kate.GetTarget( target ) )
-        kate.Notify( pl, LOG_COMMON, to, ':', text )
+        return
       end
+
+      local from = string.format( '[ %s %s ]', kate.GetPhrase( true, pl:IsAdmin() and 'ADMIN' or 'PLAYER' ), kate.GetActor( pl ) )
+      kate.Notify( target, LOG_COMMON, from, ':', text )
+
+      local to = string.format( '[ %s %s ]', kate.GetPhrase( true, 'SENT_TO' ), kate.GetTarget( target ) )
+      kate.Notify( pl, LOG_COMMON, to, ':', text )
     else
       local str = string.format( '[ %s ]: %s', 'Console', text )
       kate.Notify( target, LOG_COMMON, str )
