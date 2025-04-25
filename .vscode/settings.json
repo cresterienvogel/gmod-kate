@@ -1,0 +1,22 @@
+{
+  "editor.tabSize": 2,
+  "files.trimTrailingWhitespace": true,
+  "Lua.workspace.library": [
+    "${addons}/garrysmod/module/library",
+    "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod/garrysmod"
+  ],
+  "Lua.runtime.special": {
+    "include": "dofile",
+    "IncludeCS": "dofile"
+  },
+  "Lua.runtime.nonstandardSymbol": [
+    "continue",
+    "&&",
+    "||",
+    "!=",
+    "!",
+    "//",
+    "/**/"
+  ],
+  "Lua.workspace.checkThirdParty": false
+}
