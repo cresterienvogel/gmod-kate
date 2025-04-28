@@ -5,11 +5,12 @@ kate.AddCommand( 'Mute',
       return
     end
 
-    local args = {}
-    args.MuteReason = reason
-    args.MuteGiver = IsValid( pl ) and pl:SteamID64() or 'Console'
-    args.MuteTime = os.time()
-    args.UnMuteTime = ( time ~= 0 ) and ( os.time() + time ) or 0
+    local args = {
+      MuteReason = reason,
+      MuteGiver = IsValid( pl ) and pl:SteamID64() or 'Console',
+      MuteTime = os.time(),
+      UnMuteTime = ( time ~= 0 ) and ( os.time() + time ) or 0
+    }
 
     kate.Mute( steamId64, args )
 
@@ -54,12 +55,12 @@ kate.AddCommand( 'Gag',
       return
     end
 
-    local args = {}
-
-    args.GagReason = reason
-    args.GagGiver = IsValid( pl ) and pl:SteamID64() or 'Console'
-    args.GagTime = os.time()
-    args.UnGagTime = ( time ~= 0 ) and ( os.time() + time ) or 0
+    local args = {
+      GagReason = reason,
+      GagGiver = IsValid( pl ) and pl:SteamID64() or 'Console',
+      GagTime = os.time(),
+      UnGagTime = ( time ~= 0 ) and ( os.time() + time ) or 0
+    }
 
     kate.Gag( steamId64, args )
 

@@ -29,7 +29,8 @@ function kate.RunCommand( pl, cmd, args )
     args[k] = string.sub( v, 1, 126 )
   end
 
-  if hook.Run( 'Kate::CanRunCommand', pl, cmdObj, args ) == false then
+  local canRun = hook.Run( 'Kate::CanRunCommand', pl, cmdObj, args )
+  if canRun == false then
     return false
   end
 
@@ -43,8 +44,8 @@ function kate.RunCommand( pl, cmd, args )
     pl.KateDelay = CurTime() + 1
   end
 
-  local succ, parsedArgs = kate.Parse( pl, cmdObj, table.concat( args, ' ' ) )
-  if not succ then
+  local canParse, parsedArgs = kate.Parse( pl, cmdObj, table.concat( args, ' ' ) )
+  if not canParse then
     return false
   end
 

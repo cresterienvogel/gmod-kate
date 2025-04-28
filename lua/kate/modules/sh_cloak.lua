@@ -14,23 +14,32 @@ if SERVER then
     end
   end
 
-  function kate.Cloak( pl, shouldDraw )
+  function kate.Cloak( pl, shouldCloak )
     if not IsValid( pl ) then
-      return
+      return false
     end
 
-    pl:SetNetVar( 'Kate_Cloak', shouldDraw )
+    local canCloak, failReason = hook.Run( 'Kate::PlayerCanCloak', pl, shouldCloak )
+    if canCloak == false then
+      return false, failReason
+    end
 
-    pl:SetMoveType( shouldDraw and MOVETYPE_NOCLIP or MOVETYPE_WALK )
-    pl:SetNoDraw( shouldDraw )
-    pl:DrawWorldModel( not shouldDraw )
-    pl:SetRenderMode( shouldDraw and RENDERMODE_TRANSALPHA or RENDERMODE_NORMAL )
-    pl:Fire( 'alpha', shouldDraw and 0 or 255, 0 )
+    pl:SetNetVar( 'Kate_Cloak', shouldCloak )
+    pl:SetMoveType( shouldCloak and MOVETYPE_NOCLIP or MOVETYPE_WALK )
+    pl:SetNoDraw( shouldCloak )
+    pl:DrawWorldModel( not shouldCloak )
+    pl:SetRenderMode( shouldCloak and RENDERMODE_TRANSALPHA or RENDERMODE_NORMAL )
+    pl:Fire( 'alpha', shouldCloak and 0 or 255, 0 )
 
-    cloakWeapons( pl, shouldDraw )
+    cloakWeapons( pl, shouldCloak )
+
+    return true
   end
 
   hook.Add( 'PlayerSpawn', 'Kate::Cloak', function( pl )
+    pl:SetCustomCollisionCheck( true )
+    pl:CollisionRulesChanged()
+
     local isCloaked = pl:GetNetVar( 'Kate_Cloak' )
     if not isCloaked then
       return
@@ -52,6 +61,16 @@ if SERVER then
     end )
   end )
 end
+
+hook.Add( 'ShouldCollide', 'Kate::DisableCloakCollision', function( ent1, ent2 )
+  if not ( ent1:IsPlayer() or ent2:IsPlayer() ) then
+    return
+  end
+
+  if ( ent1:GetNetVar( 'Kate_Cloak' ) or ent2:GetNetVar( 'Kate_Cloak' ) ) then
+    return false
+  end
+end )
 
 hook.Add( 'Kate::PlayerCanNoclip', 'Kate::Cloak', function( pl, desired )
   if pl:GetNetVar( 'Kate_Cloak' ) and ( desired == false ) then

@@ -39,11 +39,9 @@ function kate.SetUserGroup( steamId64, givenGroup, expireTime, expireGroup, give
         return
       end
 
-      kate.DB:Query(
-        string.format( 'INSERT INTO kate_usergroups ( SteamID64, UserGroup, ExpireGroup, ExpireTime, AdminSteamID64 ) VALUES ( %q, %q, %q, %i, %q );',
-          kate.DB:Escape( steamId64 ), givenGroup, expireGroup or 'user', expireTime or 0, adminSteamId64
-        )
-      )
+      kate.DB:Query( string.format( 'INSERT INTO kate_usergroups ( SteamID64, UserGroup, ExpireGroup, ExpireTime, AdminSteamID64 ) VALUES ( %q, %q, %q, %i, %q );',
+        kate.DB:Escape( steamId64 ), givenGroup, expireGroup or 'user', expireTime or 0, adminSteamId64
+      ) )
         :SetOnSuccess( function()
           kate.UserGroups.Cache[steamId64] = givenGroup
 

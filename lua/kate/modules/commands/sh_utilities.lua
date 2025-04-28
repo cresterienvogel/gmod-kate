@@ -1,8 +1,6 @@
 kate.AddCommand( 'Health',
   function( pl, target, health )
-    health = ( health ~= nil ) and
-      math.max( health, 1 ) or pl:GetMaxHealth()
-
+    health = ( health ~= nil ) and math.max( health, 1 ) or pl:GetMaxHealth()
     target:SetHealth( health )
 
     local phrase = function( showSteamId )
@@ -45,7 +43,6 @@ kate.AddCommand( 'God',
     target = target or pl
 
     local isGod = target:HasGodMode()
-
     if isGod then
       target:GodDisable()
     else
@@ -75,7 +72,14 @@ kate.AddCommand( 'Cloak',
     target = target or pl
 
     local isCloaked = target:GetNetVar( 'Kate_Cloak' )
-    kate.Cloak( target, not isCloaked )
+    local canCloak, failReason = kate.Cloak( target, not isCloaked )
+    if canCloak == false then
+      if failReason ~= nil then
+        kate.Notify( pl, LOG_ERROR, kate.GetPhrase( true, failReason ) )
+      end
+
+      return
+    end
 
     local phraseMsg = isCloaked and {
       'LOG_UNCLOAK_MESSAGE', kate.GetActor( pl ) } or {
