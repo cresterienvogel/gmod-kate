@@ -63,7 +63,7 @@ if SERVER then
 end
 
 hook.Add( 'ShouldCollide', 'Kate::DisableCloakCollision', function( ent1, ent2 )
-  if not ( ent1:IsPlayer() or ent2:IsPlayer() ) then
+  if ( not ent1:IsPlayer() ) or ( not ent2:IsPlayer() ) then
     return
   end
 

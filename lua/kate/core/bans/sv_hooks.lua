@@ -13,7 +13,7 @@ hook.Add( 'CheckPassword', 'Kate::HandleBans', function( steamId64 )
     return
   end
 
-  local adminSteamId64 = ( cached['AdminSteamID64'] ~= 'Console' ) and
+  local adminSteamId64 = ( cached['AdminSteamID64'] ~= '<Console>' ) and
     ( '(' .. util.SteamIDFrom64( cached['AdminSteamID64'] ) .. ')' ) or
     ''
 

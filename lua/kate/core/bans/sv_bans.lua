@@ -13,13 +13,14 @@ function kate.Ban( steamId64, details )
     return
   end
 
+  local banTime = os.time()
   local unbanTime = details.UnbanTime or 0
-  local banReason = details.Reason or 'Unknown'
-  local targetName = details.Name or 'Offline ban'
-  local targetIp = details.IP or 'Offline ban'
-  local adminSteamId64 = details.AdminSteamID64 or 'Console'
-  local adminName = details.AdminName or 'Console'
-  local adminIp = details.AdminIP or 'Console'
+  local banReason = details.Reason or '<Unknown>'
+  local targetName = details.Name or '<Offline ban>'
+  local targetIp = details.IP or '<Offline ban>'
+  local adminSteamId64 = details.AdminSteamID64 or '<Console>'
+  local adminName = details.AdminName or '<Console>'
+  local adminIp = details.AdminIP or '<Console>'
 
   kate.DB:Query( string.format( 'SELECT * FROM kate_bans WHERE SteamID64 = %q AND ( UnbanTime > %i OR UnbanTime = 0 );', steamId64, os.time() ) )
     :SetOnSuccess( function( _, info )
@@ -27,7 +28,7 @@ function kate.Ban( steamId64, details )
         vendor.Update(
           {
             Reason = kate.DB:Escape( banReason ),
-            BanTime = os.time(),
+            BanTime = banTime,
             UnbanTime = unbanTime,
             AdminSteamID64 = adminSteamId64,
             AdminName = kate.DB:Escape( adminName ),
@@ -35,18 +36,22 @@ function kate.Ban( steamId64, details )
           },
           info[1]
         )
+
+        hook.Run( 'Kate::BanUpdated', steamId64, targetName, targetIp, adminSteamId64, adminName, adminIp, banReason, banTime, unbanTime )
       else
         vendor.Insert( {
           SteamID64 = steamId64,
           Name = kate.DB:Escape( targetName ),
           IP = targetIp,
           Reason = kate.DB:Escape( banReason ),
-          BanTime = os.time(),
+          BanTime = banTime,
           UnbanTime = unbanTime,
           AdminSteamID64 = adminSteamId64,
           AdminName = kate.DB:Escape( adminName ),
           AdminIP = adminIp
         } )
+
+        hook.Run( 'Kate::BanCreated', steamId64, targetName, targetIp, adminSteamId64, adminName, adminIp, banReason, banTime, unbanTime )
       end
     end )
     :Start()
@@ -57,10 +62,11 @@ function kate.Unban( steamId64, details )
     return
   end
 
-  local unbanReason = details.Reason or 'Unknown'
-  local adminSteamId64 = details.AdminSteamID64 or 'Console'
-  local adminName = details.AdminName or 'Console'
-  local adminIp = details.AdminIP or 'Console'
+  local adminSteamId64 = details.AdminSteamID64 or '<Console>'
+  local adminName = details.AdminName or '<Console>'
+  local adminIp = details.AdminIP or '<Console>'
+  local unbanReason = details.Reason or '<Unknown>'
+  local unbanTime = os.time()
 
   kate.DB:Query( string.format( 'SELECT * FROM kate_bans WHERE SteamID64 = %q AND ( UnbanTime > %i OR UnbanTime = 0 );', steamId64, os.time() ) )
     :SetOnSuccess( function( _, info )
@@ -71,7 +77,7 @@ function kate.Unban( steamId64, details )
       vendor.Update(
         {
           Reason = kate.DB:Escape( unbanReason ),
-          UnbanTime = os.time(),
+          UnbanTime = unbanTime,
           AdminSteamID64 = adminSteamId64,
           AdminName = kate.DB:Escape( adminName ),
           AdminIP = adminIp
@@ -79,6 +85,7 @@ function kate.Unban( steamId64, details )
         info[1],
         function()
           kate.Bans.Cache[steamId64] = nil
+          hook.Run( 'Kate::BanRemoved', steamId64, adminSteamId64, adminName, adminIp, unbanReason, unbanTime )
         end
       )
     end )

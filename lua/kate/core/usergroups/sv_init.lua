@@ -15,7 +15,7 @@ function kate.SetUserGroup( steamId64, givenGroup, expireTime, expireGroup, give
     return
   end
 
-  local adminSteamId64 = 'Console'
+  local adminSteamId64 = '<Console>'
   if ( giverSteamId64 ~= nil ) and kate.IsSteamID64( giverSteamId64 ) then
     adminSteamId64 = giverSteamId64
   end
@@ -31,10 +31,11 @@ function kate.SetUserGroup( steamId64, givenGroup, expireTime, expireGroup, give
         end
 
         target:SetUserGroup( 'user' )
-
         target:SetNetVar( 'Kate_ExpireUserGroup', nil )
         target:SetNetVar( 'Kate_ExpireUserGroupTime', nil )
         target:SetNetVar( 'Kate_Mentor', nil )
+
+        hook.Run( 'Kate::UserGroupRemoved', steamId64, adminSteamId64 )
 
         return
       end
@@ -51,10 +52,11 @@ function kate.SetUserGroup( steamId64, givenGroup, expireTime, expireGroup, give
           end
 
           target:SetUserGroup( givenGroup )
-
           target:SetNetVar( 'Kate_ExpireUserGroup', expireGroup )
           target:SetNetVar( 'Kate_ExpireUserGroupTime', expireTime )
           target:SetNetVar( 'Kate_Mentor', adminSteamId64 )
+
+          hook.Run( 'Kate::UserGroupChanged', steamId64, givenGroup, expireTime or 0, expireGroup or 'user', adminSteamId64 )
         end )
         :Start()
     end )

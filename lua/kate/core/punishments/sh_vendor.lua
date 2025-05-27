@@ -136,6 +136,7 @@ function VENDOR.RegisterPunishment( name, columns )
         kate.DB:Query( string.format( 'INSERT INTO kate_punishments_%s ( SteamID64, %s ) VALUES ( %q, %s );', tbl, keys, steamId64, values ) )
           :SetOnSuccess( function()
             PUNISHMENT.Cache[steamId64] = info
+            hook.Run( 'Kate::' .. name .. 'Created', steamId64, info )
 
             local target = kate.FindPlayer( steamId64 )
             if not IsValid( target ) then
@@ -155,10 +156,11 @@ function VENDOR.RegisterPunishment( name, columns )
       :Start()
   end
 
-  PUNISHMENT.Penalize = function( steamId64 )
+  PUNISHMENT.Penalize = function( steamId64, info )
     kate.DB:Query( string.format( 'DELETE FROM kate_punishments_%s WHERE SteamID64 = %q;', string.gsub( string.lower( name ), ' ', '_' ), steamId64 ) )
       :SetOnSuccess( function()
         PUNISHMENT.Cache[steamId64] = nil
+        hook.Run( 'Kate::' .. name .. 'Removed', steamId64, info )
 
         local target = kate.FindPlayer( steamId64 )
         if not IsValid( target ) then
@@ -171,7 +173,7 @@ function VENDOR.RegisterPunishment( name, columns )
           end
         end
 
-        hook.Run( 'Kate::PlayerUn' .. name, target )
+        hook.Run( 'Kate::PlayerUn' .. name, target, info )
       end )
       :Start()
   end

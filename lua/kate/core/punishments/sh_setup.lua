@@ -3,17 +3,17 @@ kate.AddPunishment( 'Gag',
     GagReason = 'string',
     GagGiver = 'string',
     GagTime = 'number',
-    UnGagTime = 'number'
+    UngagTime = 'number'
   },
   {
     GagReason = true,
     GagGiver = true,
     GagTime = true,
-    UnGagTime = true
+    UngagTime = true
   },
   {
     PlayerCanHearPlayersVoice = function( _, pl )
-      local gag = pl:GetNetVar( 'Kate_UnGagTime' )
+      local gag = pl:GetNetVar( 'Kate_UngagTime' )
       if gag == nil then
         return
       end
@@ -45,17 +45,17 @@ kate.AddPunishment( 'Mute',
     MuteReason = 'string',
     MuteGiver = 'string',
     MuteTime = 'number',
-    UnMuteTime = 'number'
+    UnmuteTime = 'number'
   },
   {
     MuteReason = true,
     MuteGiver = true,
     MuteTime = true,
-    UnMuteTime = true
+    UnmuteTime = true
   },
   {
     PlayerSay = function( pl )
-      local mute = pl:GetNetVar( 'Kate_UnMuteTime' )
+      local mute = pl:GetNetVar( 'Kate_UnmuteTime' )
       if mute == nil then
         return
       end

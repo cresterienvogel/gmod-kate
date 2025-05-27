@@ -5,18 +5,18 @@ kate.AddCommand( 'Mute',
       return
     end
 
-    local args = {
-      MuteReason = reason,
-      MuteGiver = IsValid( pl ) and pl:SteamID64() or 'Console',
-      MuteTime = os.time(),
-      UnMuteTime = ( time ~= 0 ) and ( os.time() + time ) or 0
-    }
+    local args = {}
+
+    args.MuteReason = reason
+    args.MuteGiver = IsValid( pl ) and pl:SteamID64() or '<Console>'
+    args.MuteTime = os.time()
+    args.UnmuteTime = ( time ~= 0 ) and ( os.time() + time ) or 0
 
     kate.Mute( steamId64, args )
 
     local phrase = function( showSteamId )
       return ( time ~= 0 ) and {
-        'LOG_MUTE', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), os.date( '%d.%m.%y (%H:%M)', args.UnMuteTime ), reason } or {
+        'LOG_MUTE', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), os.date( '%d.%m.%y (%H:%M)', args.UnmuteTime ), reason } or {
         'LOG_MUTE_PERMA', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), reason }
     end
 
@@ -35,7 +35,13 @@ kate.AddCommand( 'UnMute',
       return
     end
 
-    kate.UnMute( steamId64 )
+    local args = {}
+
+    args.UnmuteReason = reason
+    args.UnmuteGiver = IsValid( pl ) and pl:SteamID64() or '<Console>'
+    args.UnmuteTime = os.time()
+
+    kate.UnMute( steamId64, args )
 
     local phrase = function( showSteamId )
       return { 'LOG_UNMUTE', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), reason }
@@ -55,18 +61,18 @@ kate.AddCommand( 'Gag',
       return
     end
 
-    local args = {
-      GagReason = reason,
-      GagGiver = IsValid( pl ) and pl:SteamID64() or 'Console',
-      GagTime = os.time(),
-      UnGagTime = ( time ~= 0 ) and ( os.time() + time ) or 0
-    }
+    local args = {}
+
+    args.GagReason = reason
+    args.GagGiver = IsValid( pl ) and pl:SteamID64() or '<Console>'
+    args.GagTime = os.time()
+    args.UngagTime = ( time ~= 0 ) and ( os.time() + time ) or 0
 
     kate.Gag( steamId64, args )
 
     local phrase = function( showSteamId )
       return ( time ~= 0 ) and {
-        'LOG_GAG', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), os.date( '%d.%m.%y (%H:%M)', args.UnGagTime ), reason } or {
+        'LOG_GAG', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), os.date( '%d.%m.%y (%H:%M)', args.UngagTime ), reason } or {
         'LOG_GAG_PERMA', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), reason }
     end
 
@@ -85,7 +91,13 @@ kate.AddCommand( 'UnGag',
       return
     end
 
-    kate.UnGag( steamId64 )
+    local args = {}
+
+    args.UngagReason = reason
+    args.UngagGiver = IsValid( pl ) and pl:SteamID64() or '<Console>'
+    args.UngagTime = os.time()
+
+    kate.UnGag( steamId64, args )
 
     local phrase = function( showSteamId )
       return { 'LOG_UNGAG', kate.GetActor( pl, showSteamId ), kate.GetTarget( steamId64, showSteamId ), reason }
