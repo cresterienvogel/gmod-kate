@@ -1,4 +1,4 @@
-timer.Create( 'Kate::CheckExpirations', 120, 0, function()
+timer.Create( 'Kate::CheckExpirations', 60, 0, function()
   for _, pl in player.Iterator() do
     local steamId64 = pl:SteamID64()
     local expireTime = pl:GetNetVar( 'Kate_ExpireUserGroupTime' )
