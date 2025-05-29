@@ -211,6 +211,10 @@ kate.AddParam( 'NUMBER' )
         return false, 'ERROR_INVALID_NUMBER', { arg }
       end
 
+      if n < 0 then
+        return false, 'ERROR_INVALID_NUMBER', { arg }
+      end
+
       return true, n
     end
 

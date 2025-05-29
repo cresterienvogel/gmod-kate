@@ -1,31 +1,16 @@
-function kate.FindPlayer( info )
-  if ( info == nil ) or ( info == '' ) then
+function kate.FindPlayer( context )
+  if context == '' then
     return nil
   end
 
-  if IsValid( info ) and info:IsPlayer() then
-    return info
-  end
+  for _, client in player.Iterator() do
+    local bySteamId = client.SteamID( client ) == context
+    local bySteamId64 = client.SteamID64( client ) == context
+    local byAccountId = tostring( client.AccountID( client ) ) == context
+    local byNick = string.find( string.lower( client.Nick( client ) ), string.lower( context ) ) ~= nil
 
-  for _, pl in player.Iterator() do
-    if tonumber( info ) == pl:UserID() then
-      return pl
-    end
-
-    if info == pl:SteamID() then
-      return pl
-    end
-
-    if info == pl:SteamID64() then
-      return pl
-    end
-
-    if tostring( info ) == pl:Name() then
-      return pl
-    end
-
-    if string.find( string.lower( pl:Name() ), string.lower( info ), 1, true ) then
-      return pl
+    if bySteamId or bySteamId64 or byAccountId or byNick then
+      return client
     end
   end
 

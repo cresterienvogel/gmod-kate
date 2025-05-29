@@ -8,8 +8,6 @@ kate.DB = kate.DB or SickQL:New(
 )
 
 function kate.DB:OnConnected()
-  kate.Print( LOG_SUCCESS, kate.GetPhrase( false, 'DATABASE_CONNECTION_SUCCESS' ) )
-
   self:Query( [[
     CREATE TABLE IF NOT EXISTS kate_users
       (
@@ -50,6 +48,8 @@ function kate.DB:OnConnected()
       );
     ]] )
     :Start()
+
+  kate.Print( LOG_SUCCESS, kate.GetPhrase( false, 'DATABASE_CONNECTION_SUCCESS' ) )
 end
 
 function kate.DB:OnConnectionFailed( errorMsg )
