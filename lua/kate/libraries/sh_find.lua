@@ -3,6 +3,10 @@ function kate.FindPlayer( context )
     return nil
   end
 
+  if IsValid( context ) and ( type( context ) == 'Player' ) then
+    return context
+  end
+
   for _, client in player.Iterator() do
     local bySteamId = client.SteamID( client ) == context
     local bySteamId64 = client.SteamID64( client ) == context
