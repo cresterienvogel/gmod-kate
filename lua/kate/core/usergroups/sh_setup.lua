@@ -13,7 +13,7 @@ kate.AddUserGroup( 'Supervisor' )
     'teleport', 'health', 'armor', 'god',
     'cloak', 'ammo', 'message', 'mute',
     'gag', 'slay', 'model', 'freeze',
-    'ignite', 'strip'
+    'ignite', 'strip', 'physgun'
   } )
 
 -- rules admins
@@ -25,7 +25,7 @@ kate.AddUserGroup( 'Overseer' )
     'teleport', 'health', 'armor', 'god',
     'cloak', 'ammo', 'message', 'mute',
     'gag', 'slay', 'model', 'freeze',
-    'ignite', 'strip'
+    'ignite', 'strip', 'physgun'
   } )
 
 -- rules moderators
@@ -37,7 +37,7 @@ kate.AddUserGroup( 'Observer' )
     'health', 'armor', 'god', 'cloak',
     'ammo', 'message', 'mute', 'gag',
     'slay', 'model', 'freeze', 'ignite',
-    'strip'
+    'strip', 'physgun'
   } )
 
 kate.AddUserGroup( 'SuperAdmin' )
@@ -47,7 +47,7 @@ kate.AddUserGroup( 'SuperAdmin' )
     'ban', 'unban', 'kick', 'teleport',
     'health', 'armor', 'god', 'cloak',
     'message', 'mute', 'gag', 'freeze',
-    'strip', 'slay', 'ignite'
+    'strip', 'slay', 'ignite', 'physgun'
   } )
 
 kate.AddUserGroup( 'Admin' )
@@ -56,7 +56,7 @@ kate.AddUserGroup( 'Admin' )
   :SetFlags( {
     'ban', 'kick', 'teleport', 'cloak',
     'message', 'mute', 'gag', 'freeze',
-    'strip', 'slay', 'ignite'
+    'strip', 'slay', 'ignite', 'physgun'
   } )
 
 kate.AddUserGroup( 'SuperModerator' )
@@ -65,7 +65,7 @@ kate.AddUserGroup( 'SuperModerator' )
   :SetFlags( {
     'ban', 'kick', 'teleport', 'cloak',
     'message', 'mute', 'gag', 'freeze',
-    'strip'
+    'strip', 'physgun'
   } )
 
 kate.AddUserGroup( 'Moderator' )
@@ -73,5 +73,6 @@ kate.AddUserGroup( 'Moderator' )
   :SetRelevance( 100 )
   :SetFlags( {
     'kick', 'teleport', 'cloak', 'message',
-    'mute', 'gag', 'freeze', 'strip'
+    'mute', 'gag', 'freeze', 'strip',
+    'physgun'
   } )
