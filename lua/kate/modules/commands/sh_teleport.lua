@@ -7,15 +7,15 @@ kate.AddCommand( 'GoTo',
     pl.Kate_ReturnPos = pl:GetPos()
     pl:SetPos( kate.FindEmptyPos( target:GetPos(), {}, 32, 32, Vector( 16, 16, 64 ) ) )
 
-    if not pl:GetNetVar( 'Kate_Cloak' ) then
-      pl:EmitSound( 'ambient/energy/spark6.wav' )
-    end
-
     local phrase = function( showSteamId )
       return { 'LOG_GOTO', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
     end
 
-    kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+    if not pl:GetNetVar( 'Kate_Cloak' ) then
+      pl:EmitSound( 'ambient/energy/spark6.wav' )
+      kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+    end
+
     kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
   end )
   :SetFlag( 'teleport' )
@@ -31,15 +31,15 @@ kate.AddCommand( 'Teleport',
     target.Kate_ReturnPos = target:GetPos()
     target:SetPos( pl:GetEyeTrace().HitPos )
 
-    if not target:GetNetVar( 'Kate_Cloak' ) then
-      target:EmitSound( 'ambient/energy/spark6.wav' )
-    end
-
     local phrase = function( showSteamId )
       return { 'LOG_TELEPORT', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
     end
 
-    kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+    if not target:GetNetVar( 'Kate_Cloak' ) then
+      target:EmitSound( 'ambient/energy/spark6.wav' )
+      kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+    end
+
     kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
   end )
   :SetFlag( 'teleport' )
@@ -56,15 +56,15 @@ kate.AddCommand( 'Bring',
     target.Kate_ReturnPos = target:GetPos()
     target:SetPos( kate.FindEmptyPos( pl:GetPos(), {}, 32, 32, Vector( 16, 16, 64 ) ) )
 
-    if not target:GetNetVar( 'Kate_Cloak' ) then
-      target:EmitSound( 'ambient/energy/spark6.wav' )
-    end
-
     local phrase = function( showSteamId )
       return { 'LOG_TELEPORT', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
     end
 
-    kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+    if not target:GetNetVar( 'Kate_Cloak' ) then
+      target:EmitSound( 'ambient/energy/spark6.wav' )
+      kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+    end
+
     kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
   end )
   :SetFlag( 'teleport' )
@@ -89,15 +89,15 @@ kate.AddCommand( 'Return',
     target:SetPos( pos )
     target.Kate_ReturnPos = nil
 
-    if not target:GetNetVar( 'Kate_Cloak' ) then
-      target:EmitSound( 'ambient/energy/spark6.wav' )
-    end
-
     local phrase = function( showSteamId )
       return { 'LOG_RETURN', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
     end
 
-    kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+    if not target:GetNetVar( 'Kate_Cloak' ) then
+      target:EmitSound( 'ambient/energy/spark6.wav' )
+      kate.Notify( kate.GetAdmins(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
+    end
+
     kate.Print( LOG_COMMON, kate.GetPhrase( false, unpack( phrase( true ) ) ) )
   end )
   :SetFlag( 'teleport' )
