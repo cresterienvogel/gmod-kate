@@ -10,10 +10,14 @@ local vendor = {
 }
 
 function kate.AddPunishment( name, columns, vars, hooks )
-  vendor.RegisterVars( columns, vars )
+  if vars ~= nil then
+    vendor.RegisterVars( columns, vars )
+  end
 
-  for hookName, func in pairs( hooks ) do
-    hook.Add( hookName, 'Kate::' .. name, func )
+  if hooks ~= nil then
+    for hookName, func in pairs( hooks ) do
+      hook.Add( hookName, 'Kate::' .. name, func )
+    end
   end
 
   if SERVER then
