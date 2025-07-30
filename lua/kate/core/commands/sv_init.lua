@@ -49,6 +49,11 @@ function kate.RunCommand( pl, cmd, args )
     return false
   end
 
+  local canRunParsed = hook.Run( 'Kate::CanRunParsedCommand', pl, cmdObj, parsedArgs )
+  if canRunParsed == false then
+    return false
+  end
+
   hook.Run( 'Kate::OnCommandRun', pl, cmdObj, parsedArgs, cmdObj:Run( pl, unpack( parsedArgs ) ) )
 
   return true
