@@ -14,18 +14,9 @@ local function setGroup( pl, steamId64, givenGroup, expireTime, expireGroup )
 
   args[1] = steamId64
   args[2] = givenGroup
-
-  if expireTime ~= nil then
-    args[3] = os.time() + expireTime
-  end
-
-  if expireGroup ~= nil then
-    args[4] = expireGroup
-  end
-
-  if IsValid( pl ) then
-    args[5] = pl:SteamID64()
-  end
+  args[3] = ( expireTime ~= nil ) and os.time() + expireTime or 'NULL'
+  args[4] = ( expireGroup ~= nil ) and expireGroup or 'NULL'
+  args[5] = IsValid( pl ) and pl:SteamID64() or 'NULL'
 
   kate.SetUserGroup( unpack( args ) )
 
@@ -61,15 +52,15 @@ local function createLog( pl, steamId64, args )
   local expireObj = kate.UserGroups.Stored[args[4]]
 
   local givenGroup = givenObj:GetName()
-  local expireTime = ( args[3] ~= nil ) and os.date( '%d.%m.%y (%H:%M)', args[3] )
-  local expireGroup = ( args[4] ~= nil ) and expireObj:GetName()
+  local expireTime = ( ( args[3] ~= nil ) and ( args[3] ~= 'NULL' ) ) and os.date( '%d.%m.%y (%H:%M)', args[3] ) or nil
+  local expireGroup = ( ( args[4] ~= nil ) and ( args[4] ~= 'NULL' ) ) and expireObj:GetName() or nil
 
   local phrase = function( showSteamId )
     local actor = kate.GetActor( pl, showSteamId )
     local target = kate.GetTarget( steamId64, showSteamId )
 
-    return ( ( args[3] ~= nil ) and ( args[4] ~= nil ) ) and {
-      'LOG_SETGROUP_TIME_GROUP', actor, target, givenGroup, expireTime, expireGroup } or ( args[3] ~= nil ) and {
+    return ( ( expireTime ~= nil ) and ( expireGroup ~= nil ) ) and {
+      'LOG_SETGROUP_TIME_GROUP', actor, target, givenGroup, expireTime, expireGroup } or ( expireTime ~= nil ) and {
       'LOG_SETGROUP_TIME', actor, target, givenGroup, expireTime } or {
       'LOG_SETGROUP', actor, target, givenGroup }
   end

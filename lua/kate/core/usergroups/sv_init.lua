@@ -3,6 +3,18 @@ function kate.SetUserGroup( steamId64, givenGroup, expireTime, expireGroup, give
     return
   end
 
+  if expireTime == 'NULL' then
+    expireTime = nil
+  end
+
+  if expireGroup == 'NULL' then
+    expireGroup = nil
+  end
+
+  if giverSteamId64 == 'NULL' then
+    giverSteamId64 = nil
+  end
+
   if ( givenGroup ~= 'user' ) and ( kate.UserGroups.Stored[givenGroup] == nil ) then
     return
   end
