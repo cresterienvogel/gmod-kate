@@ -12,10 +12,6 @@ hook.Add( 'PlayerSay', 'Kate::RunCommand', function( pl, text )
   local command = string.sub( string.lower( args[1] ), 2 )
   table.remove( args, 1 )
 
-  local succ = kate.RunCommand( pl, command, args )
-  if not succ then
-    return ''
-  end
-
-  return text
+  kate.RunCommand( pl, command, args )
+  return ''
 end )
