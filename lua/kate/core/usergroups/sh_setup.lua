@@ -18,7 +18,7 @@ kate.AddUserGroup( 'Supervisor' )
 
 -- rules admins
 kate.AddUserGroup( 'Overseer' )
-  :SetAdmin( true )
+  :SetSuperAdmin( true )
   :SetRelevance( 105 )
   :SetFlags( {
     'usergroup', 'ban', 'unban', 'kick',
@@ -30,7 +30,7 @@ kate.AddUserGroup( 'Overseer' )
 
 -- rules moderators
 kate.AddUserGroup( 'Observer' )
-  :SetAdmin( true )
+  :SetSuperAdmin( true )
   :SetRelevance( 104 )
   :SetFlags( {
     'ban', 'unban', 'kick', 'teleport',
