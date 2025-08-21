@@ -53,7 +53,7 @@ local function createLog( pl, steamId64, args )
 
   local givenGroup = givenObj:GetName()
   local expireTime = ( ( args[3] ~= nil ) and ( args[3] ~= 'NULL' ) ) and os.date( '%d.%m.%y (%H:%M)', args[3] ) or nil
-  local expireGroup = ( ( args[4] ~= nil ) and ( args[4] ~= 'NULL' ) ) and expireObj:GetName() or nil
+  local expireGroup = ( ( args[4] ~= nil ) and ( args[4] ~= 'NULL' ) ) and ( expireObj ~= nil and expireObj:GetName() ) or nil
 
   local phrase = function( showSteamId )
     local actor = kate.GetActor( pl, showSteamId )
