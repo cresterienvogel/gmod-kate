@@ -29,6 +29,8 @@ function VENDOR.LoadUserInfo( pl )
           steamId64, kate.DB:Escape( name ), os.time(), os.time(), 0, address
         ) ):Start()
       end
+
+      hook.Run( 'Kate::PlayerUserInfoLoaded', pl )
     end )
     :Start()
 end
@@ -36,15 +38,18 @@ end
 function VENDOR.LoadUserGroup( pl )
   kate.DB:Query( string.format( 'SELECT * FROM kate_usergroups WHERE SteamID64 = %q;', pl:SteamID64() ) )
     :SetOnSuccess( function( _, info )
-      if ( not IsValid( pl ) ) or ( info[1] == nil ) then
+      if not IsValid( pl ) then
         return
       end
 
-      pl:SetUserGroup( info[1]['UserGroup'] )
+      if info[1] ~= nil then
+        pl:SetUserGroup( info[1]['UserGroup'] )
+        pl:SetNetVar( 'Kate_ExpireUserGroup', info[1]['ExpireGroup'] )
+        pl:SetNetVar( 'Kate_ExpireUserGroupTime', info[1]['ExpireTime'] )
+        pl:SetNetVar( 'Kate_Mentor', info[1]['Mentor'] )
+      end
 
-      pl:SetNetVar( 'Kate_ExpireUserGroup', info[1]['ExpireGroup'] )
-      pl:SetNetVar( 'Kate_ExpireUserGroupTime', info[1]['ExpireTime'] )
-      pl:SetNetVar( 'Kate_Mentor', info[1]['Mentor'] )
+      hook.Run( 'Kate::PlayerUserGroupLoaded', pl )
     end )
     :Start()
 end
@@ -55,15 +60,19 @@ function VENDOR.LoadUserPunishments( pl )
 
     kate.DB:Query( string.format( 'SELECT * FROM kate_punishments_%s WHERE SteamID64 = %q;', tbl, pl:SteamID64() ) )
       :SetOnSuccess( function( _, info )
-        if ( not IsValid( pl ) ) or ( info[1] == nil ) then
+        if not IsValid( pl ) then
           return
         end
 
-        for column, value in pairs( info[1] ) do
-          if nw.Vars['Kate_' .. column] ~= nil then
-            pl:SetNetVar( 'Kate_' .. column, value )
+        if info[1] ~= nil then
+          for column, value in pairs( info[1] ) do
+            if nw.Vars['Kate_' .. column] ~= nil then
+              pl:SetNetVar( 'Kate_' .. column, value )
+            end
           end
         end
+
+        hook.Run( 'Kate::PlayerUser' .. punishment .. 'Loaded', pl )
       end )
       :Start()
   end
