@@ -33,11 +33,11 @@ kate.AddUserGroup( 'Observer' )
   :SetSuperAdmin( true )
   :SetRelevance( 104 )
   :SetFlags( {
-    'ban', 'unban', 'kick', 'teleport',
-    'health', 'armor', 'god', 'cloak',
-    'ammo', 'message', 'mute', 'gag',
-    'slay', 'model', 'freeze', 'ignite',
-    'strip', 'physgun'
+    'usergroup', 'ban', 'unban', 'kick',
+    'teleport', 'health', 'armor', 'god',
+    'cloak', 'ammo', 'message', 'mute',
+    'gag', 'slay', 'model', 'freeze',
+    'ignite', 'strip', 'physgun'
   } )
 
 kate.AddUserGroup( 'SuperAdmin' )
