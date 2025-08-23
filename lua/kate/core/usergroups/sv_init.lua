@@ -35,7 +35,7 @@ function kate.SetUserGroup( steamId64, givenGroup, expireTime, expireGroup, give
   kate.DB:Query( string.format( 'DELETE FROM kate_usergroups WHERE SteamID64 = %q;', steamId64 ) )
     :SetOnSuccess( function()
       if givenGroup == 'user' then
-        kate.UserGroups.Cache[steamId64] = nil
+        kate.UserGroups.Store( steamId64, nil )
 
         local target = kate.FindPlayer( steamId64 )
         if not IsValid( target ) then
@@ -56,7 +56,7 @@ function kate.SetUserGroup( steamId64, givenGroup, expireTime, expireGroup, give
         kate.DB:Escape( steamId64 ), givenGroup, expireGroup or 'user', expireTime or 0, adminSteamId64
       ) )
         :SetOnSuccess( function()
-          kate.UserGroups.Cache[steamId64] = givenGroup
+          kate.UserGroups.Store( steamId64, givenGroup )
 
           local target = kate.FindPlayer( steamId64 )
           if not IsValid( target ) then
@@ -74,18 +74,3 @@ function kate.SetUserGroup( steamId64, givenGroup, expireTime, expireGroup, give
     end )
     :Start()
 end
-
-local function cacheUsers()
-  kate.UserGroups.Cache = {}
-
-  kate.DB:Query( 'SELECT SteamID64, UserGroup FROM kate_usergroups;' )
-    :SetOnSuccess( function( _, info )
-      for _, data in ipairs( info ) do
-        kate.UserGroups.Cache[data.SteamID64] = data.UserGroup
-      end
-    end )
-    :Start()
-end
-
-timer.Simple( 0, cacheUsers )
-timer.Create( 'Kate::CacheUsers', 60, 0, cacheUsers )

@@ -14,7 +14,7 @@ function VENDOR.LoadUserInfo( pl )
         return
       end
 
-      if info[1] then
+      if info[1] ~= nil then
         pl:SetNetVar( 'Kate_FirstJoin', info[1].FirstJoin )
         pl:SetNetVar( 'Kate_Playtime', info[1].Playtime )
 
@@ -36,7 +36,9 @@ function VENDOR.LoadUserInfo( pl )
 end
 
 function VENDOR.LoadUserGroup( pl )
-  kate.DB:Query( string.format( 'SELECT * FROM kate_usergroups WHERE SteamID64 = %q;', pl:SteamID64() ) )
+  local steamId64 = pl:SteamID64()
+
+  kate.DB:Query( string.format( 'SELECT * FROM kate_usergroups WHERE SteamID64 = %q;', steamId64 ) )
     :SetOnSuccess( function( _, info )
       if not IsValid( pl ) then
         return
@@ -47,6 +49,11 @@ function VENDOR.LoadUserGroup( pl )
         pl:SetNetVar( 'Kate_ExpireUserGroup', info[1]['ExpireGroup'] )
         pl:SetNetVar( 'Kate_ExpireUserGroupTime', info[1]['ExpireTime'] )
         pl:SetNetVar( 'Kate_Mentor', info[1]['Mentor'] )
+
+        local cache = kate.UserGroups.Cache[steamId64]
+        if cache == nil then
+          kate.UserGroups.Store( steamId64, info[1]['UserGroup'] )
+        end
       end
 
       hook.Run( 'Kate::PlayerUserGroupLoaded', pl )
