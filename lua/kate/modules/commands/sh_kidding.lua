@@ -71,13 +71,13 @@ kate.AddCommand( 'Ignite',
     if isIgnited then
       target:Extinguish()
     else
-      target:Ignite( time or 60 )
+      target:Ignite( time or 30 )
     end
 
     local phrase = function( showSteamId )
       return isIgnited and {
         'LOG_UNIGNITE', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) } or {
-        'LOG_IGNITE', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ), time }
+        'LOG_IGNITE', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ), time or 30 }
     end
 
     kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
