@@ -35,7 +35,7 @@ kate.AddCommand( 'Size',
     target:SetModelScale( size or 1 )
 
     local phrase = function( showSteamId )
-      return { 'LOG_SIZE', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ), size }
+      return { 'LOG_SIZE', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ), size or 1 }
     end
 
     kate.Notify( player.GetAll(), LOG_COMMON, kate.GetPhrase( true, unpack( phrase( false ) ) ) )
