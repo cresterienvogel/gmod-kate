@@ -1,25 +1,3 @@
-local IsValid = IsValid
-local CurTime = CurTime
-
-local ENTITY = FindMetaTable( 'Entity' )
-local PLAYER = FindMetaTable( 'Player' )
-
-local IsPlayer = ENTITY.IsPlayer
-local GetClass = ENTITY.GetClass
-local GetEyeTrace = PLAYER.GetEyeTrace
-local GetActiveWeapon = PLAYER.GetActiveWeapon
-local KeyDown = PLAYER.KeyDown
-local GetInfoNum = PLAYER.GetInfoNum
-
-local function getEyeTraceCached( pl )
-  local ct = CurTime()
-  if pl.Kate_EyeTraceTime ~= ct then
-    pl.Kate_EyeTrace = GetEyeTrace( pl )
-    pl.Kate_EyeTraceTime = ct
-  end
-  return pl.Kate_EyeTrace
-end
-
 if SERVER then
   local function cloakWeapons( pl, shouldDraw )
     for _, wep in pairs( pl:GetWeapons() ) do
@@ -52,8 +30,6 @@ if SERVER then
     pl:DrawWorldModel( not shouldCloak )
     pl:SetRenderMode( shouldCloak and RENDERMODE_TRANSALPHA or RENDERMODE_NORMAL )
     pl:Fire( 'alpha', shouldCloak and 0 or 255, 0 )
-    pl:SetCustomCollisionCheck( shouldCloak )
-    pl:CollisionRulesChanged()
 
     cloakWeapons( pl, shouldCloak )
 
@@ -61,10 +37,11 @@ if SERVER then
   end
 
   hook.Add( 'PlayerSpawn', 'Kate::Cloak', function( pl )
+    pl:SetCustomCollisionCheck( true )
+    pl:CollisionRulesChanged()
+
     local isCloaked = pl:GetNetVar( 'Kate_Cloak' )
     if not isCloaked then
-      pl:SetCustomCollisionCheck( false )
-      pl:CollisionRulesChanged()
       return
     end
 
@@ -86,69 +63,39 @@ if SERVER then
 end
 
 hook.Add( 'ShouldCollide', 'Kate::DisableCloakCollision', function( ent1, ent2 )
-  if ( not IsPlayer( ent1 ) ) or ( not IsPlayer( ent2 ) ) then
+  if ( not ent1:IsPlayer() ) or ( not ent2:IsPlayer() ) then
     return
   end
 
   local cloak1 = ent1:GetNetVar( 'Kate_Cloak' )
   local cloak2 = ent2:GetNetVar( 'Kate_Cloak' )
 
-  if ( not cloak1 ) and ( not cloak2 ) then
-    return
-  end
+  local wep1 = ent1:GetActiveWeapon()
+  local wep2 = ent2:GetActiveWeapon()
 
-  local function canPhysgunCollide( pl, target )
-    if GetInfoNum( pl, 'kate_physgun', 1 ) ~= 1 then
-      return false
-    end
+  local physgun1 = IsValid( wep1 ) and ( wep1:GetClass() == 'weapon_physgun' ) or false
+  local physgun2 = IsValid( wep2 ) and ( wep2:GetClass() == 'weapon_physgun' ) or false
 
-    local wep = GetActiveWeapon( pl )
-    if wep == nil then
-      return false
-    end
+  local press1 = ent1:KeyDown( IN_ATTACK )
+  local press2 = ent2:KeyDown( IN_ATTACK )
 
-    if not IsValid( wep ) then
-      return false
-    end
+  local tr1 = ent1:GetEyeTrace()
+  local tr2 = ent2:GetEyeTrace()
 
-    if GetClass( wep ) ~= 'weapon_physgun' then
-      return false
-    end
+  local target1 = IsValid( tr1.Entity ) and ( tr1.Entity == ent2 ) or false
+  local target2 = IsValid( tr2.Entity ) and ( tr2.Entity == ent1 ) or false
 
-    if not KeyDown( pl, IN_ATTACK ) then
-      return false
-    end
-
-    local tr = getEyeTraceCached( pl )
-    if tr == nil then
-      return false
-    end
-
-    local ent = tr.Entity
-    if ent == nil then
-      return false
-    end
-
-    if not IsValid( ent ) then
-      return false
-    end
-
-    if ent ~= target then
-      return false
-    end
-
+  if ( ent1:GetInfoNum( 'kate_physgun', 1 ) == 1 ) and ( cloak1 and physgun1 and press1 and target1 ) then
     return true
   end
 
-  if cloak1 and canPhysgunCollide( ent1, ent2 ) then
+  if ( ent2:GetInfoNum( 'kate_physgun', 1 ) == 1 ) and ( cloak2 and physgun2 and press2 and target2 ) then
     return true
   end
 
-  if cloak2 and canPhysgunCollide( ent2, ent1 ) then
-    return true
+  if cloak1 or cloak2 then
+    return false
   end
-
-  return false
 end )
 
 hook.Add( 'Kate::PlayerCanNoclip', 'Kate::Cloak', function( pl, desired )
