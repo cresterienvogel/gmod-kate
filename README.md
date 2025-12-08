@@ -1,10 +1,13 @@
 # Kate
-Powerful and elegant Garry's mod Administration System
+A lightweight, powerful and fast administration system for Garry’s Mod
 
-# Menu
-There are no menus due to the instinctively named commands.<br>
-If the menu is an important part for you, consider using the 1.0 branch.
+## 📌 Overview
+Kate is a minimalistic yet powerful admin system designed for server owners who prefer speed, clarity, and console/command control over heavy UI panels, everything works through chat and console commands — clean, fast, and distraction-free
 
-# Aliases
-Keep in mind that there are aliases here, so you can literally write !tp or !tele instead of !teleport.<br>
-Aliases have been added to almost every command, so you can write commands on instinct and in most cases they will run.
+## 🚀 Key Features
+- Everything works as it should
+- You need to run a command and you run it regardless of it's name thanks to a powerful alias system
+- A competent ranking system won't allow any form of subordination to be violated
+- Kate is suitable for both regular server owners and coders, as everything is designed to be as convenient and responsive as possible
+- Choose any database provider you like, as Kate supports SQLite, MySQLOO, and TMySQL
+- The language system supports English and Russian, which are linked to the server's sv_location console variable
