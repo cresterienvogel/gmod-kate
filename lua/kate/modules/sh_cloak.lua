@@ -62,42 +62,6 @@ if SERVER then
   end )
 end
 
-hook.Add( 'ShouldCollide', 'Kate::DisableCloakCollision', function( ent1, ent2 )
-  if ( not ent1:IsPlayer() ) or ( not ent2:IsPlayer() ) then
-    return
-  end
-
-  local cloak1 = ent1:GetNetVar( 'Kate_Cloak' )
-  local cloak2 = ent2:GetNetVar( 'Kate_Cloak' )
-
-  local wep1 = ent1:GetActiveWeapon()
-  local wep2 = ent2:GetActiveWeapon()
-
-  local physgun1 = IsValid( wep1 ) and ( wep1:GetClass() == 'weapon_physgun' ) or false
-  local physgun2 = IsValid( wep2 ) and ( wep2:GetClass() == 'weapon_physgun' ) or false
-
-  local press1 = ent1:KeyDown( IN_ATTACK )
-  local press2 = ent2:KeyDown( IN_ATTACK )
-
-  local tr1 = ent1:GetEyeTrace()
-  local tr2 = ent2:GetEyeTrace()
-
-  local target1 = IsValid( tr1.Entity ) and ( tr1.Entity == ent2 ) or false
-  local target2 = IsValid( tr2.Entity ) and ( tr2.Entity == ent1 ) or false
-
-  if ( ent1:GetInfoNum( 'kate_physgun', 1 ) == 1 ) and ( cloak1 and physgun1 and press1 and target1 ) then
-    return true
-  end
-
-  if ( ent2:GetInfoNum( 'kate_physgun', 1 ) == 1 ) and ( cloak2 and physgun2 and press2 and target2 ) then
-    return true
-  end
-
-  if cloak1 or cloak2 then
-    return false
-  end
-end )
-
 hook.Add( 'Kate::PlayerCanNoclip', 'Kate::Cloak', function( pl, desired )
   if pl:GetNetVar( 'Kate_Cloak' ) and ( desired == false ) then
     return false
