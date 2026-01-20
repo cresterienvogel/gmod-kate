@@ -27,13 +27,22 @@ function kate.UserGroups.Send( pl )
 end
 
 hook.Add( 'InitPostEntity', 'Kate::CacheUserGroups', function()
-  kate.DB:Query( 'SELECT SteamID64, UserGroup FROM kate_usergroups;' )
+  kate.Database
+    :Query( 'SELECT SteamID64, UserGroup FROM kate_usergroups;' )
     :SetOnSuccess( function( _, info )
       for _, data in ipairs( info ) do
         kate.UserGroups.Cache[data.SteamID64] = data.UserGroup
       end
     end )
     :Start()
+end )
+
+hook.Add( 'Kate::UserGroupRemoved', 'Kate::CacheUserGroups', function( steamId64 )
+  kate.UserGroups.Store( steamId64, nil )
+end )
+
+hook.Add( 'Kate::UserGroupChanged', 'Kate::CacheUserGroups', function( steamId64, userGroup )
+  kate.UserGroups.Store( steamId64, userGroup )
 end )
 
 hook.Add( 'PlayerInitialSpawn', 'Kate::CacheUserGroups', function( pl )

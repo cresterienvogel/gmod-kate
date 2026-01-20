@@ -6,7 +6,6 @@ timer.Create( 'Kate::CheckExpirations', 60, 0, function()
 
     if ( expireTime ~= nil ) and ( expireTime ~= 0 ) and ( os.time() > expireTime ) then
       kate.SetUserGroup( steamId64, expireGroup or 'user' )
-      kate.UserGroups.Cache[steamId64] = nil
     end
   end
 end )

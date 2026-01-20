@@ -5,7 +5,7 @@ kate.AddCommand( 'GoTo',
     end
 
     pl.Kate_ReturnPos = pl:GetPos()
-    pl:SetPos( kate.FindEmptyPos( target:GetPos(), {}, 32, 32, Vector( 16, 16, 64 ) ) )
+    pl:SetPos( kate.FindEmptyPos( target:GetPos() ) )
 
     local phrase = function( showSteamId )
       return { 'LOG_GOTO', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
@@ -29,7 +29,7 @@ kate.AddCommand( 'Teleport',
     end
 
     target.Kate_ReturnPos = target:GetPos()
-    target:SetPos( pl:GetEyeTrace().HitPos )
+    target:SetPos( kate.FindEmptyPos( pl:GetEyeTrace().HitPos ) )
 
     local phrase = function( showSteamId )
       return { 'LOG_TELEPORT', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }
@@ -54,7 +54,7 @@ kate.AddCommand( 'Bring',
     end
 
     target.Kate_ReturnPos = target:GetPos()
-    target:SetPos( kate.FindEmptyPos( pl:GetPos(), {}, 32, 32, Vector( 16, 16, 64 ) ) )
+    target:SetPos( kate.FindEmptyPos( pl:GetPos() ) )
 
     local phrase = function( showSteamId )
       return { 'LOG_TELEPORT', kate.GetActor( pl, showSteamId ), kate.GetTarget( target, showSteamId ) }

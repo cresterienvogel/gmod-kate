@@ -69,18 +69,18 @@ function kate.GetTarget( target, showSteamId )
   if IsValid( target ) then
     if showSteamId then
       return target:Name() .. ' (' .. target:SteamID() .. ')'
-    else
-      return target:Name()
     end
+
+    return target:Name()
   end
 
   local found = kate.FindPlayer( target )
   if IsValid( found ) then
     if showSteamId then
       return found:Name() .. ' (' .. found:SteamID() .. ')'
-    else
-      return found:Name()
     end
+
+    return found:Name()
   end
 
   local id = kate.SteamIDFrom64( target )
@@ -95,15 +95,7 @@ function kate.Print( status, ... )
   local text = table.concat( { ... }, ' ' )
 
   timer.Simple( 0, function()
-    MsgC(
-      LOG_TIMESTAMP,
-      os.date( '[%d/%m/%y] [%H:%M:%S]', os.time() ),
-      status,
-      ' » ',
-      color_white,
-      text,
-      '\n'
-    )
+    MsgC( LOG_TIMESTAMP, os.date( '[%d/%m/%y] [%H:%M:%S]', os.time() ), status, ' » ', color_white, text, '\n' )
   end )
 end
 
@@ -113,6 +105,7 @@ function kate.Notify( recievers, status, ... )
   timer.Simple( 0, function()
     if ( not IsValid( recievers ) ) and ( type( recievers ) ~= 'table' ) then
       kate.Print( status, text )
+
       return
     end
 

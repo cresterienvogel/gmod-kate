@@ -5,7 +5,7 @@ CreateClientConVar( 'kate_physgun', '1', true, true,
   0, 1
 )
 
-local vendor = {
+local VENDOR = {
   ['sv_'] = function( fileName, fileDir )
     if SERVER then
       include( fileDir .. fileName )
@@ -29,13 +29,11 @@ local vendor = {
 
 local function includeFile( fileName, fileDir )
   local filePrefix = string.lower( string.Left( fileName, 3 ) )
-  local includeFunc = vendor[filePrefix]
+  local includeFunc = VENDOR[filePrefix]
 
-  if includeFunc == nil then
-    return
+  if includeFunc ~= nil then
+    includeFunc( fileName, fileDir )
   end
-
-  includeFunc( fileName, fileDir )
 end
 
 local function includeDir( curDir, isRecursive )
@@ -54,6 +52,11 @@ local function includeDir( curDir, isRecursive )
   end
 end
 
+if SERVER then
+  include( 'kate/config/sv_database.lua' )
+end
+
 includeDir( 'kate/libraries', true )
 includeDir( 'kate/core', true )
+includeDir( 'kate/config', true )
 includeDir( 'kate/modules', true )

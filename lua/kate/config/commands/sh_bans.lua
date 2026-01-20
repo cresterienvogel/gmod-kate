@@ -24,7 +24,8 @@ kate.AddCommand( 'Ban',
 
       kate.Ban( steamId64, args )
     else
-      kate.DB:Query( string.format( 'SELECT Name, IP FROM kate_users WHERE SteamID64 = %q', steamId64 ) )
+      kate.Database
+        :Query( string.format( 'SELECT Name, IP FROM kate_users WHERE SteamID64 = %q', steamId64 ) )
         :SetOnSuccess( function( _, info )
           if info[1] then
             args.Name = info[1].Name

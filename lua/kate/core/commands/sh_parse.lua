@@ -49,7 +49,9 @@ function kate.Parse( caller, cmdObj, argString )
       hook.Run( 'Kate::OnCommandError', caller, cmdObj, 'ERROR_MISSING_PARAM', { k, paramObj:GetName() } )
 
       return false
-    elseif splitArgs[1] ~= nil then
+    end
+
+    if splitArgs[1] ~= nil then
       local succ, value, used = paramObj:Parse( caller, cmdObj, splitArgs[1], splitArgs, k )
       if succ == false then
         hook.Run( 'Kate::OnCommandError', caller, cmdObj, value, used )

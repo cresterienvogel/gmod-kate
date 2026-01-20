@@ -9,7 +9,6 @@ function VENDOR.Insert( info )
 
     for k in pairs( info ) do
       handled = handled + 1
-
       keys = keys .. k
 
       if handled ~= total then
@@ -26,8 +25,7 @@ function VENDOR.Insert( info )
 
     for _, v in pairs( info ) do
       handled = handled + 1
-
-      values = values .. ( ( type( v ) == 'string' ) and string.format( '%q', kate.DB:Escape( v ) ) or v )
+      values = values .. ( ( type( v ) == 'string' ) and string.format( '%q', kate.Database:Escape( v ) ) or v )
 
       if handled ~= total then
         values = values .. ', '
@@ -38,7 +36,8 @@ function VENDOR.Insert( info )
   local steamId64 = info['SteamID64']
   local reason = info['Reason']
 
-  kate.DB:Query( string.format( 'INSERT INTO kate_bans ( %s ) VALUES ( %s );', keys, values ) )
+  kate.Database
+    :Query( string.format( 'INSERT INTO kate_bans ( %s ) VALUES ( %s );', keys, values ) )
     :SetOnSuccess( function()
       kate.Bans.Cache[steamId64] = info
       game.KickID( kate.SteamIDFrom64( steamId64 ), reason )
@@ -55,9 +54,8 @@ function VENDOR.Update( newInfo, oldInfo, callback )
 
     for k, v in pairs( newInfo ) do
       handled = handled + 1
-
       values = values .. ( k .. ' = ' )
-      values = values .. ( ( type( v ) == 'string' ) and string.format( '%q', kate.DB:Escape( v ) ) or v )
+      values = values .. ( ( type( v ) == 'string' ) and string.format( '%q', kate.Database:Escape( v ) ) or v )
 
       if handled ~= total then
         values = values .. ', '
@@ -73,9 +71,8 @@ function VENDOR.Update( newInfo, oldInfo, callback )
 
     for k, v in pairs( oldInfo ) do
       handled = handled + 1
-
       condition = condition .. k .. ' = '
-      condition = condition .. ( ( type( v ) == 'string' ) and string.format( '%q', kate.DB:Escape( v ) ) or v )
+      condition = condition .. ( ( type( v ) == 'string' ) and string.format( '%q', kate.Database:Escape( v ) ) or v )
 
       if handled ~= total then
         condition = condition .. ' AND '
@@ -85,7 +82,8 @@ function VENDOR.Update( newInfo, oldInfo, callback )
 
   local steamId64 = oldInfo['SteamID64']
 
-  kate.DB:Query( string.format( 'UPDATE kate_bans SET %s WHERE %s;', values, condition ) )
+  kate.Database
+    :Query( string.format( 'UPDATE kate_bans SET %s WHERE %s;', values, condition ) )
     :SetOnSuccess( function()
       if callback ~= nil then
         callback()

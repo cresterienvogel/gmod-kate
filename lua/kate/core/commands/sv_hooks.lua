@@ -4,6 +4,7 @@ end )
 
 hook.Add( 'PlayerSay', 'Kate::RunCommand', function( pl, text )
   text = string.Trim( text )
+
   if text[1] ~= '!' then
     return
   end

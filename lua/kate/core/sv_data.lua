@@ -1,13 +1,15 @@
-kate.DB = kate.DB or SickQL:New(
-  'MySQLOO', -- Data vendor ( MySQLOO/TMySQL/SQLite )
-  '127.0.0.1', -- IP Address
-  3306, -- Port
-  'root', -- User
-  '', -- Password
-  'kate' -- Table
+local credentials = kate.DatabaseCredentials
+
+kate.Database = kate.Database or SickQL:New(
+  credentials.Vendor,
+  credentials.Address,
+  credentials.Port,
+  credentials.User,
+  credentials.Password,
+  credentials.Table
 )
 
-function kate.DB:OnConnected()
+function kate.Database:OnConnected()
   self:Query( [[
     CREATE TABLE IF NOT EXISTS kate_users
       (
@@ -52,8 +54,8 @@ function kate.DB:OnConnected()
   kate.Print( LOG_SUCCESS, kate.GetPhrase( false, 'DATABASE_CONNECTION_SUCCESS' ) )
 end
 
-function kate.DB:OnConnectionFailed( errorMsg )
+function kate.Database:OnConnectionFailed( errorMsg )
   kate.Print( LOG_ERROR, kate.GetPhrase( false, 'DATABASE_CONNECTION_ERROR', errorMsg ) )
 end
 
-kate.DB:Connect()
+kate.Database:Connect()

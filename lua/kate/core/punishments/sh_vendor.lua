@@ -36,7 +36,7 @@ function VENDOR.CreateTable( name, columns )
     end
   end
 
-  kate.DB:Query( string.format( 'CREATE TABLE IF NOT EXISTS kate_punishments_%s ( SteamID64 VARCHAR ( 17 ) PRIMARY KEY, %s );',
+  kate.Database:Query( string.format( 'CREATE TABLE IF NOT EXISTS kate_punishments_%s ( SteamID64 VARCHAR ( 17 ) PRIMARY KEY, %s );',
     string.gsub( string.lower( name ), ' ', '_' ), content
   ) ):Start()
 end
@@ -62,7 +62,8 @@ function VENDOR.RegisterPunishment( name, columns )
   PUNISHMENT.LoadCache = function()
     PUNISHMENT.Cache = {}
 
-    kate.DB:Query( string.format( 'SELECT * FROM kate_punishments_%s;', string.gsub( string.lower( name ), ' ', '_' ) ) )
+    kate.Database
+      :Query( string.format( 'SELECT * FROM kate_punishments_%s;', string.gsub( string.lower( name ), ' ', '_' ) ) )
       :SetOnSuccess( function( _, info )
         for _, data in ipairs( info ) do
           PUNISHMENT.Cache[data['SteamID64']] = data
@@ -75,7 +76,8 @@ function VENDOR.RegisterPunishment( name, columns )
     local steamId64 = pl:SteamID64()
     PUNISHMENT.Cache[steamId64] = nil
 
-    kate.DB:Query( string.format( 'SELECT * FROM kate_punishments_%s WHERE SteamID64 = %q;', string.gsub( string.lower( name ), ' ', '_' ), steamId64 ) )
+    kate.Database
+      :Query( string.format( 'SELECT * FROM kate_punishments_%s WHERE SteamID64 = %q;', string.gsub( string.lower( name ), ' ', '_' ), steamId64 ) )
       :SetOnSuccess( function( _, info )
         if info[1] == nil then
           return
@@ -99,7 +101,8 @@ function VENDOR.RegisterPunishment( name, columns )
   PUNISHMENT.Punish = function( steamId64, info )
     local tbl = string.gsub( string.lower( name ), ' ', '_' )
 
-    kate.DB:Query( string.format( 'DELETE FROM kate_punishments_%s WHERE SteamID64 = %q;', tbl, steamId64 ) )
+    kate.Database
+      :Query( string.format( 'DELETE FROM kate_punishments_%s WHERE SteamID64 = %q;', tbl, steamId64 ) )
       :SetOnSuccess( function()
         local keys do
           keys = ''
@@ -125,7 +128,7 @@ function VENDOR.RegisterPunishment( name, columns )
 
           for k in pairs( columns ) do
             handled = handled + 1
-            values = values .. ( ( type( info[k] ) == 'string' ) and string.format( '%q', kate.DB:Escape( info[k] ) ) or info[k] )
+            values = values .. ( ( type( info[k] ) == 'string' ) and string.format( '%q', kate.Database:Escape( info[k] ) ) or info[k] )
 
             if handled ~= total then
               values = values .. ', '
@@ -133,7 +136,8 @@ function VENDOR.RegisterPunishment( name, columns )
           end
         end
 
-        kate.DB:Query( string.format( 'INSERT INTO kate_punishments_%s ( SteamID64, %s ) VALUES ( %q, %s );', tbl, keys, steamId64, values ) )
+        kate.Database
+          :Query( string.format( 'INSERT INTO kate_punishments_%s ( SteamID64, %s ) VALUES ( %q, %s );', tbl, keys, steamId64, values ) )
           :SetOnSuccess( function()
             PUNISHMENT.Cache[steamId64] = info
             hook.Run( 'Kate::' .. name .. 'Created', steamId64, info )
@@ -157,7 +161,8 @@ function VENDOR.RegisterPunishment( name, columns )
   end
 
   PUNISHMENT.Penalize = function( steamId64, info )
-    kate.DB:Query( string.format( 'DELETE FROM kate_punishments_%s WHERE SteamID64 = %q;', string.gsub( string.lower( name ), ' ', '_' ), steamId64 ) )
+    kate.Database
+      :Query( string.format( 'DELETE FROM kate_punishments_%s WHERE SteamID64 = %q;', string.gsub( string.lower( name ), ' ', '_' ), steamId64 ) )
       :SetOnSuccess( function()
         PUNISHMENT.Cache[steamId64] = nil
         hook.Run( 'Kate::' .. name .. 'Removed', steamId64, info )
@@ -178,10 +183,10 @@ function VENDOR.RegisterPunishment( name, columns )
       :Start()
   end
 
-  kate.Punishments.Stored[name] = PUNISHMENT
-
   kate[name] = PUNISHMENT.Punish
   kate['Un' .. name] = PUNISHMENT.Penalize
+
+  kate.Punishments.Stored[name] = PUNISHMENT
 
   return PUNISHMENT
 end
